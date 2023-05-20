@@ -1,15 +1,11 @@
 package thaumicenergistics.common.integration;
 
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Optional;
-import net.minecraft.nbt.NBTTagCompound;
-
 import appeng.api.config.Upgrades;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.api.ThEApi;
-import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.blocks.BlockArcaneAssembler;
 import thaumicenergistics.common.tiles.TileEssentiaProvider;
 import thaumicenergistics.common.utils.EffectiveSide;
@@ -22,7 +18,6 @@ import thaumicenergistics.common.utils.ThELog;
  *
  */
 public final class IntegrationCore {
-
 
     /**
      * Module ID for Waila

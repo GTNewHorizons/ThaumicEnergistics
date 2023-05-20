@@ -2,13 +2,13 @@ package thaumicenergistics.common.integration;
 
 import java.util.List;
 
-import cpw.mods.fml.common.Optional;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;

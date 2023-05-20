@@ -12,6 +12,7 @@ import thaumicenergistics.common.fluids.GaseousEssentia;
  *
  */
 public class ModuleEC2 {
+
     private ModuleEC2() {}
 
     @Optional.Method(modid = "extracells")

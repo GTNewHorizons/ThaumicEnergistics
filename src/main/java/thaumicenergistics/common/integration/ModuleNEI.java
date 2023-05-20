@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import cpw.mods.fml.common.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
@@ -22,6 +21,7 @@ import codechicken.nei.api.INEIGuiAdapter;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.api.IStackPositioner;
 import codechicken.nei.recipe.IRecipeHandler;
+import cpw.mods.fml.common.Optional;
 import thaumicenergistics.client.gui.GuiArcaneCraftingTerminal;
 import thaumicenergistics.client.gui.abstraction.ThEBaseGui;
 import thaumicenergistics.common.container.ContainerPartArcaneCraftingTerminal;

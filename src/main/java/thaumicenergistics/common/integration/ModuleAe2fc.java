@@ -1,7 +1,8 @@
 package thaumicenergistics.common.integration;
 
-import cpw.mods.fml.common.Optional;
 import com.glodblock.github.api.FluidCraftAPI;
+
+import cpw.mods.fml.common.Optional;
 import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.common.fluids.GaseousEssentia;
 

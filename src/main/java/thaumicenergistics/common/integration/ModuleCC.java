@@ -15,6 +15,7 @@ import thaumicenergistics.common.tiles.TileEssentiaProvider;
  *
  */
 public class ModuleCC {
+
     public static class ThEPeripherals implements IPeripheralProvider {
 
         @Override
