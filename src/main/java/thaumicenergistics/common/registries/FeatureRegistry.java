@@ -58,6 +58,11 @@ public class FeatureRegistry {
     public final FeatureVisRelayInterface featureVRI;
 
     /**
+     * Creative Vis Relay Interface
+     */
+    public final FeatureCreativeVisRelayInterface featureCVRI;
+
+    /**
      * Essentia IO buses.
      */
     public final FeatureEssentiaIOBuses featureEssentiaIOBuses;
@@ -143,6 +148,7 @@ public class FeatureRegistry {
 
         // Build VRI
         this.featuresList.add(this.featureVRI = new FeatureVisRelayInterface());
+        this.featuresList.add(this.featureCVRI = new FeatureCreativeVisRelayInterface());
 
         // Build IO buses
         this.featuresList.add(this.featureEssentiaIOBuses = new FeatureEssentiaIOBuses());
