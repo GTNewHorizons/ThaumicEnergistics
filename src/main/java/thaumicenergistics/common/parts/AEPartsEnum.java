@@ -45,6 +45,8 @@ public enum AEPartsEnum {
 
     VisInterface(ThEStrings.Part_VisRelayInterface, PartVisInterface.class),
 
+    CreativeVisInterface(ThEStrings.Part_CreativeVisRelayInterface, PartCreativeVisInterface.class),
+
     EssentiaStorageMonitor(ThEStrings.Part_EssentiaStorageMonitor, PartEssentiaStorageMonitor.class),
 
     EssentiaConversionMonitor(ThEStrings.Part_EssentiaConversionMonitor, PartEssentiaConversionMonitor.class);

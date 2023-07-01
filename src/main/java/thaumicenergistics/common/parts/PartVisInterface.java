@@ -121,7 +121,7 @@ public class PartVisInterface extends ThEPartBase implements IGridTickable, IDig
      * @param amount
      * @return
      */
-    private int consumeVisFromVisNetwork(final Aspect digiVisAspect, final int amount) {
+    protected int consumeVisFromVisNetwork(final Aspect digiVisAspect, final int amount) {
         // Get the relay
         TileVisRelay visRelay = this.getRelay();
 
