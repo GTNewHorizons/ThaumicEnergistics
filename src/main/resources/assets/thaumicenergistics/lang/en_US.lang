@@ -24,6 +24,7 @@ thaumicenergistics.aeparts.essentia.StorageBus.name=Essentia Storage Bus
 thaumicenergistics.aeparts.essentia.terminal.name=Essentia Terminal
 thaumicenergistics.aeparts.arcane.crafting.terminal.name=Arcane Crafting Terminal
 thaumicenergistics.aeparts.vis.interface.name=Vis Relay Interface
+thaumicenergistics.aeparts.vis.interface_creative.name=Creative Vis Relay Interface
 thaumicenergistics.aeparts.essentia.storage.monitor.name=Essentia Storage Monitor
 thaumicenergistics.aeparts.essentia.conversion.monitor.name=Essentia Conversion Monitor
 

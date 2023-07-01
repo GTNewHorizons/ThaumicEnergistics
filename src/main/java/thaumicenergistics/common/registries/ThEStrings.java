@@ -34,6 +34,7 @@ public enum ThEStrings {
     Part_EssentiaTerminal("aeparts.essentia.terminal", true),
     Part_ArcaneCraftingTerminal("aeparts.arcane.crafting.terminal", true),
     Part_VisRelayInterface("aeparts.vis.interface", true),
+    Part_CreativeVisRelayInterface("aeparts.vis.interface_creative", true),
     Part_EssentiaStorageMonitor("aeparts.essentia.storage.monitor", true),
     Part_EssentiaConversionMonitor("aeparts.essentia.conversion.monitor", true),
 
