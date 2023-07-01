@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -16,6 +15,7 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import thaumcraft.client.lib.UtilsFX;
 
@@ -42,19 +42,13 @@ public class ItemCellMicroscopeRenderer implements IItemRenderer {
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         Minecraft mc = Minecraft.getMinecraft();
-        int rve_id = 0;
-        int player_id = 0;
-        if (type == ItemRenderType.EQUIPPED) {
-            rve_id = mc.renderViewEntity.getEntityId();
-            player_id = ((EntityLivingBase) data[1]).getEntityId();
-        }
+
         EntityPlayer playermp = mc.thePlayer;
         float partialTicks = UtilsFX.getTimer(mc).renderPartialTicks;
         float unknownVar = 0.8F;
         EntityPlayerSP playersp = (EntityPlayerSP) playermp;
         GL11.glPushMatrix();
-        if (type == ItemRenderType.EQUIPPED_FIRST_PERSON && player_id == rve_id
-                && mc.gameSettings.thirdPersonView == 0) {
+        if (type == ItemRenderType.EQUIPPED_FIRST_PERSON && mc.gameSettings.thirdPersonView == 0) {
             GL11.glTranslatef(1.0F, 0.75F, -1.0F);
             GL11.glRotatef(135.0F, 0.0F, -1.0F, 0.0F);
             float f3 = playersp.prevRenderArmPitch
@@ -62,8 +56,6 @@ public class ItemCellMicroscopeRenderer implements IItemRenderer {
             float f4 = playersp.prevRenderArmYaw + (playersp.renderArmYaw - playersp.prevRenderArmYaw) * partialTicks;
             GL11.glRotatef((playermp.rotationPitch - f3) * 0.1F, 1.0F, 0.0F, 0.0F);
             GL11.glRotatef((playermp.rotationYaw - f4) * 0.1F, 0.0F, 1.0F, 0.0F);
-            float var10000 = playermp.prevRotationPitch
-                    + (playermp.rotationPitch - playermp.prevRotationPitch) * partialTicks;
             float newProgress = UtilsFX.getPrevEquippedProgress(mc.entityRenderer.itemRenderer)
                     + (UtilsFX.getEquippedProgress(mc.entityRenderer.itemRenderer)
                             - UtilsFX.getPrevEquippedProgress(mc.entityRenderer.itemRenderer)) * partialTicks;
@@ -76,7 +68,7 @@ public class ItemCellMicroscopeRenderer implements IItemRenderer {
             GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
             GL11.glRotatef(0.0F, 0.0F, 0.0F, 1.0F);
 
-            GL11.glEnable(55);
+            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             GL11.glPushMatrix();
             GL11.glScalef(5.0F, 5.0F, 5.0F);
             mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
@@ -99,7 +91,7 @@ public class ItemCellMicroscopeRenderer implements IItemRenderer {
             GL11.glPopMatrix();
             GL11.glRotatef(90.0F, 0.0F, 0.0F, 1.0F);
             GL11.glTranslatef(0.4F, -0.8F, 0.0F);
-            GL11.glEnable(55);
+            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             GL11.glScalef(2.0F, 2.0F, 2.0F);
         } else {
             GL11.glScalef(0.5F, 0.5F, 0.5F);
@@ -143,16 +135,14 @@ public class ItemCellMicroscopeRenderer implements IItemRenderer {
                         + 10.0F),
                 771,
                 1.0F);
-        if (playermp instanceof EntityPlayer && type == ItemRenderType.EQUIPPED_FIRST_PERSON
-                && player_id == rve_id
-                && mc.gameSettings.thirdPersonView == 0) {
+        if (type == ItemRenderType.EQUIPPED_FIRST_PERSON && mc.gameSettings.thirdPersonView == 0) {
             RenderHelper.disableStandardItemLighting();
             int j = (int) (190.0F
                     + MathHelper.sin((float) (playermp.ticksExisted - playermp.worldObj.rand.nextInt(2))) * 10.0F
                     + 10.0F);
             int k = j % 65536;
             int l = j / 65536;
-            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) k / 1.0F, (float) l / 1.0F);
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) k, (float) l);
             RenderHelper.enableGUIStandardItemLighting();
         }
         GL11.glPopMatrix();
