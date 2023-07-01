@@ -19,26 +19,6 @@ import thaumicenergistics.common.utils.ThELog;
  */
 public final class IntegrationCore {
 
-    /**
-     * Module ID for Waila
-     */
-    private static final String MODID_WAILA = "Waila";
-
-    /**
-     * Module ID for NEI
-     */
-    private static final String MODID_NEI = "NEI";
-
-    /**
-     * Module ID for ExtraCells2
-     */
-    private static final String MODID_EC2 = "EC2";
-
-    /**
-     * Module ID for ComputerCraft
-     */
-    private static final String MODID_CC = "CC";
-
     @SideOnly(Side.CLIENT)
     private static void integrateWithClientMods() {
         if (Loader.isModLoaded("NotEnoughItems")) {

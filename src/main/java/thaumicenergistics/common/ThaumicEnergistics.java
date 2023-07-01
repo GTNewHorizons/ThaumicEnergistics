@@ -23,6 +23,7 @@ import thaumicenergistics.common.grid.GridEssentiaCache;
 import thaumicenergistics.common.integration.IntegrationCore;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
 import thaumicenergistics.common.integration.tc.EssentiaTileContainerHelper;
+import thaumicenergistics.common.items.ItemCraftingAspect;
 import thaumicenergistics.common.network.NetworkHandler;
 import thaumicenergistics.common.registries.AEAspectRegister;
 import thaumicenergistics.common.utils.ThELog;
@@ -39,7 +40,7 @@ import thaumicenergistics.common.utils.ThELog;
         modid = ThaumicEnergistics.MOD_ID,
         name = "Thaumic Energistics",
         version = ThaumicEnergistics.VERSION,
-        dependencies = "required-after:ThE-core;required-after:appliedenergistics2@[rv3-beta-116,);required-after:Thaumcraft@[4.2.3.5,);after:Waila;after:extracells")
+        dependencies = "required-after:ThE-core;required-after:appliedenergistics2@[rv3-beta-214,);required-after:Thaumcraft@[4.2.3.5,);after:Waila;after:extracells")
 public class ThaumicEnergistics {
 
     /**
@@ -127,6 +128,9 @@ public class ThaumicEnergistics {
 
         // Register the essentia grid cache
         AEApi.instance().registries().gridCache().registerGridCache(IEssentiaGrid.class, GridEssentiaCache.class);
+
+        // Register blacklist
+        AEApi.instance().registries().itemDisplay().blacklistItemDisplay(ItemCraftingAspect.class);
 
         // Register the wireless golem handler
         ThEApi.instance().interact().registerGolemHookHandler(WirelessGolemHandler.getInstance());

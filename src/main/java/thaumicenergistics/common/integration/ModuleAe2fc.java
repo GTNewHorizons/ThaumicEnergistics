@@ -11,7 +11,7 @@ public class ModuleAe2fc {
     private ModuleAe2fc() {}
 
     /**
-     * Integrates with CC
+     * Integrates with AE2FC
      */
     @Optional.Method(modid = "ae2fc")
     static void init() {

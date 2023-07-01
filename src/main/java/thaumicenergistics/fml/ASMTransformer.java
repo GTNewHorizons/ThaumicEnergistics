@@ -5,8 +5,11 @@ import java.util.HashMap;
 import net.minecraft.launchwrapper.IClassTransformer;
 
 import thaumicenergistics.fml.classtransformers.ae.ClassTransformer_CraftingTreeProcess;
-import thaumicenergistics.fml.classtransformers.ae.ClassTransformer_GuiMEMonitorable;
-import thaumicenergistics.fml.classtransformers.tc.*;
+import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_Aspect;
+import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_EntityGolemBase;
+import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_ItemGolemBell;
+import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_ItemGolemPlacer;
+import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_RenderGolemBase;
 
 public class ASMTransformer implements IClassTransformer {
 
@@ -18,7 +21,7 @@ public class ASMTransformer implements IClassTransformer {
 
     public ASMTransformer() {
         // Create the transformers map
-        this.tranformers = new HashMap<String, AClassTransformer>();
+        this.tranformers = new HashMap<>();
 
         // Add Thaumcraft transformers
         this.addTransformer(new ClassTransformer_Aspect());
@@ -29,7 +32,6 @@ public class ASMTransformer implements IClassTransformer {
 
         // Add AE transformers
         this.addTransformer(new ClassTransformer_CraftingTreeProcess());
-        this.addTransformer(new ClassTransformer_GuiMEMonitorable());
     }
 
     /**
