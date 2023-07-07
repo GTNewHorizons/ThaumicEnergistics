@@ -15,6 +15,12 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.cleanroommc.modularui.api.IGuiHolder;
+import com.cleanroommc.modularui.screen.ModularScreen;
+import com.cleanroommc.modularui.sync.GuiSyncHandler;
+import com.cleanroommc.modularui.sync.ItemSlotSH;
+import com.cleanroommc.modularui.sync.SyncHandlers;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -37,6 +43,7 @@ import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
+import appeng.container.slot.SlotInaccessible;
 import appeng.core.localization.WailaText;
 import appeng.core.sync.packets.PacketAssemblerAnimation;
 import appeng.me.GridAccessException;
@@ -56,7 +63,12 @@ import thaumcraft.common.Thaumcraft;
 import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.api.grid.IDigiVisSource;
 import thaumicenergistics.client.gui.ThEGuiHelper;
+import thaumicenergistics.client.gui.mui2.guis.MuiArcaneAssembler;
+import thaumicenergistics.client.gui.mui2.helper.MuiNetworkTool;
+import thaumicenergistics.client.gui.mui2.sync.AspectCostSH;
 import thaumicenergistics.common.blocks.BlockArcaneAssembler;
+import thaumicenergistics.common.container.slot.SlotArmor;
+import thaumicenergistics.common.container.slot.SlotRestrictive;
 import thaumicenergistics.common.integration.IWailaSource;
 import thaumicenergistics.common.integration.tc.ArcaneCraftingPattern;
 import thaumicenergistics.common.integration.tc.DigiVisSourceData;
@@ -72,7 +84,139 @@ import thaumicenergistics.common.utils.EffectiveSide;
  * @author Nividica
  *
  */
-public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingProvider, IWailaSource {
+public class TileArcaneAssembler extends AENetworkInvTile implements IGuiHolder, ICraftingProvider, IWailaSource {
+
+    @Override
+    public void buildSyncHandler(GuiSyncHandler guiSyncHandler, EntityPlayer player) {
+        // spotless:off
+        guiSyncHandler.syncValue(MuiArcaneAssembler.SYNC_ASPECT_AIR, AspectCostSH.builder()
+                .visCost(() -> {
+                    if (this.currentPattern != null) {
+                        return (float) getRequiredAmountForAspect(Aspect.AIR);
+                    } else {
+                        return 0.0f;
+                    }
+                })
+                .visStored(() -> (float) storedVis.getAmount(Aspect.AIR))
+                .visDiscount(() -> visDiscount.get(Aspect.AIR))
+                .enoughVis(() -> this.currentPattern == null
+                        || getRequiredAmountForAspect(Aspect.AIR) <= storedVis.getAmount(Aspect.AIR))
+                .build());
+        guiSyncHandler.syncValue(MuiArcaneAssembler.SYNC_ASPECT_FIRE, AspectCostSH.builder()
+                .visCost(() -> {
+                    if (this.currentPattern != null) {
+                        return (float) getRequiredAmountForAspect(Aspect.FIRE);
+                    } else {
+                        return 0.0f;
+                    }
+                })
+                .visStored(() -> (float) storedVis.getAmount(Aspect.FIRE))
+                .visDiscount(() -> visDiscount.get(Aspect.FIRE))
+                .enoughVis(() -> this.currentPattern == null
+                        || getRequiredAmountForAspect(Aspect.FIRE) <= storedVis.getAmount(Aspect.FIRE))
+                .build());
+        guiSyncHandler.syncValue(MuiArcaneAssembler.SYNC_ASPECT_WATER, AspectCostSH.builder()
+                .visCost(() -> {
+                    if (this.currentPattern != null) {
+                        return (float) getRequiredAmountForAspect(Aspect.WATER);
+                    } else {
+                        return 0.0f;
+                    }
+                })
+                .visStored(() -> (float) storedVis.getAmount(Aspect.WATER))
+                .visDiscount(() -> visDiscount.get(Aspect.WATER))
+                .enoughVis(() -> this.currentPattern == null
+                        || getRequiredAmountForAspect(Aspect.WATER) <= storedVis.getAmount(Aspect.WATER))
+                .build());
+        guiSyncHandler.syncValue(MuiArcaneAssembler.SYNC_ASPECT_EARTH, AspectCostSH.builder()
+                .visCost(() -> {
+                    if (this.currentPattern != null) {
+                        return (float) getRequiredAmountForAspect(Aspect.EARTH);
+                    } else {
+                        return 0.0f;
+                    }
+                })
+                .visStored(() -> (float) storedVis.getAmount(Aspect.EARTH))
+                .visDiscount(() -> visDiscount.get(Aspect.EARTH))
+                .enoughVis(
+                        () -> this.currentPattern == null
+                                || getRequiredAmountForAspect(Aspect.EARTH) <= storedVis.getAmount(Aspect.EARTH))
+                .build());
+        guiSyncHandler.syncValue(MuiArcaneAssembler.SYNC_ASPECT_ORDER, AspectCostSH.builder()
+                .visCost(() -> {
+                    if (this.currentPattern != null) {
+                        return (float) getRequiredAmountForAspect(Aspect.ORDER);
+                    } else {
+                        return 0.0f;
+                    }
+                })
+                .visStored(() -> (float) storedVis.getAmount(Aspect.ORDER))
+                .visDiscount(() -> visDiscount.get(Aspect.ORDER))
+                .enoughVis(() -> this.currentPattern == null
+                        || getRequiredAmountForAspect(Aspect.ORDER) <= storedVis.getAmount(Aspect.ORDER))
+                .build());
+        guiSyncHandler.syncValue(MuiArcaneAssembler.SYNC_ASPECT_ENTROPY, AspectCostSH.builder()
+                .visCost(() -> {
+                    if (this.currentPattern != null) {
+                        return (float) getRequiredAmountForAspect(Aspect.ENTROPY);
+                    } else {
+                        return 0.0f;
+                    }
+                })
+                .visStored(() -> (float) storedVis.getAmount(Aspect.ENTROPY))
+                .visDiscount(() -> visDiscount.get(Aspect.ENTROPY))
+                .enoughVis(() -> this.currentPattern == null
+                        || getRequiredAmountForAspect(Aspect.ENTROPY) <= storedVis.getAmount(Aspect.ENTROPY))
+                .build());
+        guiSyncHandler.syncValue(
+                MuiArcaneAssembler.SYNC_CRAFT_PROGRESS,
+                SyncHandlers.doubleNumber(() -> (double) craftTickCounter / ticksPerCraft(), (val) -> {}));
+
+        guiSyncHandler.registerSlotGroup(MuiArcaneAssembler.SYNC_KCORE_SLOT, 1, -1);
+        guiSyncHandler.syncValue(
+                MuiArcaneAssembler.SYNC_KCORE_SLOT,
+                SyncHandlers.itemSlot(new SlotRestrictive(this.internalInventory, KCORE_SLOT_INDEX, 0, 0))
+                        .slotGroup(MuiArcaneAssembler.SYNC_KCORE_SLOT));
+
+        guiSyncHandler.registerSlotGroup(MuiArcaneAssembler.SYNC_UPGRADE_SLOTS, 4, true);
+        for (int i = 0; i < this.upgradeInventory.getSizeInventory(); ++i) {
+            guiSyncHandler.syncValue(
+                    MuiArcaneAssembler.SYNC_UPGRADE_SLOTS,
+                    i,
+                    SyncHandlers.itemSlot(new SlotRestrictive(this.upgradeInventory, i, 0, 0))
+                            .slotGroup(MuiArcaneAssembler.SYNC_UPGRADE_SLOTS));
+        }
+
+        guiSyncHandler.registerSlotGroup(MuiArcaneAssembler.SYNC_ARMOR_SLOTS, 4, true);
+        for (int i = 0; i < 4; ++i) {
+            guiSyncHandler.syncValue(
+                    MuiArcaneAssembler.SYNC_ARMOR_SLOTS, i,
+                    new ItemSlotSH(new SlotArmor(this.internalInventory, i + DISCOUNT_ARMOR_INDEX, 0, 0, i, true))
+                            .slotGroup(MuiArcaneAssembler.SYNC_UPGRADE_SLOTS));
+        }
+
+        guiSyncHandler.registerSlotGroup(MuiArcaneAssembler.SYNC_PATTERN_SLOTS, 3, false);
+        for (int i = 0; i < MuiArcaneAssembler.NUM_PATTERN_SLOTS; ++i) {
+            guiSyncHandler.syncValue(
+                    MuiArcaneAssembler.SYNC_PATTERN_SLOTS,
+                    i,
+                    new ItemSlotSH(new SlotInaccessible(this.internalInventory, i + PATTERN_SLOT_INDEX, 0, 0))
+                            .slotGroup(MuiArcaneAssembler.SYNC_PATTERN_SLOTS));
+        }
+
+        guiSyncHandler.registerSlotGroup(MuiArcaneAssembler.SYNC_RESULT_SLOT, 1, false);
+        guiSyncHandler.syncValue(
+                MuiArcaneAssembler.SYNC_RESULT_SLOT,
+                new ItemSlotSH(new SlotInaccessible(this.internalInventory, TARGET_SLOT_INDEX, 0, 0))
+                        .slotGroup(MuiArcaneAssembler.SYNC_RESULT_SLOT));
+        // Network tool gets sync handlers if necessary.
+        MuiNetworkTool.addSyncHandlers(guiSyncHandler, this.getLocation(), player);
+    }
+
+    @Override
+    public ModularScreen createClientGui(EntityPlayer player) {
+        return ModularScreen.simple("arcane_ass", context -> MuiArcaneAssembler.createGui(context, this, player));
+    }
 
     private class AAInv extends TheInternalInventory {
 

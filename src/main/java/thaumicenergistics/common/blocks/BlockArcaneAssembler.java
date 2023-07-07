@@ -16,11 +16,12 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.cleanroommc.modularui.manager.GuiInfos;
+
 import appeng.api.implementations.items.IMemoryCard;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.client.textures.BlockTextureManager;
-import thaumicenergistics.common.ThEGuiHandler;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.tiles.TileArcaneAssembler;
 import thaumicenergistics.common.utils.EffectiveSide;
@@ -78,7 +79,8 @@ public class BlockArcaneAssembler extends AbstractBlockAEWrenchable {
                 // Can the player interact with the assembler?
                 if (((TileArcaneAssembler) tileAssembler).isUseableByPlayer(player)) {
                     // Launch the gui.
-                    ThEGuiHandler.launchGui(ThEGuiHandler.ARCANE_ASSEMBLER_ID, player, world, x, y, z);
+                    // ThEGuiHandler.launchGui(ThEGuiHandler.ARCANE_ASSEMBLER_ID, player, world, x, y, z);
+                    GuiInfos.TILE_ENTITY.open(player, world, x, y, z);
                 }
             }
         }
