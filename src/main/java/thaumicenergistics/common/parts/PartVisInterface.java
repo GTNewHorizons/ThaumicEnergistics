@@ -114,6 +114,12 @@ public class PartVisInterface extends ThEPartBase implements IGridTickable, IDig
         this.UID = System.currentTimeMillis() ^ this.hashCode();
     }
 
+    public PartVisInterface(AEPartsEnum part) {
+        super(part);
+
+        this.UID = System.currentTimeMillis() ^ this.hashCode();
+    }
+
     /**
      * Requests that the interface drain vis from the relay
      *

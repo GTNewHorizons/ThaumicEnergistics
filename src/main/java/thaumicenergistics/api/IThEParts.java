@@ -63,4 +63,10 @@ public abstract class IThEParts {
      */
     @Nonnull
     public IThEItemDescription Essentia_ConversionMonitor;
+
+    /**
+     * Creative vis relay interface.
+     */
+    @Nonnull
+    public IThEItemDescription CreativeVisRelay_Interface;
 }

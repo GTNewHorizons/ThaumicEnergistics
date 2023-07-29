@@ -21,5 +21,6 @@ class ThEParts extends IThEParts {
         this.VisRelay_Interface = new ThEItemDescription(AEPartsEnum.VisInterface.getStack());
         this.Essentia_StorageMonitor = new ThEItemDescription(AEPartsEnum.EssentiaStorageMonitor.getStack());
         this.Essentia_ConversionMonitor = new ThEItemDescription(AEPartsEnum.EssentiaConversionMonitor.getStack());
+        this.CreativeVisRelay_Interface = new ThEItemDescription(AEPartsEnum.CreativeVisInterface.getStack());
     }
 }
