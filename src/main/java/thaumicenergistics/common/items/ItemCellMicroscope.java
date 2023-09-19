@@ -1,5 +1,9 @@
 package thaumicenergistics.common.items;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -27,10 +31,6 @@ import thaumcraft.common.lib.network.playerdata.PacketScannedToServer;
 import thaumcraft.common.lib.research.ScanManager;
 import thaumcraft.common.lib.utils.EntityUtils;
 import thaumicenergistics.common.registries.ThEStrings;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class ItemCellMicroscope extends ItemThaumometer {
 
@@ -77,9 +77,8 @@ public class ItemCellMicroscope extends ItemThaumometer {
 
     @Override
     public void onUsingTick(ItemStack stack, EntityPlayer p, int count) {
-        if (p.worldObj.isRemote
-                && Objects.equals(p.getCommandSenderName(),
-                Minecraft.getMinecraft().thePlayer.getCommandSenderName())) {
+        if (p.worldObj.isRemote && Objects
+                .equals(p.getCommandSenderName(), Minecraft.getMinecraft().thePlayer.getCommandSenderName())) {
 
             ArrayList<ItemStack> cells = this.doScan(stack, p.worldObj, p, count);
 
@@ -88,7 +87,7 @@ public class ItemCellMicroscope extends ItemThaumometer {
                 if (count <= 5) {
                     p.stopUsingItem();
                     this.startCells.clear();
-                    for (ItemStack cell: cells) {
+                    for (ItemStack cell : cells) {
                         doCellScan(p, cell);
                     }
                 }
@@ -110,19 +109,13 @@ public class ItemCellMicroscope extends ItemThaumometer {
 
     }
 
-    private void doCellScan(EntityPlayer p, ItemStack cell){
+    private void doCellScan(EntityPlayer p, ItemStack cell) {
         IMEInventory<IAEItemStack> inv = AEApi.instance().registries().cell()
                 .getCellInventory(cell, (ISaveProvider) cellSaveManager, StorageChannel.ITEMS);
-        IItemList<IAEItemStack> itemList = inv
-                .getAvailableItems(AEApi.instance().storage().createItemList());
+        IItemList<IAEItemStack> itemList = inv.getAvailableItems(AEApi.instance().storage().createItemList());
 
         for (final IAEItemStack i : itemList) {
-            ScanResult sr = new ScanResult(
-                    (byte) 1,
-                    Item.getIdFromItem(i.getItem()),
-                    i.getItemDamage(),
-                    null,
-                    "");
+            ScanResult sr = new ScanResult((byte) 1, Item.getIdFromItem(i.getItem()), i.getItemDamage(), null, "");
             if (ScanManager.isValidScanTarget(p, sr, "@")) {
 
                 ScanManager.completeScan(p, sr, "@");
@@ -160,8 +153,9 @@ public class ItemCellMicroscope extends ItemThaumometer {
         }
 
         MovingObjectPosition lookingAtBlock = Minecraft.getMinecraft().objectMouseOver;
-        TileEntity blockAtPos = world.getTileEntity(lookingAtBlock.blockX, lookingAtBlock.blockY, lookingAtBlock.blockZ);
-        if (blockAtPos instanceof ICellContainer){
+        TileEntity blockAtPos = world
+                .getTileEntity(lookingAtBlock.blockX, lookingAtBlock.blockY, lookingAtBlock.blockZ);
+        if (blockAtPos instanceof ICellContainer) {
             ((ICellContainer) blockAtPos).getCellArray(StorageChannel.ITEMS);
             IInventory inv = (IInventory) blockAtPos;
             cellSaveManager = blockAtPos;
@@ -177,7 +171,7 @@ public class ItemCellMicroscope extends ItemThaumometer {
                         15,
                         -0.03F);
             } catch (Exception ignored) {}
-            for (int i = 0; i < inv.getSizeInventory(); i++){
+            for (int i = 0; i < inv.getSizeInventory(); i++) {
                 ItemStack itemStack = inv.getStackInSlot(i);
                 if (itemStack != null) {
                     cellsOutput.add(itemStack);
@@ -188,7 +182,7 @@ public class ItemCellMicroscope extends ItemThaumometer {
     }
 
     public void onPlayerStoppedUsing(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer,
-                                     int par4) {
+            int par4) {
         super.onPlayerStoppedUsing(par1ItemStack, par2World, par3EntityPlayer, par4);
         this.startCells.clear();
     }
