@@ -9,8 +9,36 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import thaumicenergistics.common.ThaumicEnergistics;
-import thaumicenergistics.common.network.packet.client.*;
-import thaumicenergistics.common.network.packet.server.*;
+import thaumicenergistics.common.network.packet.client.Packet_C_ArcaneCraftingTerminal;
+import thaumicenergistics.common.network.packet.client.Packet_C_AspectSlot;
+import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaCellTerminal;
+import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaEmitter;
+import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaIOBus;
+import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaStorageBus;
+import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaVibrationChamber;
+import thaumicenergistics.common.network.packet.client.Packet_C_KnowledgeInscriber;
+import thaumicenergistics.common.network.packet.client.Packet_C_Priority;
+import thaumicenergistics.common.network.packet.client.Packet_C_Sync;
+import thaumicenergistics.common.network.packet.client.Packet_R_ParticleFX;
+import thaumicenergistics.common.network.packet.client.ThEAreaPacket;
+import thaumicenergistics.common.network.packet.client.ThEClientPacket;
+import thaumicenergistics.common.network.packet.client.WrapperPacket_C;
+import thaumicenergistics.common.network.packet.server.Packet_S_ArcaneCraftingTerminal;
+import thaumicenergistics.common.network.packet.server.Packet_S_AspectSlot;
+import thaumicenergistics.common.network.packet.server.Packet_S_ChangeGui;
+import thaumicenergistics.common.network.packet.server.Packet_S_ConfirmCraftingJob;
+import thaumicenergistics.common.network.packet.server.Packet_S_DistillationEncoder;
+import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellTerminal;
+import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellWorkbench;
+import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaEmitter;
+import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaIOBus;
+import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaStorageBus;
+import thaumicenergistics.common.network.packet.server.Packet_S_KnowledgeInscriber;
+import thaumicenergistics.common.network.packet.server.Packet_S_NEIRecipe;
+import thaumicenergistics.common.network.packet.server.Packet_S_Priority;
+import thaumicenergistics.common.network.packet.server.Packet_S_WrenchFocus;
+import thaumicenergistics.common.network.packet.server.ThEServerPacket;
+import thaumicenergistics.common.network.packet.server.WrapperPacket_S;
 
 /**
  * Handles all server<->client network communication for ThE.

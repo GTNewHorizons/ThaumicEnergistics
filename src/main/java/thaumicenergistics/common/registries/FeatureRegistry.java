@@ -2,7 +2,27 @@ package thaumicenergistics.common.registries;
 
 import java.util.ArrayList;
 
-import thaumicenergistics.common.features.*;
+import thaumicenergistics.common.features.CommonDependantItems;
+import thaumicenergistics.common.features.FeatureACT;
+import thaumicenergistics.common.features.FeatureAutocrafting_Arcane;
+import thaumicenergistics.common.features.FeatureAutocrafting_Essentia;
+import thaumicenergistics.common.features.FeatureCellMicroscope;
+import thaumicenergistics.common.features.FeatureCells;
+import thaumicenergistics.common.features.FeatureConversionCores;
+import thaumicenergistics.common.features.FeatureCreativeVisRelayInterface;
+import thaumicenergistics.common.features.FeatureEssentiaIOBuses;
+import thaumicenergistics.common.features.FeatureEssentiaMonitoring;
+import thaumicenergistics.common.features.FeatureEssentiaProvider;
+import thaumicenergistics.common.features.FeatureEssentiaVibrationChamber;
+import thaumicenergistics.common.features.FeatureGearbox;
+import thaumicenergistics.common.features.FeatureGolemBackpack;
+import thaumicenergistics.common.features.FeatureInfusionProvider;
+import thaumicenergistics.common.features.FeatureQuartzDupe;
+import thaumicenergistics.common.features.FeatureThaumcraftFacades;
+import thaumicenergistics.common.features.FeatureThaumicEnergisticsResearch;
+import thaumicenergistics.common.features.FeatureVisRelayInterface;
+import thaumicenergistics.common.features.FeatureWrenchFocus;
+import thaumicenergistics.common.features.ThEFeatureBase;
 
 /**
  * Acts as a safe way to depend on features that can be disabled in both TC and AE.

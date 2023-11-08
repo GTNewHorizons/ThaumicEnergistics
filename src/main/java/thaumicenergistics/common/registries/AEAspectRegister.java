@@ -11,7 +11,11 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 
 import appeng.api.AEApi;
-import appeng.api.definitions.*;
+import appeng.api.definitions.IBlocks;
+import appeng.api.definitions.IItemDefinition;
+import appeng.api.definitions.IItems;
+import appeng.api.definitions.IMaterials;
+import appeng.api.definitions.IParts;
 import appeng.api.features.IGrinderEntry;
 import appeng.api.features.IInscriberRecipe;
 import appeng.api.util.AEColor;
@@ -376,7 +380,6 @@ public class AEAspectRegister {
         /**
          * Builds the aspect list from the items ingredients.
          *
-         * @param itemInfo
          */
         private void findAspectsForIngredients() {
             for (ItemStack stack : this.ingredients) {
@@ -1049,7 +1052,7 @@ public class AEAspectRegister {
     /**
      * Gets the item info for the item def or itemstack.
      *
-     * @param itemDef
+     * @param itemDefinitionOrStack
      * @return
      */
     AEItemInfo getInfoForDefinitionOrStack(final Object itemDefinitionOrStack) {
@@ -1118,7 +1121,6 @@ public class AEAspectRegister {
      * Registers the item info with thaumcraft.
      *
      * @param itemInfo
-     * @param aspects
      */
     void registerItem(final AEItemInfo itemInfo) {
         // Remove from the add list

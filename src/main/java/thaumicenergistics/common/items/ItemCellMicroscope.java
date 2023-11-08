@@ -11,7 +11,8 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
 import appeng.api.AEApi;
-import appeng.api.storage.*;
+import appeng.api.storage.IMEInventory;
+import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.items.storage.ItemBasicStorageCell;
