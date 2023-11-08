@@ -97,7 +97,7 @@ public enum AEPartsEnum {
     /**
      * Gets an AEPart based on an item stacks damage value.
      *
-     * @param damageValue
+     * @param itemStack
      * @return
      */
     public static AEPartsEnum getPartFromDamageValue(final ItemStack itemStack) {

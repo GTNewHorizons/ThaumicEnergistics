@@ -33,7 +33,14 @@ import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.client.lib.UtilsFX;
 import thaumcraft.common.config.Config;
 import thaumicenergistics.client.gui.abstraction.GuiConstants_ACT;
-import thaumicenergistics.client.gui.buttons.*;
+
+import thaumicenergistics.client.gui.buttons.GuiButtonClearCraftingGrid;
+import thaumicenergistics.client.gui.buttons.GuiButtonSearchMode;
+import thaumicenergistics.client.gui.buttons.GuiButtonSortingDirection;
+import thaumicenergistics.client.gui.buttons.GuiButtonSortingMode;
+import thaumicenergistics.client.gui.buttons.GuiButtonSwapArmor;
+import thaumicenergistics.client.gui.buttons.GuiButtonTerminalStyle;
+import thaumicenergistics.client.gui.buttons.GuiButtonViewType;
 import thaumicenergistics.client.gui.widget.ThEWidget;
 import thaumicenergistics.client.gui.widget.WidgetAEItem;
 import thaumicenergistics.client.textures.AEStateIconsEnum;
