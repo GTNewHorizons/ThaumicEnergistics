@@ -612,15 +612,6 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
         return this.totalBytes;
     }
 
-    // /**
-    // * Total number of types the cell can hold.
-    // *
-    // * @return
-    // */
-    // public int getTotalTypes() {
-    // return this.totalTypes;
-    // }
-
     /**
      * Returns how many bytes are used.
      *
@@ -630,26 +621,6 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
     public long getUsedBytes() {
         return (long) Math.ceil(this.usedEssentiaStorage / (double) HandlerItemEssentiaCell.ESSENTIA_PER_BYTE);
     }
-
-    // /**
-    // * Returns how many types are used.
-    // *
-    // * @return
-    // */
-    // public int getUsedTypes() {
-    // // Assume we are empty
-    // int typeCount = 0;
-    //
-    // // Count the number of valid types
-    // for (IAspectStack stack : this.storedEssentia) {
-    // if (stack != null) {
-    // typeCount++;
-    // }
-    // }
-    //
-    // // Return the count
-    // return typeCount;
-    // }
 
     /**
      * Gets the view mode.
