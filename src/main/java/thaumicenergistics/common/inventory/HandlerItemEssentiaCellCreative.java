@@ -111,7 +111,7 @@ public class HandlerItemEssentiaCellCreative extends HandlerItemEssentiaCell {
      * Used types based on partition table.
      */
     @Override
-    public int getUsedTypes() {
+    public long getUsedTypes() {
         return this.partitionAspects.size();
     }
 
