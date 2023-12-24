@@ -369,6 +369,12 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
         if (essentiaCell.getItemDamage() == EnumEssentiaStorageTypes.Type_Creative.index) {
             return essentiaCell;
         }
+        if (essentiaCell.getItemDamage() == EnumEssentiaStorageTypes.Type_QUANTUM.index) {
+            return essentiaCell;
+        }
+        if (essentiaCell.getItemDamage() == EnumEssentiaStorageTypes.Type_SINGULARITY.index) {
+            return essentiaCell;
+        }
 
         // Get the handler
         @SuppressWarnings("unchecked")
