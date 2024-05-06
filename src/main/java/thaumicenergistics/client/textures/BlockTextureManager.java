@@ -70,7 +70,10 @@ public enum BlockTextureManager {
                     "e.vibration.face.potentia" }),
 
     DISTILLATION_ENCODER(TextureTypes.Block,
-            new String[] { "knowledge.inscriber.side", "distillation.encoder.face", "knowledge.inscriber.bottom" });
+            new String[] { "knowledge.inscriber.side", "distillation.encoder.face", "knowledge.inscriber.bottom" }),
+
+    INFUSION_ENCODER(TextureTypes.Block,
+            new String[] { "knowledge.inscriber.side", "infusion.encoder.face", "knowledge.inscriber.bottom" });
 
     private enum TextureTypes {
         Block,

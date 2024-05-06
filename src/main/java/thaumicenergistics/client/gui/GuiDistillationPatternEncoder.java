@@ -96,7 +96,7 @@ public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInvent
     private GuiButtonEncodePattern buttonEncode;
 
     /**
-     * The encode button.
+     * The reset button.
      */
     private GuiButtonResetAspectSlot buttonReset;
 

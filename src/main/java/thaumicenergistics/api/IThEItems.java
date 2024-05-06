@@ -177,4 +177,10 @@ public abstract class IThEItems {
      */
     @Nonnull
     public IThEItemDescription CellMicroscope;
+
+    /**
+     * Essentia encoded pattern
+     */
+    @Nonnull
+    public IThEItemDescription EssentiaEncodedPattern;
 }

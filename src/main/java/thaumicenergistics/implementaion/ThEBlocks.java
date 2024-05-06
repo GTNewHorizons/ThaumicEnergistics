@@ -21,5 +21,6 @@ class ThEBlocks extends IThEBlocks {
         this.KnowledgeInscriber = new ThEItemDescription(BlockEnum.KNOWLEDGE_INSCRIBER.getBlock());
         this.EssentiaVibrationChamber = new ThEItemDescription(BlockEnum.ESSENTIA_VIBRATION_CHAMBER.getBlock());
         this.DistillationPatternEncoder = new ThEItemDescription(BlockEnum.DISTILLATION_ENCODER.getBlock());
+        this.InfusionEncoder = new ThEItemDescription(BlockEnum.INFUSION_ENCODER.getBlock());
     }
 }

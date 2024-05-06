@@ -25,6 +25,7 @@ public enum ThEStrings {
     Block_KnowledgeInscriber("block.knowledge.inscriber", true),
     Block_EssentiaVibrationChamber("block.essentia.vibration.chamber", true),
     Block_DistillationEncoder("block.distillation.encoder", true),
+    Block_InfusionEncoder("block.infusion.encoder", true),
 
     // Parts
     Part_EssentiaImportBus("aeparts.essentia.ImportBus", true),
@@ -68,6 +69,7 @@ public enum ThEStrings {
     Item_FocusAEWrench_Disabled("item.focus.aewrench.disabled", true),
     Item_Golem_Wifi_Backpack("item.golem.wifi.backpack", true),
     Item_Cell_Microscope("item.cell.microscope", true),
+    Item_Essentia_Encoded_Pattern("item.essentia.encoded.pattern", true),
 
     // Tooltips
     Tooltip_ItemStackDetails("tooltip.itemstack.details", false),
@@ -90,6 +92,7 @@ public enum ThEStrings {
     TooltipButton_SwapArmor_Title("tooltip.button.swap.armor.title", false),
     TooltipButton_Reset_Aspect("tooltip.button.reset.aspect", false),
     TooltipButton_Reset_Aspect_Description("tooltip.button.reset.aspect.description", false),
+    TooltipButton_Encode_Pattern("tooltip.button.encode.description", false),
 
     // GUI
     Gui_TitleArcaneCraftingTerminal("gui.arcane.crafting.terminal.title", false),

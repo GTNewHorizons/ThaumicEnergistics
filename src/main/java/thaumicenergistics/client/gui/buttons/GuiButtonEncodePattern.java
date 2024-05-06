@@ -6,6 +6,7 @@ import appeng.core.localization.ButtonToolTips;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.client.textures.AEStateIconsEnum;
+import thaumicenergistics.common.registries.ThEStrings;
 
 /**
  * Displays encode pattern icon.
@@ -23,6 +24,9 @@ public class GuiButtonEncodePattern extends ThEStateButton {
 
     @Override
     public void getTooltip(final List<String> tooltip) {
-        this.addAboutToTooltip(tooltip, ButtonToolTips.Encode.getLocal(), ButtonToolTips.EncodeDescription.getLocal());
+        this.addAboutToTooltip(
+                tooltip,
+                ButtonToolTips.Encode.getLocal(),
+                ThEStrings.TooltipButton_Encode_Pattern.getLocalized());
     }
 }

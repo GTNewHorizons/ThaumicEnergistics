@@ -15,6 +15,7 @@ thaumicenergistics.block.arcane.assembler.name=奥术装配室
 thaumicenergistics.block.knowledge.inscriber.name=知识记录仪
 thaumicenergistics.block.essentia.vibration.chamber.name=源质谐振仓
 thaumicenergistics.block.distillation.encoder.name=蒸馏编码台
+thaumicenergistics.block.infusion.encoder.name=注魔编码台
 
 #Cable parts
 thaumicenergistics.aeparts.essentia.ImportBus.name=源质输入总线
@@ -58,6 +59,7 @@ thaumicenergistics.item.focus.aewrench.name=法杖核心: AE扳手
 thaumicenergistics.item.focus.aewrench.disabled.name=法杖核心: AE扳手 - 扳手模式已禁用
 thaumicenergistics.item.golem.wifi.backpack.name=无线傀儡背包
 thaumicenergistics.item.cell.microscope.name=元件显微镜
+thaumicenergistics.item.essentia.encoded.pattern.name=编码样板
 
 #Tooltips
 thaumicenergistics.tooltip.itemstack.details=按住§eshift§f查看详细信息.
@@ -78,6 +80,7 @@ thaumicenergistics.tooltip.button.swap.armor.title=交换护甲
 thaumicenergistics.tooltip.arcane.assembler.hasVis=已存储Vis
 thaumicenergistics.tooltip.button.reset.aspect=重置源质
 thaumicenergistics.tooltip.button.reset.aspect.description=重置左侧源质表格为初始状态
+thaumicenergistics.tooltip.button.encode.description=将输入的样板写入当前编码样板或可用的空样板;按住Shift使样板直接进入物品栏.
 
 
 #GUI

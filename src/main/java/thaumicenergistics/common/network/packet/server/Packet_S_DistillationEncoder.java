@@ -68,6 +68,5 @@ public class Packet_S_DistillationEncoder extends ThEServerPacket {
                 ((ContainerDistillationPatternEncoder) this.player.openContainer).scanSourceItem(true);
             }
         }
-
     }
 }

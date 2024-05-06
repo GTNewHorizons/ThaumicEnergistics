@@ -19,7 +19,8 @@ public enum TileEnum {
     ArcaneAssembler("TileArcaneAssembler", TileArcaneAssembler.class),
     KnowledgeInscriber("TileKnowledgeInscriber", TileKnowledgeInscriber.class),
     EssentiaVibrationChamber("TileEssentiaVibrationChamber", TileEssentiaVibrationChamber.class),
-    DistillationInscriber("TileDistillationInscriber", TileDistillationPatternEncoder.class);
+    DistillationInscriber("TileDistillationInscriber", TileDistillationPatternEncoder.class),
+    InfusionEncoder("TileInfusionPatternEncoder", TileInfusionPatternEncoder.class);
 
     /**
      * Unique ID of the tile entity

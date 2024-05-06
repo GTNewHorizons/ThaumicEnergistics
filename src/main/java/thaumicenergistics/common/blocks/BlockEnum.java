@@ -24,7 +24,8 @@ public enum BlockEnum {
     KNOWLEDGE_INSCRIBER(ThEStrings.Block_KnowledgeInscriber, new BlockKnowledgeInscriber()),
     ESSENTIA_VIBRATION_CHAMBER(ThEStrings.Block_EssentiaVibrationChamber, new BlockEssentiaVibrationChamber(),
             ItemBlockEssentiaVibrationChamber.class),
-    DISTILLATION_ENCODER(ThEStrings.Block_DistillationEncoder, new BlockDistillationEncoder());
+    DISTILLATION_ENCODER(ThEStrings.Block_DistillationEncoder, new BlockDistillationEncoder()),
+    INFUSION_ENCODER(ThEStrings.Block_InfusionEncoder, new BlockInfusionEncoder());
 
     /**
      * Cache of the enum values

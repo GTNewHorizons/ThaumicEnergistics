@@ -33,6 +33,7 @@ import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellWork
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaEmitter;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaIOBus;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaStorageBus;
+import thaumicenergistics.common.network.packet.server.Packet_S_InfusionEncoder;
 import thaumicenergistics.common.network.packet.server.Packet_S_KnowledgeInscriber;
 import thaumicenergistics.common.network.packet.server.Packet_S_NEIRecipe;
 import thaumicenergistics.common.network.packet.server.Packet_S_Priority;
@@ -161,6 +162,9 @@ public class NetworkHandler {
 
         // Distillation encoder
         registerPacket(Packet_S_DistillationEncoder.class);
+
+        // Infusion encoder
+        registerPacket(Packet_S_InfusionEncoder.class);
 
         // Sync packet
         registerPacket(Packet_C_Sync.class);

@@ -27,6 +27,7 @@ public enum GuiTextureManager {
     KNOWLEDGE_INSCRIBER("knowledge.inscriber"),
     ESSENTIA_VIBRATION_CHAMBER("essentia.vibration.chamber"),
     DISTILLATION_ENCODER("distillation.encoder"),
+    INFUSION_ENCODER("infusion.encoder"),
     ADVANCED_TOOLBOX("advanced.toolbox");
 
     private ResourceLocation texture;

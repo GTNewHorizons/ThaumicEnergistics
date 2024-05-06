@@ -20,6 +20,7 @@ import thaumicenergistics.client.gui.GuiDistillationPatternEncoder;
 import thaumicenergistics.client.gui.GuiEssentiaCellTerminal;
 import thaumicenergistics.client.gui.GuiEssentiaCellWorkbench;
 import thaumicenergistics.client.gui.GuiEssentiaVibrationChamber;
+import thaumicenergistics.client.gui.GuiInfusionEncoder;
 import thaumicenergistics.client.gui.GuiKnowledgeInscriber;
 import thaumicenergistics.client.gui.GuiPriority;
 import thaumicenergistics.common.container.ContainerArcaneAssembler;
@@ -27,6 +28,7 @@ import thaumicenergistics.common.container.ContainerDistillationPatternEncoder;
 import thaumicenergistics.common.container.ContainerEssentiaCell;
 import thaumicenergistics.common.container.ContainerEssentiaCellWorkbench;
 import thaumicenergistics.common.container.ContainerEssentiaVibrationChamber;
+import thaumicenergistics.common.container.ContainerInfusionEncoder;
 import thaumicenergistics.common.container.ContainerKnowledgeInscriber;
 import thaumicenergistics.common.container.ContainerPriority;
 import thaumicenergistics.common.container.ContainerWirelessEssentiaTerminal;
@@ -98,6 +100,11 @@ public class ThEGuiHandler implements IGuiHandler {
      * ID of the distillation encoder.
      */
     public static final int DISTILLATION_ENCODER = ThEGuiHandler.ID_STEP_VALUE * 10;
+
+    /**
+     * ΙD of the infusion endoder.
+     */
+    public static final int INFUSION_ENCODER = ThEGuiHandler.ID_STEP_VALUE * 11;
 
     /**
      * Extra data used for some GUI calls.
@@ -320,6 +327,10 @@ public class ThEGuiHandler implements IGuiHandler {
             case ThEGuiHandler.DISTILLATION_ENCODER:
                 return new GuiDistillationPatternEncoder(player, world, x, y, z);
 
+            // Infusion encoder
+            case ThEGuiHandler.INFUSION_ENCODER:
+                return new GuiInfusionEncoder(player, world, x, y, z);
+
             // AE2 Autocrafting Amount?
             case ThEGuiHandler.AUTO_CRAFTING_AMOUNT:
                 ICraftingIssuerHost amountHost = ThEGuiHandler.getCraftingIssuerHost(player);
@@ -399,6 +410,10 @@ public class ThEGuiHandler implements IGuiHandler {
             // Distillation encoder?
             case ThEGuiHandler.DISTILLATION_ENCODER:
                 return new ContainerDistillationPatternEncoder(player, world, x, y, z);
+
+            // Infusion encoder
+            case ThEGuiHandler.INFUSION_ENCODER:
+                return new ContainerInfusionEncoder(player, world, x, y, z);
 
             // AE2 Autocrafting Amount?
             case ThEGuiHandler.AUTO_CRAFTING_AMOUNT:

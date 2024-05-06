@@ -23,6 +23,7 @@ public class TheInternalInventory implements IInventory {
      * NBT keys
      */
     private static final String NBT_KEY_SLOT = "Slot";
+    private static final String NBT_KEY_NUM = "Num";
 
     /**
      * Stack size limit.
@@ -235,6 +236,7 @@ public class TheInternalInventory implements IInventory {
             if ((slotIndex >= 0) && (slotIndex < this.slots.length)) {
                 // Load the itemstack
                 this.slots[slotIndex] = ItemStack.loadItemStackFromNBT(nbtCompound);
+                this.slots[slotIndex].stackSize = nbtCompound.getInteger(TheInternalInventory.NBT_KEY_NUM);
             }
         }
     }
@@ -269,6 +271,7 @@ public class TheInternalInventory implements IInventory {
 
                 // Set the slot number
                 nbtCompound.setByte(TheInternalInventory.NBT_KEY_SLOT, (byte) slotIndex);
+                nbtCompound.setInteger(TheInternalInventory.NBT_KEY_NUM, this.slots[slotIndex].stackSize);
 
                 // Save the inventory
                 this.slots[slotIndex].writeToNBT(nbtCompound);
