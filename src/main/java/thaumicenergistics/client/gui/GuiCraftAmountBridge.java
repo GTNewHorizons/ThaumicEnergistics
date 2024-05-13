@@ -1,15 +1,11 @@
 package thaumicenergistics.client.gui;
 
-import java.lang.reflect.Field;
-
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 import appeng.client.gui.implementations.GuiCraftAmount;
 import appeng.client.gui.widgets.GuiTabButton;
-import appeng.core.localization.GuiText;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.api.grid.ICraftingIssuerHost;
@@ -39,16 +35,6 @@ public class GuiCraftAmountBridge extends GuiCraftAmount {
      */
     protected EntityPlayer player;
 
-    /**
-     * The next button.
-     */
-    protected GuiButton buttonNext;
-
-    /**
-     * The amount-to-craft text box.
-     */
-    protected GuiTextField amountToCraft;
-
     public GuiCraftAmountBridge(final EntityPlayer player, final ICraftingIssuerHost craftingHost) {
         // Call super
         super(player.inventory, craftingHost);
@@ -65,16 +51,16 @@ public class GuiCraftAmountBridge extends GuiCraftAmount {
         if (btn == this.buttonReturnToTerminalHost) {
             // Change back to host GUI
             this.host.launchGUI(this.player);
-        } else if (btn == this.buttonNext) {
+        } else if (btn == this.nextBtn) {
             try {
                 // Parse the amount
-                long amount = Long.parseLong(this.amountToCraft.getText());
+                long amount = Long.parseLong(this.amountTextField.getText());
 
                 // Ask server to show confirm gui
                 Packet_S_ConfirmCraftingJob.sendConfirmAutoCraft(this.player, amount, isShiftKeyDown());
             } catch (final NumberFormatException e) {
                 // Reset amount to 1
-                this.amountToCraft.setText("1");
+                this.amountTextField.setText("1");
             }
         } else {
             // Call super
@@ -99,24 +85,5 @@ public class GuiCraftAmountBridge extends GuiCraftAmount {
                 myIcon.getDisplayName(),
                 itemRender);
         this.buttonList.add(this.buttonReturnToTerminalHost);
-
-        // Get the next button
-        for (Object buttonObj : this.buttonList) {
-            if (buttonObj instanceof GuiButton) {
-                GuiButton button = (GuiButton) buttonObj;
-                if (button.displayString == GuiText.Next.getLocal()) {
-                    this.buttonNext = button;
-                    break;
-                }
-            }
-        }
-
-        // Get the amount to craft
-        Field atcField;
-        try {
-            atcField = GuiCraftAmount.class.getDeclaredField("amountToCraft");
-            atcField.setAccessible(true);
-            this.amountToCraft = (GuiTextField) atcField.get(this);
-        } catch (Exception e) {}
     }
 }

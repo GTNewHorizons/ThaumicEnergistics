@@ -35,9 +35,10 @@ public class GuiPriority extends ThEBaseGui {
 
         enum EnumButtonWidth {
 
-            Small(25),
-            Medium(35),
-            Large(45);
+            Small(22),
+            Medium(28),
+            Large(32),
+            ExLarge(38);
 
             public final int width;
 
@@ -100,9 +101,11 @@ public class GuiPriority extends ThEBaseGui {
             new AdjustmentButtonDef(AdjustmentButtonDef.EnumButtonWidth.Small, 1),
             new AdjustmentButtonDef(AdjustmentButtonDef.EnumButtonWidth.Medium, 10),
             new AdjustmentButtonDef(AdjustmentButtonDef.EnumButtonWidth.Large, 100),
+            new AdjustmentButtonDef(AdjustmentButtonDef.EnumButtonWidth.ExLarge, 1000),
             new AdjustmentButtonDef(AdjustmentButtonDef.EnumButtonWidth.Small, -1),
             new AdjustmentButtonDef(AdjustmentButtonDef.EnumButtonWidth.Medium, -10),
-            new AdjustmentButtonDef(AdjustmentButtonDef.EnumButtonWidth.Large, -100) };
+            new AdjustmentButtonDef(AdjustmentButtonDef.EnumButtonWidth.Large, -100),
+            new AdjustmentButtonDef(AdjustmentButtonDef.EnumButtonWidth.ExLarge, -1000) };
 
     /**
      * The width of the gui
@@ -122,7 +125,7 @@ public class GuiPriority extends ThEBaseGui {
     /**
      * X position of the switch tab
      */
-    private static final int PART_SWITCH_BUTTON_X_POSITION = 154;
+    private static final int PART_SWITCH_BUTTON_X_POSITION = 150;
 
     /**
      * Starting ID of the adjustment buttons
@@ -132,12 +135,12 @@ public class GuiPriority extends ThEBaseGui {
     /**
      * Starting X position for each row of buttons
      */
-    private static final int ADJUSTMENT_BUTTONS_X_POSITION = 35;
+    private static final int ADJUSTMENT_BUTTONS_X_POSITION = 20;
 
     /**
      * Y position for each row
      */
-    private static final int[] ADJUSTMENT_BUTTONS_Y_POSITION = new int[] { 30, 70 };
+    private static final int[] ADJUSTMENT_BUTTONS_Y_POSITION = new int[] { 32, 69 };
 
     /**
      * Amount of empty space between buttons
@@ -157,12 +160,12 @@ public class GuiPriority extends ThEBaseGui {
     /**
      * Width of the amount field.
      */
-    private static final int AMOUNT_WIDTH = 80;
+    private static final int AMOUNT_WIDTH = 59;
 
     /**
      * Height of the amount field.
      */
-    private static final int AMOUNT_HEIGHT = 10;
+    private static final int AMOUNT_HEIGHT = 9;
 
     /**
      * The maximum number of characters that can be typed in the amount field.
@@ -322,7 +325,7 @@ public class GuiPriority extends ThEBaseGui {
                 new GuiButtonAETab(
                         GuiPriority.PART_SWITCH_BUTTON_ID,
                         this.guiLeft + GuiPriority.PART_SWITCH_BUTTON_X_POSITION,
-                        this.guiTop,
+                        this.guiTop - 3,
                         AEStateIconsEnum.WRENCH,
                         this.part.getUnlocalizedName()));
 

@@ -31,8 +31,8 @@ thaumicenergistics.item.material.diffusion.core.name=Zersetzungskern
 thaumicenergistics.item.material.coalescence.core.name=Zusammensetzungskern
 
 #Tooltips
-thaumicenergistics.tooltip.essentia.cell.bytes=%d von %d genutzte Bytes
-thaumicenergistics.tooltip.essentia.cell.types=%d von %d Essentia-Typen
+thaumicenergistics.tooltip.essentia.cell.bytes=%s von %s genutzte Bytes
+thaumicenergistics.tooltip.essentia.cell.types=%s von %s Essentia-Typen
 thaumicenergistics.tooltip.button.clear.crafting=Items lagern
 thaumicenergistics.tooltip.button.void=Leere erlauben
 thaumicenergistics.tooltip.button.void.disabled=Essentia nicht verwerfen

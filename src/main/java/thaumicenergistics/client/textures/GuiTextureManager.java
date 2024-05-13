@@ -23,9 +23,11 @@ public enum GuiTextureManager {
     PRIORITY("priority"),
     CELL_WORKBENCH("essentia.cell.workbench"),
     ARCANE_ASSEMBLER("arcane.assembler"),
+    ARCANE_ASSEMBLER_VISBAR("arcane.assembler.visbar"),
     KNOWLEDGE_INSCRIBER("knowledge.inscriber"),
     ESSENTIA_VIBRATION_CHAMBER("essentia.vibration.chamber"),
-    DISTILLATION_ENCODER("distillation.encoder");
+    DISTILLATION_ENCODER("distillation.encoder"),
+    ADVANCED_TOOLBOX("advanced.toolbox");
 
     private ResourceLocation texture;
 

@@ -79,8 +79,8 @@ public class GuiButtonAETab extends ThEStateButton {
             this.drawIcon(
                     minecraftInstance,
                     this.stateIcon,
-                    this.xPosition,
-                    this.yPosition,
+                    this.xPosition + 3,
+                    this.yPosition + 3,
                     AEStateIconsEnum.STANDARD_ICON_SIZE,
                     AEStateIconsEnum.STANDARD_ICON_SIZE);
         }

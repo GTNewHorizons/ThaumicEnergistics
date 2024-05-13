@@ -54,6 +54,10 @@ public class CommonDependantItems {
     public ItemStack QuickSilverDrop;
     public ItemStack Thaumometer;
     public ItemStack Nitor;
+    public ItemStack VoidSeed;
+    public ItemStack VoidIngot;
+    public ItemStack PrimalCharm;
+    public ItemStack EssentiaReservoir;
 
     // AE Items =========================
     public Object VibrantGlass;
@@ -82,6 +86,8 @@ public class CommonDependantItems {
     public ItemStack QuantumLink;
     public ItemStack Singularity;
     public ItemStack ItemP2P;
+    public ItemStack QuantumRing;
+    public ItemStack Condenser;
 
     /**
      * Populates the common items
@@ -178,6 +184,8 @@ public class CommonDependantItems {
                 .getItemOrAlt(aeBlocks.energyCellDense(), this.getAEItem(aeBlocks.energyCell()));
         this.VibrationChamber = this.getAEItem(aeBlocks.vibrationChamber());
         this.QuantumLink = this.getAEItem(aeBlocks.quantumLink());
+        this.QuantumRing = this.getAEItem(aeBlocks.quantumRing());
+        this.Condenser = this.getAEItem(aeBlocks.condenser());
 
         // Parts
         IParts aeParts = AEApi.instance().definitions().parts();
@@ -206,6 +214,9 @@ public class CommonDependantItems {
         this.ThaumiumIngot = new ItemStack(ConfigItems.itemResource, 1, 2);
         this.VisFilter = new ItemStack(ConfigItems.itemResource, 1, 8);
         this.SalisMundus = new ItemStack(ConfigItems.itemResource, 1, 14);
+        this.PrimalCharm = new ItemStack(ConfigItems.itemResource, 1, 15);
+        this.VoidIngot = new ItemStack(ConfigItems.itemResource, 1, 16);
+        this.VoidSeed = new ItemStack(ConfigItems.itemResource, 1, 17);
 
         // Blocks
         this.WardedJar = new ItemStack(ConfigBlocks.blockJar, 1, 0);
@@ -217,6 +228,7 @@ public class CommonDependantItems {
                 this.VanillaGlass);
         this.EssentiaMirror = (ItemStack) this
                 .getItemOrAlt(Config.allowMirrors, new ItemStack(ConfigBlocks.blockMirror, 1, 6), this.WardedJar);
+        this.EssentiaReservoir = new ItemStack(ConfigBlocks.blockEssentiaReservoir, 1, 0);
 
         // Items
         this.Thaumometer = new ItemStack(ConfigItems.itemThaumometer);

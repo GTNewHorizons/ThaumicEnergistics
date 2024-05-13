@@ -20,10 +20,11 @@ thaumicenergistics.block.distillation.encoder.name=蒸馏编码台
 thaumicenergistics.aeparts.essentia.ImportBus.name=源质输入总线
 thaumicenergistics.aeparts.essentia.ExportBus.name=源质输出总线
 thaumicenergistics.aeparts.essentia.levelemitter.name=源质发信器
-thaumicenergistics.aeparts.essentia.StorageBus.name=源质储存总线
+thaumicenergistics.aeparts.essentia.StorageBus.name=源质存储总线
 thaumicenergistics.aeparts.essentia.terminal.name=源质终端
 thaumicenergistics.aeparts.arcane.crafting.terminal.name=奥术合成终端
 thaumicenergistics.aeparts.vis.interface.name=要素中继接口
+thaumicenergistics.aeparts.vis.interface_creative.name=创造要素中继接口
 thaumicenergistics.aeparts.essentia.storage.monitor.name=源质储存监控器
 thaumicenergistics.aeparts.essentia.conversion.monitor.name=源质交换监控器
 
@@ -32,12 +33,22 @@ thaumicenergistics.item.essentia.cell.1k.name=1k-ME源质存储元件
 thaumicenergistics.item.essentia.cell.4k.name=4k-ME源质存储元件
 thaumicenergistics.item.essentia.cell.16k.name=16k-ME源质存储元件
 thaumicenergistics.item.essentia.cell.64k.name=64k-ME源质存储元件
+thaumicenergistics.item.essentia.cell.256k.name=256k-ME源质存储元件
+thaumicenergistics.item.essentia.cell.1024k.name=1024k-ME源质存储元件
+thaumicenergistics.item.essentia.cell.4096k.name=4096k-ME源质存储元件
+thaumicenergistics.item.essentia.cell.16384k.name=16384k-ME源质存储元件
+thaumicenergistics.item.essentia.cell.quantum.name=ME源质量子存储元件
+thaumicenergistics.item.essentia.cell.singularity.name=ME源质数字奇点元件
 thaumicenergistics.item.essentia.cell.creative.name=创造源质存储元件
 thaumicenergistics.item.storage.casing.name=ME源质存储外壳
 thaumicenergistics.item.storage.component.1k.name=1k-ME源质存储组件
 thaumicenergistics.item.storage.component.4k.name=4k-ME源质存储组件
 thaumicenergistics.item.storage.component.16k.name=16k-ME源质存储组件
 thaumicenergistics.item.storage.component.64k.name=64k-ME源质存储组件
+thaumicenergistics.item.storage.component.256k.name=256k-ME源质存储组件
+thaumicenergistics.item.storage.component.1024k.name=1024k-ME源质存储组件
+thaumicenergistics.item.storage.component.4096k.name=4096k-ME源质存储组件
+thaumicenergistics.item.storage.component.16384k.name=16384k-ME源质存储组件
 thaumicenergistics.item.material.diffusion.core.name=扩散核心
 thaumicenergistics.item.material.coalescence.core.name=聚集核心
 thaumicenergistics.item.material.iron.gear.name=铁齿轮
@@ -46,11 +57,13 @@ thaumicenergistics.item.knowledge.core.name=知识核心
 thaumicenergistics.item.focus.aewrench.name=法杖核心: AE扳手
 thaumicenergistics.item.focus.aewrench.disabled.name=法杖核心: AE扳手 - 扳手模式已禁用
 thaumicenergistics.item.golem.wifi.backpack.name=无线傀儡背包
+thaumicenergistics.item.cell.microscope.name=元件显微镜
 
 #Tooltips
 thaumicenergistics.tooltip.itemstack.details=按住§eshift§f查看详细信息.
-thaumicenergistics.tooltip.essentia.cell.bytes=%d / %d 字节已使用.
-thaumicenergistics.tooltip.essentia.cell.types=%d / %d 源质类型储存.
+thaumicenergistics.tooltip.essentia.cell.contains=包含
+thaumicenergistics.tooltip.essentia.cell.bytes=%s / %s 字节已使用.
+thaumicenergistics.tooltip.essentia.cell.types=%s / %s 源质类型储存.
 thaumicenergistics.tooltip.button.void=允许清空
 thaumicenergistics.tooltip.button.void.disabled=不清空源质
 thaumicenergistics.tooltip.button.void.allowed=罐子溢满时清空源质
@@ -63,6 +76,8 @@ thaumicenergistics.tooltip.button.inscriber.missing=需要知识核心
 thaumicenergistics.tooltip.button.swap.armor=将你目前装备的护甲与终端中的护甲交换.
 thaumicenergistics.tooltip.button.swap.armor.title=交换护甲
 thaumicenergistics.tooltip.arcane.assembler.hasVis=已存储Vis
+thaumicenergistics.tooltip.button.reset.aspect=重置源质
+thaumicenergistics.tooltip.button.reset.aspect.description=重置左侧源质表格为初始状态
 
 
 #GUI
@@ -191,3 +206,5 @@ thaumicenergistics.research_page.TEGOLEMWIFIBACKPACK.COREALCHEMY=§n炼金核心
 thaumicenergistics.research_page.TEGOLEMWIFIBACKPACK.UPGRADEORDER=§n秩序升级 解锁§r<IMG>thaumcraft:textures/items/golem_upgrade_order.png:0:0:255:255:0.0625</IMG>装备有秩序升级的傀儡会更高效地管理背包能量,这为其带来了单次充能后工作量的提升.
 thaumicenergistics.research_page.TEGOLEMWIFIBACKPACK.ADVANCEDGOLEM=§n高级傀儡§r<IMG>thaumcraft:textures/items/brain.png:0:0:255:255:0.0625</IMG>高级傀儡每次充能后的工作量是原来的两倍.
 
+# Research Cell Microscope
+tc.research_name.thaumicenergistics.TECELLMICROSCOPE=元件显微镜

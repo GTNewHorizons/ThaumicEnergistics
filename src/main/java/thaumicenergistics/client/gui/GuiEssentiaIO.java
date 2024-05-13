@@ -138,6 +138,11 @@ public class GuiEssentiaIO extends ThEBaseGui implements WidgetAspectSlot.IConfi
     private boolean hasNetworkTool;
 
     /**
+     * True if network tool is advanced.
+     */
+    private boolean isAdvancedNetworkTool = false;
+
+    /**
      * Tracks the redstone mode of the bus.
      */
     private RedstoneMode redstoneMode = RedstoneMode.HIGH_SIGNAL;
@@ -180,12 +185,21 @@ public class GuiEssentiaIO extends ThEBaseGui implements WidgetAspectSlot.IConfi
 
         // Check if the player has a network tool
         this.hasNetworkTool = ((ContainerPartEssentiaIOBus) this.inventorySlots).hasNetworkTool();
+        if (this.hasNetworkTool)
+            this.isAdvancedNetworkTool = ((ContainerPartEssentiaIOBus) this.inventorySlots).isAdvancedNetworkTool();
 
-        // Set the width
-        this.xSize = (this.hasNetworkTool ? GuiEssentiaIO.GUI_WIDTH_WITH_TOOL : GuiEssentiaIO.GUI_WIDTH_NO_TOOL);
+        // Set the GUI size
+        if (this.hasNetworkTool) {
+            if (this.isAdvancedNetworkTool) {
+                this.xSize = GuiEssentiaIO.GUI_WIDTH_WITH_TOOL + 36;
+            } else {
+                this.xSize = GuiEssentiaIO.GUI_WIDTH_WITH_TOOL;
+            }
+        } else {
+            this.xSize = GuiEssentiaIO.GUI_WIDTH_NO_TOOL;
+        }
 
-        // Set the height
-        this.ySize = GuiEssentiaIO.GUI_HEIGHT;
+        this.ySize = this.isAdvancedNetworkTool ? GuiEssentiaIO.GUI_HEIGHT + 36 : GuiEssentiaIO.GUI_HEIGHT;
 
         // Set the title
         if (partBus instanceof PartEssentiaImportBus) {
@@ -212,14 +226,40 @@ public class GuiEssentiaIO extends ThEBaseGui implements WidgetAspectSlot.IConfi
 
         // Does the user have a network tool?
         if (this.hasNetworkTool) {
-            // Draw the full gui
-            this.drawTexturedModalRect(
-                    this.guiLeft,
-                    this.guiTop,
-                    0,
-                    0,
-                    GuiEssentiaIO.GUI_WIDTH_WITH_TOOL,
-                    GuiEssentiaIO.GUI_HEIGHT);
+            if (this.isAdvancedNetworkTool) {
+                // Draw main gui
+                this.drawTexturedModalRect(
+                        this.guiLeft,
+                        this.guiTop,
+                        0,
+                        0,
+                        GuiEssentiaIO.GUI_MAIN_WIDTH,
+                        GuiEssentiaIO.GUI_HEIGHT);
+
+                // Draw upgrade slots
+                this.drawTexturedModalRect(
+                        this.guiLeft + GuiEssentiaIO.GUI_MAIN_WIDTH,
+                        this.guiTop,
+                        GuiEssentiaIO.GUI_MAIN_WIDTH,
+                        0,
+                        GuiEssentiaIO.GUI_UPGRADES_WIDTH,
+                        GuiEssentiaIO.GUI_UPGRADES_HEIGHT);
+
+                // Draw advanced toolbox
+                Minecraft.getMinecraft().renderEngine.bindTexture(GuiTextureManager.ADVANCED_TOOLBOX.getTexture());
+                this.drawTexturedModalRect(this.guiLeft + 179, this.guiTop + 94, 0, 0, 104, 104);
+                Minecraft.getMinecraft().renderEngine.bindTexture(GuiTextureManager.ESSENTIA_IO_BUS.getTexture());
+
+            } else {
+                // Draw the full gui
+                this.drawTexturedModalRect(
+                        this.guiLeft,
+                        this.guiTop,
+                        0,
+                        0,
+                        GuiEssentiaIO.GUI_WIDTH_WITH_TOOL,
+                        GuiEssentiaIO.GUI_HEIGHT);
+            }
         } else {
             // Draw main gui
             this.drawTexturedModalRect(

@@ -37,8 +37,8 @@ thaumicenergistics.item.material.iron.gear.name=철 톱니바퀴
 thaumicenergistics.item.wireless.essentia.terminal.name=무선 에센시아 단말기
 
 #Tooltips
-thaumicenergistics.tooltip.essentia.cell.bytes=%d 바이트가 %d 중에서 사용됨
-thaumicenergistics.tooltip.essentia.cell.types=%d 개의 에센스 저장소가 %d 개중에서 사용됨
+thaumicenergistics.tooltip.essentia.cell.bytes=%s 바이트가 %s 중에서 사용됨
+thaumicenergistics.tooltip.essentia.cell.types=%s 개의 에센스 저장소가 %s 개중에서 사용됨
 thaumicenergistics.tooltip.essentia.cell.details=shift시 더 자세한 사항
 thaumicenergistics.tooltip.button.clear.crafting=Deposit Crafting Grid
 thaumicenergistics.tooltip.button.void=Allow Void?

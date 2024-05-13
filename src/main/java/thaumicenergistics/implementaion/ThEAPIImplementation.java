@@ -9,7 +9,14 @@ import com.google.common.collect.ImmutableList;
 
 import cpw.mods.fml.common.LoaderState;
 import thaumcraft.api.aspects.Aspect;
-import thaumicenergistics.api.*;
+import thaumicenergistics.api.IThEBlocks;
+import thaumicenergistics.api.IThEConfig;
+import thaumicenergistics.api.IThEEssentiaGas;
+import thaumicenergistics.api.IThEInteractionHelper;
+import thaumicenergistics.api.IThEItems;
+import thaumicenergistics.api.IThEParts;
+import thaumicenergistics.api.IThETransportPermissions;
+import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.fluids.GaseousEssentia;
 import thaumicenergistics.common.utils.ThELog;

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -14,6 +16,7 @@ import thaumcraft.common.blocks.BlockJarItem;
 import thaumcraft.common.blocks.ItemJarFilled;
 import thaumicenergistics.api.IThEEssentiaContainerPermission;
 import thaumicenergistics.api.IThETransportPermissions;
+import thaumicenergistics.api.storage.IAspectStorage;
 import thaumicenergistics.common.utils.ThELog;
 
 /**
@@ -106,24 +109,80 @@ class ThETransportPermissions implements IThETransportPermissions {
     }
 
     /**
+     * Provides information about capacity of aspect container
+     */
+    private interface ICapacityProvider {
+
+        int getContainerCapacity(final IAspectContainer container);
+
+        boolean isCapacityShared(final IAspectContainer container);
+    }
+
+    /**
+     * Provides capacity information for aspect containers with static shared capacity.
+     */
+    private static class StaticCapacityProvider implements ICapacityProvider {
+
+        private final int capacity;
+
+        public StaticCapacityProvider(int capacity) {
+            this.capacity = capacity;
+        }
+
+        @Override
+        public int getContainerCapacity(IAspectContainer container) {
+            return this.capacity;
+        }
+
+        @Override
+        public boolean isCapacityShared(IAspectContainer container) {
+            return true;
+        }
+    }
+
+    /**
+     * Provides information for aspect containers which implement {@link IAspectStorage}
+     */
+    public static class DynamicCapacityProvider implements ICapacityProvider {
+
+        public DynamicCapacityProvider() {}
+
+        @Override
+        public int getContainerCapacity(IAspectContainer container) {
+            if (container instanceof IAspectStorage storage) {
+                return storage.getContainerCapacity();
+            }
+            return 0;
+        }
+
+        @Override
+        public boolean isCapacityShared(IAspectContainer container) {
+            if (container instanceof IAspectStorage storage) {
+                return storage.doesShareCapacity();
+            }
+            return true;
+        }
+    }
+
+    /**
      * List of items allowed to work with. Indexed by item class.
      */
-    private final HashMap<Class<? extends IEssentiaContainerItem>, ContainerCollection> itemWhitelist = new HashMap<Class<? extends IEssentiaContainerItem>, ContainerCollection>();
+    private final HashMap<Class<? extends IEssentiaContainerItem>, ContainerCollection> itemWhitelist = new HashMap<>();
 
     /**
      * Holds a list of tiles that we are allowed to extract from.
      */
-    private final Set<Class<? extends IAspectContainer>> tileExtractWhiteList = new HashSet<Class<? extends IAspectContainer>>();
+    private final Set<Class<? extends IAspectContainer>> tileExtractWhiteList = new HashSet<>();
 
     /**
      * Holds a list of tiles that we are allowed to inject into.
      */
-    private final Set<Class<? extends IAspectContainer>> tileInjectWhiteList = new HashSet<Class<? extends IAspectContainer>>();
+    private final Set<Class<? extends IAspectContainer>> tileInjectWhiteList = new HashSet<>();
 
     /**
      * Holds the capacities for each registered tile.
      */
-    private final HashMap<Class<? extends IAspectContainer>, Integer> tileCapacities = new HashMap<Class<? extends IAspectContainer>, Integer>();
+    private final HashMap<Class<? extends IAspectContainer>, ICapacityProvider> tileCapacities = new HashMap<>();
 
     @Override
     public <T extends TileEntity & IAspectContainer> boolean addAspectContainerTileToBothPermissions(
@@ -134,12 +193,20 @@ class ThETransportPermissions implements IThETransportPermissions {
     }
 
     @Override
+    public <T extends TileEntity & IAspectStorage> boolean addAspectStorageTileToBothPermissions(
+            final Class<T> tileClass) {
+        // Add to both
+        return (this.addAspectStorageTileToInjectPermissions(tileClass)
+                | this.addAspectStorageTileToExtractPermissions(tileClass));
+    }
+
+    @Override
     public <T extends TileEntity & IAspectContainer> boolean addAspectContainerTileToExtractPermissions(
             final Class<T> tileClass, final int capacity) {
         // Ensure we have a tile
         if (tileClass != null) {
             // Set capacity
-            this.tileCapacities.put(tileClass, capacity);
+            this.tileCapacities.put(tileClass, new StaticCapacityProvider(capacity));
 
             // Is it not already registered?
             if (this.tileExtractWhiteList.add(tileClass)) {
@@ -154,12 +221,32 @@ class ThETransportPermissions implements IThETransportPermissions {
     }
 
     @Override
+    public <T extends TileEntity & IAspectStorage> boolean addAspectStorageTileToExtractPermissions(
+            final Class<T> tileClass) {
+        // Ensure we have a tile
+        if (tileClass != null) {
+            // Set capacity as dynamically provided
+            this.tileCapacities.put(tileClass, new DynamicCapacityProvider());
+
+            // Is it not already registered?
+            if (this.tileExtractWhiteList.add(tileClass)) {
+                // Log the addition
+                ThELog.info(
+                        "Added \"%s\" with dynamic capacity provider to extraction whitelist.",
+                        tileClass.toString());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public <T extends TileEntity & IAspectContainer> boolean addAspectContainerTileToInjectPermissions(
             final Class<T> tileClass, final int capacity) {
         // Ensure we have a tile
         if (tileClass != null) {
             // Set capacity
-            this.tileCapacities.put(tileClass, capacity);
+            this.tileCapacities.put(tileClass, new StaticCapacityProvider(capacity));
 
             // Is it not already registered?
             if (this.tileInjectWhiteList.add(tileClass)) {
@@ -170,6 +257,26 @@ class ThETransportPermissions implements IThETransportPermissions {
             return true;
         }
 
+        return false;
+    }
+
+    @Override
+    public <T extends TileEntity & IAspectStorage> boolean addAspectStorageTileToInjectPermissions(
+            final Class<T> tileClass) {
+        // Ensure we have a tile
+        if (tileClass != null) {
+            // Set capacity as dynamically provided
+            this.tileCapacities.put(tileClass, new DynamicCapacityProvider());
+
+            // Is it not already registered?
+            if (this.tileInjectWhiteList.add(tileClass)) {
+                // Log the addition
+                ThELog.info(
+                        "Added \"%s\" with dynamic capacity provider to injection whitelist.",
+                        tileClass.toString());
+            }
+            return true;
+        }
         return false;
     }
 
@@ -226,10 +333,18 @@ class ThETransportPermissions implements IThETransportPermissions {
     public int getAspectContainerTileCapacity(final IAspectContainer container) {
         // Is the capacity registered?
         if (this.tileCapacities.containsKey(container.getClass())) {
-            return this.tileCapacities.get(container.getClass());
+            return this.tileCapacities.get(container.getClass()).getContainerCapacity(container);
         }
 
         return -1;
+    }
+
+    @Override
+    public boolean doesAspectContainerTileShareCapacity(@Nonnull IAspectContainer container) {
+        if (this.tileCapacities.containsKey(container.getClass())) {
+            return this.tileCapacities.get(container.getClass()).isCapacityShared(container);
+        }
+        return true;
     }
 
     @Override

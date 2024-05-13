@@ -11,6 +11,7 @@ import appeng.api.config.AccessRestriction;
 import appeng.api.config.Actionable;
 import appeng.api.config.ViewItems;
 import appeng.api.networking.security.BaseActionSource;
+import appeng.api.storage.ICellCacheRegistry;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.ISaveProvider;
 import appeng.api.storage.StorageChannel;
@@ -32,7 +33,7 @@ import thaumicenergistics.common.storage.AspectStackComparator.AspectStackCompar
  * @author Nividica
  *
  */
-public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStack> {
+public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStack>, ICellCacheRegistry {
 
     /**
      * NBT Keys
@@ -546,6 +547,7 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
      *
      * @return
      */
+    @Override
     public long getFreeBytes() {
         return this.totalBytes - this.getUsedBytes();
     }
@@ -605,17 +607,9 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
      *
      * @return
      */
+    @Override
     public long getTotalBytes() {
         return this.totalBytes;
-    }
-
-    /**
-     * Total number of types the cell can hold.
-     *
-     * @return
-     */
-    public int getTotalTypes() {
-        return this.totalTypes;
     }
 
     /**
@@ -623,28 +617,9 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
      *
      * @return
      */
+    @Override
     public long getUsedBytes() {
         return (long) Math.ceil(this.usedEssentiaStorage / (double) HandlerItemEssentiaCell.ESSENTIA_PER_BYTE);
-    }
-
-    /**
-     * Returns how many types are used.
-     *
-     * @return
-     */
-    public int getUsedTypes() {
-        // Assume we are empty
-        int typeCount = 0;
-
-        // Count the number of valid types
-        for (IAspectStack stack : this.storedEssentia) {
-            if (stack != null) {
-                typeCount++;
-            }
-        }
-
-        // Return the count
-        return typeCount;
     }
 
     /**
@@ -869,4 +844,52 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
         // Valid if not partitioned and cell is empty.
         return ((!isPartitioned) && (!hasStoredEssentia));
     }
+
+    @Override
+    public boolean canGetInv() {
+        return (!this.isCreative());
+    }
+
+    @Override
+    public long getTotalTypes() {
+        return this.totalTypes;
+    }
+
+    @Override
+    public long getFreeTypes() {
+        return this.getTotalTypes() - this.getUsedTypes();
+    }
+
+    @Override
+    public long getUsedTypes() {
+        // Assume we are empty
+        int typeCount = 0;
+
+        // Count the number of valid types
+        for (IAspectStack stack : this.storedEssentia) {
+            if (stack != null) {
+                typeCount++;
+            }
+        }
+
+        // Return the count
+        return typeCount;
+    }
+
+    @Override
+    public int getCellStatus() {
+        if (this.getFreeBytes() == 0) {
+            return 3;
+        } else if (this.getFreeTypes() == 0) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
+    @Override
+    public TYPE getCellType() {
+        return TYPE.ESSENTIA;
+    }
+
 }

@@ -11,7 +11,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import appeng.api.AEApi;
+import appeng.items.tools.ToolAdvancedNetworkTool;
+import appeng.items.tools.ToolNetworkTool;
 import appeng.parts.automation.UpgradeInventory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -191,19 +192,23 @@ public abstract class ThEBaseGui extends GuiContainer implements IWidgetHost {
             return;
         }
 
-        // Is this container one that could have a network tool?
-        if (this.inventorySlots instanceof ContainerWithNetworkTool) {
-            // Do we have a network tool?
-            if (((ContainerWithNetworkTool) this.inventorySlots).hasNetworkTool()) {
+        // Is this container one that could have a network or advanced network tool?
+        if (this.inventorySlots instanceof ContainerWithNetworkTool container) {
+            // Do we have a network or advanced network tool?
+            if (container.hasNetworkTool()) {
                 // Get the slot the mouse was clicked over
                 Slot slot = this.getSlotAtMousePosition(mouseX, mouseY);
 
                 // Was the slot the network tool?
-                if ((slot != null) && (slot.getStack() != null)
-                        && (slot.getStack().isItemEqual(
-                                AEApi.instance().definitions().items().networkTool().maybeStack(1).get()))) {
-                    // Do not allow any interaction with the network tool slot.
-                    return;
+                if ((slot != null) && (slot.getStack() != null)) {
+                    if (!container.isAdvancedNetworkTool() && slot.getStack().getItem() instanceof ToolNetworkTool) {
+                        // Do not allow any interaction with the network tool slot.
+                        return;
+                    } else if (container.isAdvancedNetworkTool()
+                            && slot.getStack().getItem() instanceof ToolAdvancedNetworkTool) {
+                                // Do not allow any interaction with the advanced network tool slot.
+                                return;
+                            }
                 }
             }
         }

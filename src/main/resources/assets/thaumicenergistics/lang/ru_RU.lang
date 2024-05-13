@@ -46,8 +46,8 @@ thaumicenergistics.item.focus.aewrench.name=Набалдашник: AE-ключ
 thaumicenergistics.item.focus.aewrench.disabled.name=Набалдашник: AE-ключ - режим ключа отключен
 
 #Tooltips
-thaumicenergistics.tooltip.essentia.cell.bytes=%d из %d байт использовано.
-thaumicenergistics.tooltip.essentia.cell.types=%d из %d типов эссенции накоплено.
+thaumicenergistics.tooltip.essentia.cell.bytes=%s из %s байт использовано.
+thaumicenergistics.tooltip.essentia.cell.types=%s из %s типов эссенции накоплено.
 thaumicenergistics.tooltip.essentia.cell.details=Удерживайте §eshift§f для деталей.
 thaumicenergistics.tooltip.button.clear.crafting=Очистить сетку создания
 thaumicenergistics.tooltip.button.void=Разрешить уничтожение?

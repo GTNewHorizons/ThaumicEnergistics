@@ -21,6 +21,7 @@ import thaumcraft.common.config.ConfigItems;
 import thaumicenergistics.api.storage.IInventoryUpdateReceiver;
 import thaumicenergistics.client.gui.abstraction.ThEBaseGui;
 import thaumicenergistics.client.gui.buttons.GuiButtonEncodePattern;
+import thaumicenergistics.client.gui.buttons.GuiButtonResetAspectSlot;
 import thaumicenergistics.client.textures.AEStateIconsEnum;
 import thaumicenergistics.client.textures.GuiTextureManager;
 import thaumicenergistics.common.container.ContainerDistillationPatternEncoder;
@@ -52,7 +53,12 @@ public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInvent
     /**
      * Position of the encode button
      */
-    private static final int BUTTON_ENCODE_POS_X = 146, BUTTON_ENCODE_POS_Y = 94;
+    private static final int BUTTON_ENCODE_POS_X = 146, BUTTON_ENCODE_POS_Y = 78;
+
+    /**
+     * Position of the reset button
+     */
+    private static final int BUTTON_RESET_POS_X = 146, BUTTON_RESET_POS_Y = 42;
 
     /**
      * Half of the size of a standard item
@@ -88,6 +94,11 @@ public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInvent
      * The encode button.
      */
     private GuiButtonEncodePattern buttonEncode;
+
+    /**
+     * The encode button.
+     */
+    private GuiButtonResetAspectSlot buttonReset;
 
     /**
      * Set true when the source item may have been changed.
@@ -286,6 +297,9 @@ public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInvent
         if (button == this.buttonEncode) {
             // Ask server to encode
             Packet_S_DistillationEncoder.sendEncodePattern(this.deContainer.getPlayer());
+        } else if (button == this.buttonReset) {
+            // Ask server to reset aspects
+            Packet_S_DistillationEncoder.sendResetAspect(this.deContainer.getPlayer());
         }
     }
 
@@ -303,6 +317,15 @@ public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInvent
                 AEStateIconsEnum.STANDARD_ICON_SIZE,
                 AEStateIconsEnum.STANDARD_ICON_SIZE);
         this.buttonList.add(this.buttonEncode);
+
+        // Create the reset aspect button
+        this.buttonReset = new GuiButtonResetAspectSlot(
+                1,
+                GuiDistillationPatternEncoder.BUTTON_RESET_POS_X + this.guiLeft,
+                GuiDistillationPatternEncoder.BUTTON_RESET_POS_Y + this.guiTop,
+                AEStateIconsEnum.STANDARD_ICON_SIZE,
+                AEStateIconsEnum.STANDARD_ICON_SIZE);
+        this.buttonList.add(this.buttonReset);
 
         // Reset flags
         this.sourceItemDirty = false;
