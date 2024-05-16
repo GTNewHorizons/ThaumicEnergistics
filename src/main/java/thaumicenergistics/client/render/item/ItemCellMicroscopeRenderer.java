@@ -100,6 +100,7 @@ public class ItemCellMicroscopeRenderer implements IItemRenderer {
                 GL11.glRotatef(90.0F, -1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(30.0F, 0.0F, 0.0F, -1.0F);
             } else if (type == ItemRenderType.INVENTORY) {
+                GL11.glTranslatef(0.5F, 0.2F, 0F);
                 GL11.glScalef(2.5F, 2.5F, 2.5F);
                 GL11.glRotatef(60.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(30.0F, 0.0F, 0.0F, -1.0F);

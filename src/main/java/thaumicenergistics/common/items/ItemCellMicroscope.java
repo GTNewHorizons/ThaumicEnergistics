@@ -1,17 +1,25 @@
 package thaumicenergistics.common.items;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
 import appeng.api.AEApi;
+import appeng.api.storage.ICellContainer;
 import appeng.api.storage.IMEInventory;
+import appeng.api.storage.ISaveProvider;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
@@ -33,7 +41,8 @@ public class ItemCellMicroscope extends ItemThaumometer {
         super();
     }
 
-    ItemStack startCell = null;
+    List<ItemStack> startCells = new ArrayList<ItemStack>();
+    TileEntity cellSaveManager = null;
 
     @SideOnly(Side.CLIENT)
     @Override
@@ -59,9 +68,9 @@ public class ItemCellMicroscope extends ItemThaumometer {
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
         if (world.isRemote) {
-            ItemStack cell = this.doScan(stack, world, p, 0);
-            if (cell != null) {
-                this.startCell = cell;
+            ArrayList<ItemStack> cells = this.doScan(stack, world, p, 0);
+            if (cells.size() != 0) {
+                this.startCells = cells;
             }
         }
 
@@ -71,34 +80,18 @@ public class ItemCellMicroscope extends ItemThaumometer {
 
     @Override
     public void onUsingTick(ItemStack stack, EntityPlayer p, int count) {
-        if (p.worldObj.isRemote
-                && p.getCommandSenderName() == Minecraft.getMinecraft().thePlayer.getCommandSenderName()) {
+        if (p.worldObj.isRemote && Objects
+                .equals(p.getCommandSenderName(), Minecraft.getMinecraft().thePlayer.getCommandSenderName())) {
 
-            ItemStack cell = this.doScan(stack, p.worldObj, p, count);
+            ArrayList<ItemStack> cells = this.doScan(stack, p.worldObj, p, count);
 
-            if (cell != null && cell.equals(this.startCell)) {
+            if (cells.size() != 0 && cells.equals(this.startCells)) {
 
                 if (count <= 5) {
-                    this.startCell = null;
                     p.stopUsingItem();
-
-                    IMEInventory<IAEItemStack> inv = AEApi.instance().registries().cell()
-                            .getCellInventory(cell, null, StorageChannel.ITEMS);
-                    IItemList<IAEItemStack> itemList = inv
-                            .getAvailableItems(AEApi.instance().storage().createItemList());
-
-                    for (final IAEItemStack i : itemList) {
-                        ScanResult sr = new ScanResult(
-                                (byte) 1,
-                                Item.getIdFromItem(i.getItem()),
-                                i.getItemDamage(),
-                                (Entity) null,
-                                "");
-                        if (ScanManager.isValidScanTarget(p, sr, "@")) {
-
-                            ScanManager.completeScan(p, sr, "@");
-                            PacketHandler.INSTANCE.sendToServer(new PacketScannedToServer(sr, p, "@"));
-                        }
+                    this.startCells.clear();
+                    for (ItemStack cell : cells) {
+                        doCellScan(p, cell);
                     }
                 }
 
@@ -113,14 +106,30 @@ public class ItemCellMicroscope extends ItemThaumometer {
                             false);
                 }
             } else {
-                this.startCell = null;
+                this.startCells.clear();
             }
         }
 
     }
 
-    private ItemStack doScan(ItemStack stack, World world, EntityPlayer p, int count) {
+    private void doCellScan(EntityPlayer p, ItemStack cell) {
+        IMEInventory<IAEItemStack> inv = AEApi.instance().registries().cell()
+                .getCellInventory(cell, (ISaveProvider) cellSaveManager, StorageChannel.ITEMS);
+        IItemList<IAEItemStack> itemList = inv.getAvailableItems(AEApi.instance().storage().createItemList());
 
+        for (final IAEItemStack i : itemList) {
+            ScanResult sr = new ScanResult((byte) 1, Item.getIdFromItem(i.getItem()), i.getItemDamage(), null, "");
+            if (ScanManager.isValidScanTarget(p, sr, "@")) {
+
+                ScanManager.completeScan(p, sr, "@");
+                PacketHandler.INSTANCE.sendToServer(new PacketScannedToServer(sr, p, "@"));
+            }
+        }
+    }
+
+    private ArrayList<ItemStack> doScan(ItemStack stack, World world, EntityPlayer p, int count) {
+
+        ArrayList<ItemStack> cellsOutput = new ArrayList<>();
         Entity pointedEntity = EntityUtils.getPointedEntity(p.worldObj, p, 0.5D, 10.0D, 0.0F, true);
 
         if (pointedEntity != null) {
@@ -130,29 +139,54 @@ public class ItemCellMicroscope extends ItemThaumometer {
                     try {
                         Thaumcraft.proxy.blockRunes(
                                 world,
-                                (double) mop.blockX,
+                                mop.blockX,
                                 (double) mop.blockY + 0.50D,
-                                (double) mop.blockZ,
+                                mop.blockZ,
                                 0.3F,
                                 0.3F,
                                 0.7F + world.rand.nextFloat() * 0.7F,
                                 15,
                                 -0.03F);
-                    } catch (Exception e) {}
-
-                    ItemStack cell = (((EntityItem) pointedEntity).getEntityItem());
-                    return cell;
+                    } catch (Exception ignored) {}
+                    cellSaveManager = null;
+                    cellsOutput.add(((EntityItem) pointedEntity).getEntityItem());
+                    return cellsOutput;
                 }
             }
         }
 
-        return null;
-
+        MovingObjectPosition lookingAtBlock = Minecraft.getMinecraft().objectMouseOver;
+        TileEntity blockAtPos = world
+                .getTileEntity(lookingAtBlock.blockX, lookingAtBlock.blockY, lookingAtBlock.blockZ);
+        if (blockAtPos instanceof ICellContainer) {
+            ((ICellContainer) blockAtPos).getCellArray(StorageChannel.ITEMS);
+            IInventory inv = (IInventory) blockAtPos;
+            cellSaveManager = blockAtPos;
+            try {
+                Thaumcraft.proxy.blockRunes(
+                        world,
+                        lookingAtBlock.blockX,
+                        lookingAtBlock.blockY,
+                        lookingAtBlock.blockZ,
+                        0.3F,
+                        0.3F,
+                        0.7F + world.rand.nextFloat() * 0.7F,
+                        15,
+                        -0.03F);
+            } catch (Exception ignored) {}
+            for (int i = 0; i < inv.getSizeInventory(); i++) {
+                ItemStack itemStack = inv.getStackInSlot(i);
+                if (itemStack != null) {
+                    cellsOutput.add(itemStack);
+                }
+            }
+        }
+        return cellsOutput;
     }
 
     public void onPlayerStoppedUsing(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer,
             int par4) {
         super.onPlayerStoppedUsing(par1ItemStack, par2World, par3EntityPlayer, par4);
-        this.startCell = null;
+        this.startCells.clear();
     }
 }
