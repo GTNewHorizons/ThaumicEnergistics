@@ -105,7 +105,7 @@ public class PartEssentiaExportBus extends ThEPartEssentiaIOBus_Base implements 
                 return false;
             }
             if (isCraftingOnly()) {
-                handleCratting(amountToFillContainer, slot, filterAspect);
+                handleCrafting(amountToFillContainer, slot, filterAspect);
                 continue;
             }
 
@@ -120,7 +120,7 @@ public class PartEssentiaExportBus extends ThEPartEssentiaIOBus_Base implements 
             // Was any extracted?
             if (extractedAmount <= 0) {
                 if (hasCraftingCard) {
-                    handleCratting(amountToFillContainer, slot, filterAspect);
+                    handleCrafting(amountToFillContainer, slot, filterAspect);
                 }
                 // Unable to extract from network
                 continue;
@@ -140,7 +140,7 @@ public class PartEssentiaExportBus extends ThEPartEssentiaIOBus_Base implements 
         return false;
     }
 
-    private void handleCratting(int amountToFillContainer, int slot, Aspect filterAspect) {
+    private void handleCrafting(int amountToFillContainer, int slot, Aspect filterAspect) {
         IGrid grid = getGridNode().getGrid();
         final ICraftingGrid cg = grid.getCache(ICraftingGrid.class);
         IAEItemStack result = AEApi.instance().storage()

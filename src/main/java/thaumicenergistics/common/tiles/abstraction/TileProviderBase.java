@@ -9,15 +9,22 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.google.common.collect.ImmutableSet;
+
+import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.implementations.tiles.IColorableTile;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.crafting.ICraftingGrid;
+import appeng.api.networking.crafting.ICraftingLink;
+import appeng.api.networking.crafting.ICraftingRequester;
 import appeng.api.networking.events.MENetworkChannelsChanged;
 import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.security.MachineSource;
+import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
 import appeng.core.localization.WailaText;
@@ -33,10 +40,12 @@ import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.api.grid.IEssentiaGrid;
 import thaumicenergistics.api.grid.IMEEssentiaMonitor;
 import thaumicenergistics.common.integration.IWailaSource;
+import thaumicenergistics.common.items.ItemCraftingAspect;
 import thaumicenergistics.common.registries.EnumCache;
 import thaumicenergistics.common.tiles.TileEssentiaProvider;
 import thaumicenergistics.common.tiles.TileInfusionProvider;
 import thaumicenergistics.common.utils.EffectiveSide;
+import thaumicenergistics.implementaion.ThEMultiCraftingTracker;
 
 /**
  * Base class of {@link TileEssentiaProvider} and {@link TileInfusionProvider}.
@@ -44,7 +53,8 @@ import thaumicenergistics.common.utils.EffectiveSide;
  * @author Nividica
  *
  */
-public abstract class TileProviderBase extends AENetworkTile implements IColorableTile, IWailaSource {
+public abstract class TileProviderBase extends AENetworkTile
+        implements IColorableTile, IWailaSource, ICraftingRequester {
 
     /**
      * NBT keys
@@ -76,6 +86,8 @@ public abstract class TileProviderBase extends AENetworkTile implements IColorab
      * True when the color applicator has been used on the provider.
      */
     protected boolean isColorForced = false;
+
+    protected final ThEMultiCraftingTracker craftingTracker = new ThEMultiCraftingTracker(this, 1);
 
     public TileProviderBase() {
         // Create the source
@@ -500,5 +512,57 @@ public abstract class TileProviderBase extends AENetworkTile implements IColorab
             // Set the idle power usage
             this.getProxy().setIdlePowerUsage(this.getIdlePowerusage());
         }
+    }
+
+    /**
+     * When network Essentia is not enough, let provider can auto order some. With default amount 32.
+     * 
+     * @param aspect
+     * @return orderIsSuccessful
+     */
+    public boolean orderSomeEssentia(final Aspect aspect) {
+        return this.orderSomeEssentia(aspect, 32);
+    }
+
+    /**
+     * When network Essentia is not enough, let provider can auto order some.
+     * 
+     * @param aspect
+     * @param amount
+     * @return orderIsSuccessful
+     */
+    public boolean orderSomeEssentia(final Aspect aspect, final int amount) {
+        try {
+            ICraftingGrid craftingGrid = this.getProxy().getCrafting();
+            IGrid grid = this.getProxy().getGrid();
+            IAEItemStack itemStack = AEApi.instance().storage()
+                    .createItemStack(ItemCraftingAspect.createStackForAspect(aspect, 1));
+            if (!craftingGrid.isRequesting(itemStack)) {
+                return this.craftingTracker.handleCrafting(
+                        0,
+                        32,
+                        itemStack,
+                        this.getWorldObj(),
+                        grid,
+                        craftingGrid,
+                        this.getMachineSource());
+            }
+        } catch (Exception e) {}
+        return false;
+    }
+
+    @Override
+    public ImmutableSet<ICraftingLink> getRequestedJobs() {
+        return craftingTracker.getRequestedJobs();
+    }
+
+    @Override
+    public IAEItemStack injectCraftedItems(ICraftingLink link, IAEItemStack items, Actionable mode) {
+        return items;
+    }
+
+    @Override
+    public void jobStateChange(final ICraftingLink link) {
+        this.craftingTracker.jobStateChange(link);
     }
 }
