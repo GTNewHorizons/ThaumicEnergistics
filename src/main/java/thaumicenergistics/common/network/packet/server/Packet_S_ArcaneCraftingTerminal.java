@@ -239,7 +239,7 @@ public class Packet_S_ArcaneCraftingTerminal extends ThEServerPacket {
         NetworkHandler.sendPacketToServer(packet);
     }
 
-    public static void sendToggleCraftingStatus(final EntityPlayer player) {
+    public static void sendOpenCraftingStatus(final EntityPlayer player) {
         Packet_S_ArcaneCraftingTerminal packet = newPacket(player, MODE_REQUEST_CRAFTING_STATUS);
 
         // Send it
@@ -308,7 +308,7 @@ public class Packet_S_ArcaneCraftingTerminal extends ThEServerPacket {
                 case Packet_S_ArcaneCraftingTerminal.MODE_REQUEST_CRAFTING_STATUS:
                     // Request toggle crafting status
                     ((ContainerPartArcaneCraftingTerminal) this.player.openContainer)
-                            .onClientRequestToggleCraftingStatus(this.player);
+                            .onClientRequestCraftingStatus(this.player);
                     break;
             }
         }

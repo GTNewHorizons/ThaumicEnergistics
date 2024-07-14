@@ -1302,7 +1302,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerWithPlayerInve
     /**
      * Called when a client has requested to toggle crafting status.
      */
-    public void onClientRequestToggleCraftingStatus(final EntityPlayer player) {
+    public void onClientRequestCraftingStatus(final EntityPlayer player) {
         // Get the host tile
         TileEntity te = this.terminal.getHostTile();
 

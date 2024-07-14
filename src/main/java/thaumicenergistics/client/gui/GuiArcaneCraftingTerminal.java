@@ -860,7 +860,7 @@ public class GuiArcaneCraftingTerminal extends GuiConstants_ACT implements ISort
         }
 
         if (button == this.btnCraftingStatus) {
-            Packet_S_ArcaneCraftingTerminal.sendToggleCraftingStatus(this.player);
+            Packet_S_ArcaneCraftingTerminal.sendOpenCraftingStatus(this.player);
         }
 
         switch (button.id) {
