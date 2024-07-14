@@ -103,6 +103,8 @@ public class TileInfusionProvider extends TileProviderBase implements IAspectSou
             this.doParticalFX(tag.getColor());
 
             return true;
+        } else {
+            this.orderSomeEssentia(tag);
         }
 
         return false;

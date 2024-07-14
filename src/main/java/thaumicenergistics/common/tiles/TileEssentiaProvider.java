@@ -137,7 +137,12 @@ public class TileEssentiaProvider extends TileProviderBase implements IEssentiaT
 
         // Does the neighbor want anything?
         if (wantedAspect != null) {
-            return (int) Math.min(this.getAspectAmountInNetwork(wantedAspect), Integer.MAX_VALUE);
+            long aspectAmountInNetwork = this.getAspectAmountInNetwork(wantedAspect);
+            if (aspectAmountInNetwork == 0) {
+                this.orderSomeEssentia(wantedAspect);
+            } else {
+                return (int) Math.min(aspectAmountInNetwork, Integer.MAX_VALUE);
+            }
         }
 
         // No match or no request
