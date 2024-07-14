@@ -7,6 +7,8 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
+import org.lwjgl.opengl.GL11;
+
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.render.AppEngRenderItem;
 import appeng.util.item.AEItemStack;
@@ -67,8 +69,8 @@ public class WidgetAEItem extends ThEWidget {
         try {
             if (this.aeItemStack != null) {
                 // Set the z level
-                this.zLevel = 2.0F;
-                this.aeItemRenderer.zLevel = 2.0F;
+                this.zLevel = 100.0F;
+                this.aeItemRenderer.zLevel = 100.0F;
 
                 // Set the item
                 this.aeItemRenderer.setAeStack(this.aeItemStack);
@@ -81,17 +83,19 @@ public class WidgetAEItem extends ThEWidget {
                         this.xPosition + 1,
                         this.yPosition + 1);
 
+                // Reset the z level
+                this.zLevel = 0.0F;
+                this.aeItemRenderer.zLevel = 0.0F;
+
                 // Draw the amount
+                GL11.glTranslatef(0.0f, 0.0f, 200.0f);
                 this.aeItemRenderer.renderItemOverlayIntoGUI(
                         WidgetAEItem.MC.fontRenderer,
                         WidgetAEItem.TEXTURE_MANAGER,
                         this.aeItemStack.getItemStack(),
                         this.xPosition + 1,
                         this.yPosition + 1);
-
-                // Reset the z level
-                this.zLevel = 0.0F;
-                this.aeItemRenderer.zLevel = 0.0F;
+                GL11.glTranslatef(0.0f, 0.0f, -200.0f);
             }
         } catch (Exception e) {
             // Silently ignore.
