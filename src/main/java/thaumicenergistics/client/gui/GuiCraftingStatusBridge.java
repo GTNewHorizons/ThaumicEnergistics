@@ -9,7 +9,6 @@ import appeng.client.gui.widgets.GuiTabButton;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.api.grid.ICraftingIssuerHost;
-import thaumicenergistics.common.parts.ThEPartBase;
 
 @SideOnly(Side.CLIENT)
 public class GuiCraftingStatusBridge extends GuiCraftingStatus {
