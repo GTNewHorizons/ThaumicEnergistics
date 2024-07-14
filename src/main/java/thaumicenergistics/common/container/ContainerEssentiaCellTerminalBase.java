@@ -750,6 +750,13 @@ public abstract class ContainerEssentiaCellTerminalBase extends ContainerWithPla
     public abstract void onClientRequestViewModeChange(final EntityPlayer player, boolean backwards);
 
     /**
+     * Called when a client sends a view mode change request.
+     *
+     * @param player
+     */
+    public abstract void onClientRequestCraftingStatus(final EntityPlayer player);
+
+    /**
      * Unregister this container from the monitor.
      */
     @Override

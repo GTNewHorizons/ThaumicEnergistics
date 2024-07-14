@@ -17,6 +17,7 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.container.ContainerOpenContext;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.util.Platform;
+import net.minecraft.tileentity.TileEntity;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.api.grid.ICraftingIssuerHost;
 import thaumicenergistics.api.grid.IMEEssentiaMonitor;
@@ -250,6 +251,11 @@ public class ContainerWirelessEssentiaTerminal extends ContainerEssentiaCellTerm
 
         // Send confirmation back to client
         Packet_C_EssentiaCellTerminal.sendViewingModes(player, this.handler.getSortingMode(), viewMode);
+    }
+
+    public void onClientRequestCraftingStatus(final EntityPlayer player) {
+        // Launch the GUI
+        ThEGuiHandler.launchGui(ThEGuiHandler.CRAFTING_STATUS, player, player.worldObj, 0, 0, 0);
     }
 
     /**

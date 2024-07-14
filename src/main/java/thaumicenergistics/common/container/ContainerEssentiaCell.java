@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import appeng.api.config.Settings;
@@ -27,6 +28,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.api.grid.ICraftingIssuerHost;
 import thaumicenergistics.api.grid.IMEEssentiaMonitor;
 import thaumicenergistics.api.storage.IAspectStack;
+import thaumicenergistics.common.ThEGuiHandler;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.grid.EssentiaMonitor;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
@@ -38,6 +40,7 @@ import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaCellTerm
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellTerminal;
 import thaumicenergistics.common.storage.AspectStackComparator.AspectStackComparatorMode;
 import thaumicenergistics.common.utils.EffectiveSide;
+import thaumicenergistics.common.utils.ThELog;
 
 /**
  * Inventory container for essentia cells in a ME chest.
@@ -263,6 +266,11 @@ public class ContainerEssentiaCell extends ContainerEssentiaCellTerminalBase {
             // Send confirmation back to client
             Packet_C_EssentiaCellTerminal.sendViewingModes(player, sortingMode, cellHandler.getViewMode());
         }
+    }
+
+    @Override
+    public void onClientRequestCraftingStatus(final EntityPlayer player) {
+        // Ignored, can't open crafting status from here
     }
 
     @Override

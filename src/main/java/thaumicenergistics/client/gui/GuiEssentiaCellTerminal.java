@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import appeng.client.gui.widgets.GuiTabButton;
+import appeng.core.localization.GuiText;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -39,6 +41,7 @@ import thaumicenergistics.common.container.ContainerWirelessEssentiaTerminal;
 import thaumicenergistics.common.inventory.HandlerWirelessEssentiaTerminal;
 import thaumicenergistics.common.items.ItemEssentiaCell;
 import thaumicenergistics.common.items.ItemWirelessEssentiaTerminal;
+import thaumicenergistics.common.network.packet.server.Packet_S_ArcaneCraftingTerminal;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellTerminal;
 import thaumicenergistics.common.parts.PartEssentiaTerminal;
 import thaumicenergistics.common.registries.ThEStrings;
@@ -153,6 +156,11 @@ public class GuiEssentiaCellTerminal extends GuiConstants_ECT implements IAspect
      * The currently selected aspect
      */
     private IAspectStack selectedAspectStack;
+
+    /**
+     * Tab button to show crafting status
+     */
+    private GuiTabButton btnCraftingStatus;
 
     /**
      * Creates the gui.
@@ -622,6 +630,8 @@ public class GuiEssentiaCellTerminal extends GuiConstants_ECT implements IAspect
         } else if (button == this.buttonViewMode) {
             // Request update from server
             Packet_S_EssentiaCellTerminal.sendChangeView(this.player, (mouseButton == ThEGuiHelper.MOUSE_BUTTON_RIGHT));
+        } else if (button == this.btnCraftingStatus) {
+            Packet_S_EssentiaCellTerminal.sendOpenCraftingStatus(this.player);
         }
     }
 
@@ -760,6 +770,18 @@ public class GuiEssentiaCellTerminal extends GuiConstants_ECT implements IAspect
                 GuiConstants_ECT.MODE_BUTTON_SIZE,
                 GuiConstants_ECT.MODE_BUTTON_SIZE);
         this.buttonList.add(this.buttonViewMode);
+
+        if ((this.baseContainer instanceof ContainerEssentiaTerminal)
+                || (this.baseContainer instanceof ContainerWirelessEssentiaTerminal)) {
+            this.buttonList.add(
+                    this.btnCraftingStatus = new GuiTabButton(
+                            this.guiLeft + 170,
+                            this.guiTop - 4,
+                            2 + 11 * 16,
+                            GuiText.CraftingStatus.getLocal(),
+                            itemRender));
+            this.btnCraftingStatus.setHideEdge(13);
+        }
     }
 
     /**

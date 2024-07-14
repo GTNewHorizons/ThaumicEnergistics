@@ -9,7 +9,7 @@ import appeng.client.gui.widgets.GuiTabButton;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.api.grid.ICraftingIssuerHost;
-import thaumicenergistics.common.parts.PartArcaneCraftingTerminal;
+import thaumicenergistics.common.parts.ThEPartBase;
 
 @SideOnly(Side.CLIENT)
 public class GuiCraftingStatusBridge extends GuiCraftingStatus {
@@ -41,17 +41,15 @@ public class GuiCraftingStatusBridge extends GuiCraftingStatus {
     public void initGui() {
         super.initGui();
 
-        if (this.host instanceof PartArcaneCraftingTerminal terminal) {
-            ItemStack icon = terminal.associatedItem;
-            this.buttonList.add(
-                    this.btnOriginalGui = new GuiTabButton(
-                            this.guiLeft + 213,
-                            this.guiTop - 4,
-                            icon,
-                            icon.getDisplayName(),
-                            itemRender));
-            this.btnOriginalGui.setHideEdge(13);
-        }
+        ItemStack icon = host.getIcon();
+        this.buttonList.add(
+                this.btnOriginalGui = new GuiTabButton(
+                        this.guiLeft + 213,
+                        this.guiTop - 4,
+                        icon,
+                        icon.getDisplayName(),
+                        itemRender));
+        this.btnOriginalGui.setHideEdge(13);
     }
 
     @Override
