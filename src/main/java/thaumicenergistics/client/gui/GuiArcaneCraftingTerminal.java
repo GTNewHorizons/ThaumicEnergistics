@@ -23,10 +23,12 @@ import appeng.api.config.TerminalStyle;
 import appeng.api.config.ViewItems;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
+import appeng.client.gui.widgets.GuiTabButton;
 import appeng.client.gui.widgets.ISortSource;
 import appeng.client.me.ItemRepo;
 import appeng.client.render.AppEngRenderItem;
 import appeng.core.AEConfig;
+import appeng.core.localization.GuiText;
 import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -184,6 +186,11 @@ public class GuiArcaneCraftingTerminal extends GuiConstants_ACT implements ISort
      * Save the search string between sessions
      */
     private static String memoryText = "";
+
+    /**
+     * Tab button to show crafting status
+     */
+    private GuiTabButton btnCraftingStatus;
 
     public GuiArcaneCraftingTerminal(final PartArcaneCraftingTerminal part, final EntityPlayer player) {
         // Call super
@@ -852,6 +859,10 @@ public class GuiArcaneCraftingTerminal extends GuiConstants_ACT implements ISort
                 return;
         }
 
+        if (button == this.btnCraftingStatus) {
+            Packet_S_ArcaneCraftingTerminal.sendToggleCraftingStatus(this.player);
+        }
+
         switch (button.id) {
             // Clear grid
             case GuiConstants_ACT.BUTTON_CLEAR_GRID_ID:
@@ -1155,6 +1166,15 @@ public class GuiArcaneCraftingTerminal extends GuiConstants_ACT implements ISort
                         GuiConstants_ACT.BUTTON_AE_SIZE,
                         GuiConstants_ACT.BUTTON_AE_SIZE,
                         this.terminalStyle));
+
+        this.buttonList.add(
+                this.btnCraftingStatus = new GuiTabButton(
+                        this.guiLeft + 170,
+                        this.guiTop - 4,
+                        2 + 11 * 16,
+                        GuiText.CraftingStatus.getLocal(),
+                        itemRender));
+        this.btnCraftingStatus.setHideEdge(13);
 
         // Add the container as a listener
         ((ContainerPartArcaneCraftingTerminal) this.inventorySlots).registerForUpdates();

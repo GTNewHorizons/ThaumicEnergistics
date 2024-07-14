@@ -30,6 +30,7 @@ public class Packet_S_ArcaneCraftingTerminal extends ThEServerPacket {
     private static final byte MODE_REQUEST_SET_GRID = 7;
     private static final byte MODE_REQUEST_AUTO_CRAFT = 8;
     private static final byte MODE_REQUEST_SWAP_ARMOR = 9;
+    private static final byte MODE_REQUEST_CRAFTING_STATUS = 10;
 
     private static final int ITEM_GRID_SIZE = 9;
 
@@ -238,6 +239,13 @@ public class Packet_S_ArcaneCraftingTerminal extends ThEServerPacket {
         NetworkHandler.sendPacketToServer(packet);
     }
 
+    public static void sendToggleCraftingStatus(final EntityPlayer player) {
+        Packet_S_ArcaneCraftingTerminal packet = newPacket(player, MODE_REQUEST_CRAFTING_STATUS);
+
+        // Send it
+        NetworkHandler.sendPacketToServer(packet);
+    }
+
     @Override
     public void execute() {
         // If the player is not null, and they have the ACT container open
@@ -295,6 +303,12 @@ public class Packet_S_ArcaneCraftingTerminal extends ThEServerPacket {
                     // Request armor swap
                     ((ContainerPartArcaneCraftingTerminal) this.player.openContainer)
                             .onClientRequestSwapArmor(this.player);
+                    break;
+
+                case Packet_S_ArcaneCraftingTerminal.MODE_REQUEST_CRAFTING_STATUS:
+                    // Request toggle crafting status
+                    ((ContainerPartArcaneCraftingTerminal) this.player.openContainer)
+                            .onClientRequestToggleCraftingStatus(this.player);
                     break;
             }
         }

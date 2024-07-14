@@ -9,6 +9,7 @@ import appeng.api.parts.IPartHost;
 import appeng.container.AEBaseContainer;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.container.implementations.ContainerCraftConfirm;
+import appeng.container.implementations.ContainerCraftingStatus;
 import appeng.helpers.IPriorityHost;
 import cpw.mods.fml.common.network.IGuiHandler;
 import thaumicenergistics.api.grid.ICraftingIssuerHost;
@@ -16,6 +17,7 @@ import thaumicenergistics.api.gui.ICraftingIssuerContainer;
 import thaumicenergistics.client.gui.GuiArcaneAssembler;
 import thaumicenergistics.client.gui.GuiCraftAmountBridge;
 import thaumicenergistics.client.gui.GuiCraftConfirmBridge;
+import thaumicenergistics.client.gui.GuiCraftingStatusBridge;
 import thaumicenergistics.client.gui.GuiDistillationPatternEncoder;
 import thaumicenergistics.client.gui.GuiEssentiaCellTerminal;
 import thaumicenergistics.client.gui.GuiEssentiaCellWorkbench;
@@ -98,6 +100,11 @@ public class ThEGuiHandler implements IGuiHandler {
      * ID of the distillation encoder.
      */
     public static final int DISTILLATION_ENCODER = ThEGuiHandler.ID_STEP_VALUE * 10;
+
+    /**
+     * ID of the crafting status gui.
+     */
+    public static final int CRAFTING_STATUS = ThEGuiHandler.ID_STEP_VALUE * 11;
 
     /**
      * Extra data used for some GUI calls.
@@ -335,6 +342,14 @@ public class ThEGuiHandler implements IGuiHandler {
                     return new GuiCraftConfirmBridge(player, confirmHost);
                 }
                 return null;
+
+            // AE2 Crafting Status?
+            case ThEGuiHandler.CRAFTING_STATUS:
+                ICraftingIssuerHost statusHost = ThEGuiHandler.getCraftingIssuerHost(player);
+                if (statusHost != null) {
+                    return new GuiCraftingStatusBridge(player, statusHost);
+                }
+                return null;
         }
 
         // Is this the priority window?
@@ -413,6 +428,14 @@ public class ThEGuiHandler implements IGuiHandler {
                 ICraftingIssuerHost confirmHost = ThEGuiHandler.getCraftingIssuerHost(player);
                 if (confirmHost != null) {
                     return new ContainerCraftConfirm(player.inventory, confirmHost);
+                }
+                return null;
+
+            // AE2 Crafting Status?
+            case ThEGuiHandler.CRAFTING_STATUS:
+                ICraftingIssuerHost statusHost = ThEGuiHandler.getCraftingIssuerHost(player);
+                if (statusHost != null) {
+                    return new ContainerCraftingStatus(player.inventory, statusHost);
                 }
                 return null;
         }
