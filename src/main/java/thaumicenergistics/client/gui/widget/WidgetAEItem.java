@@ -7,12 +7,13 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
+import org.lwjgl.opengl.GL11;
+
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.render.AppEngRenderItem;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 import thaumicenergistics.api.gui.IWidgetHost;
 
 /**
