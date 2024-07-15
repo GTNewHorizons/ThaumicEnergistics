@@ -186,6 +186,16 @@ public class ContainerEssentiaTerminal extends ContainerEssentiaCellTerminalBase
         this.terminal.onClientRequestViewModeChange(backwards);
     }
 
+    @Override
+    public void onClientRequestCraftingStatus(final EntityPlayer player) {
+        // Get the host tile
+        TileEntity te = this.terminal.getHostTile();
+
+        // Launch the GUI
+        ThEGuiHandler
+                .launchGui(ThEGuiHandler.CRAFTING_STATUS, player, te.getWorldObj(), te.xCoord, te.yCoord, te.zCoord);
+    }
+
     /**
      * Removes this container from the terminal.
      */

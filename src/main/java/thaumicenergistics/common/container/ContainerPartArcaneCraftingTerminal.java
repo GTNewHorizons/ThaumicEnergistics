@@ -1300,6 +1300,18 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerWithPlayerInve
     }
 
     /**
+     * Called when a client has requested to toggle crafting status.
+     */
+    public void onClientRequestCraftingStatus(final EntityPlayer player) {
+        // Get the host tile
+        TileEntity te = this.terminal.getHostTile();
+
+        // Launch the GUI
+        ThEGuiHandler
+                .launchGui(ThEGuiHandler.CRAFTING_STATUS, player, te.getWorldObj(), te.xCoord, te.yCoord, te.zCoord);
+    }
+
+    /**
      * Unregister this container
      */
     @Override

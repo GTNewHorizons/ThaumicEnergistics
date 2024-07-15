@@ -266,6 +266,11 @@ public class ContainerEssentiaCell extends ContainerEssentiaCellTerminalBase {
     }
 
     @Override
+    public void onClientRequestCraftingStatus(final EntityPlayer player) {
+        // Ignored, can't open crafting status from here
+    }
+
+    @Override
     public void onClientRequestViewModeChange(final EntityPlayer player, final boolean backwards) {
         // Get the handler
         HandlerItemEssentiaCell cellHandler = this.getCellHandler();

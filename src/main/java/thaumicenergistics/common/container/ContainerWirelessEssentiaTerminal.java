@@ -252,6 +252,11 @@ public class ContainerWirelessEssentiaTerminal extends ContainerEssentiaCellTerm
         Packet_C_EssentiaCellTerminal.sendViewingModes(player, this.handler.getSortingMode(), viewMode);
     }
 
+    public void onClientRequestCraftingStatus(final EntityPlayer player) {
+        // Launch the GUI
+        ThEGuiHandler.launchGui(ThEGuiHandler.CRAFTING_STATUS, player, player.worldObj, 0, 0, 0);
+    }
+
     /**
      * Drops any items in the import and export inventory.
      */
