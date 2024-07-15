@@ -18,7 +18,7 @@ public class GuiButtonCraftingStatus extends ThEStateButton {
 
     public GuiButtonCraftingStatus(final int ID, final int xPosition, final int yPosition, final int buttonWidth,
             final int buttonHeight) {
-        super(ID, xPosition, yPosition, buttonWidth, buttonHeight, null, 0, 0, AEStateIconsEnum.CRAFTING_STATUS);
+        super(ID, xPosition, yPosition, buttonWidth, buttonHeight, null, 0, 0, AEStateIconsEnum.CRAFT_ONLY);
     }
 
     @Override
