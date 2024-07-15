@@ -83,6 +83,14 @@ public abstract class GuiConstants_ECT extends ThEScrollbarGui {
     protected static final int WIDGETS_PER_PAGE = GuiConstants_ECT.WIDGETS_PER_ROW
             * GuiConstants_ECT.WIDGET_ROWS_PER_PAGE;
 
+    /**
+     * Crafting status button
+     */
+    protected static final int BUTTON_CRAFTING_STATUS_ID = 1, BUTTON_CRAFTING_STATUS_POS_X = 170,
+            BUTTON_CRAFTING_STATUS_POS_Y = -4;
+
+    protected static final int BUTTON_AE_TAB_SIZE = 22;
+
     public GuiConstants_ECT(final Container container) {
         super(container);
     }

@@ -129,6 +129,17 @@ public abstract class ThEStateButton extends ThEGuiButtonBase {
     }
 
     /**
+     * Adds info to the tooltip as a white header.
+     *
+     * @param tooltip
+     * @param title
+     */
+    protected void addAboutToTooltip(final List<String> tooltip, final String title) {
+        // Title
+        tooltip.add(EnumChatFormatting.WHITE + title);
+    }
+
+    /**
      * Draws an icon to the screen.
      *
      * @param minecraftInstance

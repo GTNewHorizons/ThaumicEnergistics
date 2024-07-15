@@ -23,12 +23,10 @@ import appeng.api.config.TerminalStyle;
 import appeng.api.config.ViewItems;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
-import appeng.client.gui.widgets.GuiTabButton;
 import appeng.client.gui.widgets.ISortSource;
 import appeng.client.me.ItemRepo;
 import appeng.client.render.AppEngRenderItem;
 import appeng.core.AEConfig;
-import appeng.core.localization.GuiText;
 import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -36,6 +34,7 @@ import thaumcraft.client.lib.UtilsFX;
 import thaumcraft.common.config.Config;
 import thaumicenergistics.client.gui.abstraction.GuiConstants_ACT;
 import thaumicenergistics.client.gui.buttons.GuiButtonClearCraftingGrid;
+import thaumicenergistics.client.gui.buttons.GuiButtonCraftingStatus;
 import thaumicenergistics.client.gui.buttons.GuiButtonSearchMode;
 import thaumicenergistics.client.gui.buttons.GuiButtonSortingDirection;
 import thaumicenergistics.client.gui.buttons.GuiButtonSortingMode;
@@ -187,11 +186,6 @@ public class GuiArcaneCraftingTerminal extends GuiConstants_ACT implements ISort
      */
     private static String memoryText = "";
 
-    /**
-     * Tab button to show crafting status
-     */
-    private GuiTabButton btnCraftingStatus;
-
     public GuiArcaneCraftingTerminal(final PartArcaneCraftingTerminal part, final EntityPlayer player) {
         // Call super
         super(new ContainerPartArcaneCraftingTerminal(part, player));
@@ -308,7 +302,8 @@ public class GuiArcaneCraftingTerminal extends GuiConstants_ACT implements ISort
                 // Search for the widget the mouse is over, and send extract request.
                 this.sendItemWidgetClicked(mouseX, mouseY, mouseButton);
             } else {
-                // Inform the server the user would like to deposit the currently held item into the ME network.
+                // Inform the server the user would like to deposit the currently held item into
+                // the ME network.
                 Packet_S_ArcaneCraftingTerminal.sendDeposit(this.player, mouseButton);
             }
 
@@ -339,7 +334,8 @@ public class GuiArcaneCraftingTerminal extends GuiConstants_ACT implements ISort
             if (deltaZ > 0) {
                 // Is the player holding anything?
                 if (this.player.inventory.getItemStack() != null) {
-                    // Inform the server the user would like to deposit 1 of the currently held items into the ME
+                    // Inform the server the user would like to deposit 1 of the currently held
+                    // items into the ME
                     // network.
                     Packet_S_ArcaneCraftingTerminal.sendDeposit(this.player, ThEGuiHelper.MOUSE_WHEEL_MOTION);
                 }
@@ -859,10 +855,6 @@ public class GuiArcaneCraftingTerminal extends GuiConstants_ACT implements ISort
                 return;
         }
 
-        if (button == this.btnCraftingStatus) {
-            Packet_S_ArcaneCraftingTerminal.sendOpenCraftingStatus(this.player);
-        }
-
         switch (button.id) {
             // Clear grid
             case GuiConstants_ACT.BUTTON_CLEAR_GRID_ID:
@@ -967,6 +959,11 @@ public class GuiArcaneCraftingTerminal extends GuiConstants_ACT implements ISort
                 this.cachedItemTooltip.clear();
                 this.lastTooltipUpdateTime = 0;
 
+                break;
+
+            // Crafting status
+            case GuiConstants_ACT.BUTTON_CRAFTING_STATUS_ID:
+                Packet_S_ArcaneCraftingTerminal.sendOpenCraftingStatus(this.player);
                 break;
         }
 
@@ -1168,13 +1165,12 @@ public class GuiArcaneCraftingTerminal extends GuiConstants_ACT implements ISort
                         this.terminalStyle));
 
         this.buttonList.add(
-                this.btnCraftingStatus = new GuiTabButton(
-                        this.guiLeft + 170,
-                        this.guiTop - 4,
-                        2 + 11 * 16,
-                        GuiText.CraftingStatus.getLocal(),
-                        itemRender));
-        this.btnCraftingStatus.setHideEdge(13);
+                new GuiButtonCraftingStatus(
+                        GuiConstants_ACT.BUTTON_CRAFTING_STATUS_ID,
+                        this.guiLeft + GuiConstants_ACT.BUTTON_CRAFTING_STATUS_POS_X,
+                        this.guiTop + GuiConstants_ACT.BUTTON_CRAFTING_STATUS_POS_Y,
+                        GuiConstants_ACT.BUTTON_AE_TAB_SIZE,
+                        GuiConstants_ACT.BUTTON_AE_TAB_SIZE));
 
         // Add the container as a listener
         ((ContainerPartArcaneCraftingTerminal) this.inventorySlots).registerForUpdates();
