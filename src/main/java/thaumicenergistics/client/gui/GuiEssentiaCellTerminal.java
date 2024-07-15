@@ -19,8 +19,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import appeng.api.config.ViewItems;
-import appeng.client.gui.widgets.GuiTabButton;
-import appeng.core.localization.GuiText;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
@@ -29,6 +27,7 @@ import thaumicenergistics.api.gui.IAspectSelectorContainer;
 import thaumicenergistics.api.gui.IAspectSelectorGui;
 import thaumicenergistics.api.storage.IAspectStack;
 import thaumicenergistics.client.gui.abstraction.GuiConstants_ECT;
+import thaumicenergistics.client.gui.buttons.GuiButtonCraftingStatus;
 import thaumicenergistics.client.gui.buttons.GuiButtonSortingMode;
 import thaumicenergistics.client.gui.buttons.GuiButtonViewType;
 import thaumicenergistics.client.gui.widget.ThEWidget;
@@ -159,7 +158,7 @@ public class GuiEssentiaCellTerminal extends GuiConstants_ECT implements IAspect
     /**
      * Tab button to show crafting status
      */
-    private GuiTabButton btnCraftingStatus;
+    private GuiButtonCraftingStatus btnCraftingStatus;
 
     /**
      * Creates the gui.
@@ -773,13 +772,12 @@ public class GuiEssentiaCellTerminal extends GuiConstants_ECT implements IAspect
         if ((this.baseContainer instanceof ContainerEssentiaTerminal)
                 || (this.baseContainer instanceof ContainerWirelessEssentiaTerminal)) {
             this.buttonList.add(
-                    this.btnCraftingStatus = new GuiTabButton(
-                            this.guiLeft + 170,
-                            this.guiTop - 4,
-                            2 + 11 * 16,
-                            GuiText.CraftingStatus.getLocal(),
-                            itemRender));
-            this.btnCraftingStatus.setHideEdge(13);
+                    this.btnCraftingStatus = new GuiButtonCraftingStatus(
+                            GuiConstants_ECT.BUTTON_CRAFTING_STATUS_ID,
+                            this.guiLeft + GuiConstants_ECT.BUTTON_CRAFTING_STATUS_POS_X,
+                            this.guiTop + GuiConstants_ECT.BUTTON_CRAFTING_STATUS_POS_Y,
+                            GuiConstants_ECT.BUTTON_AE_TAB_SIZE,
+                            GuiConstants_ECT.BUTTON_AE_TAB_SIZE));
         }
     }
 

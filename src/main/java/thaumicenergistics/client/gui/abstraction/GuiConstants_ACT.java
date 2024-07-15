@@ -56,16 +56,16 @@ public abstract class GuiConstants_ACT extends ThEScrollbarGui {
     protected static final int BUTTON_SORT_MODE_ID = 1, BUTTON_SORT_MODE_POS_X = -18, BUTTON_SORT_MODE_POS_Y = 8;
 
     /**
-     * Sort direction button
-     */
-    protected static final int BUTTON_SORT_DIR_ID = 2, BUTTON_SORT_DIR_POS_X = BUTTON_SORT_MODE_POS_X,
-            BUTTON_SORT_DIR_POS_Y = BUTTON_SORT_MODE_POS_Y + 20;
-
-    /**
      * View type button
      */
-    protected static final int BUTTON_VIEW_TYPE_ID = 3, BUTTON_VIEW_TYPE_POS_X = BUTTON_SORT_MODE_POS_X,
-            BUTTON_VIEW_TYPE_POS_Y = BUTTON_SORT_DIR_POS_Y + 20;
+    protected static final int BUTTON_VIEW_TYPE_ID = 2, BUTTON_VIEW_TYPE_POS_X = BUTTON_SORT_MODE_POS_X,
+            BUTTON_VIEW_TYPE_POS_Y = BUTTON_SORT_MODE_POS_Y + 20;
+
+    /**
+     * Sort direction button
+     */
+    protected static final int BUTTON_SORT_DIR_ID = 3, BUTTON_SORT_DIR_POS_X = BUTTON_SORT_MODE_POS_X,
+            BUTTON_SORT_DIR_POS_Y = BUTTON_VIEW_TYPE_POS_Y + 20;
 
     /**
      * Swap armor button
@@ -76,7 +76,7 @@ public abstract class GuiConstants_ACT extends ThEScrollbarGui {
      * Search mode
      */
     protected static final int BUTTON_SEARCH_MODE_ID = 5, BUTTON_SEARCH_MODE_POS_X = BUTTON_SORT_MODE_POS_X,
-            BUTTON_SEARCH_MODE_POS_Y = BUTTON_VIEW_TYPE_POS_Y + 20;
+            BUTTON_SEARCH_MODE_POS_Y = BUTTON_SORT_DIR_POS_Y + 20;
 
     /**
      * Terminal style button
@@ -85,9 +85,20 @@ public abstract class GuiConstants_ACT extends ThEScrollbarGui {
             BUTTON_TERM_STYLE_POS_Y = BUTTON_SEARCH_MODE_POS_Y + 20;
 
     /**
+     * Crafting status button
+     */
+    protected static final int BUTTON_CRAFTING_STATUS_ID = 7, BUTTON_CRAFTING_STATUS_POS_X = 170,
+            BUTTON_CRAFTING_STATUS_POS_Y = -4;
+
+    /**
      * Size of the AE buttons
      */
     protected static final int BUTTON_AE_SIZE = 16;
+
+    /**
+     * Size of the AE tab buttons
+     */
+    protected static final int BUTTON_AE_TAB_SIZE = 22;
 
     /**
      * Size of the tiny buttons.

@@ -60,6 +60,7 @@ public enum AEStateIconsEnum implements IStateIconTexture {
     DELETE(0, 192),
     CLEAR_GRID(96, 0),
     ARROW_DOWN(128, 0),
+    CRAFTING_STATUS(48, 16),
 
     CRAFT_ONLY(48, 16),
     CRAFT_EITHER(32, 16);
