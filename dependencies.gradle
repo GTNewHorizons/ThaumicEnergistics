@@ -14,6 +14,7 @@ dependencies {
     compileOnly("curse.maven:computercraft-67504:2269339") { transitive = false }
     compileOnly("curse.maven:cofh-lib-220333:2388748") { transitive = false }
     compileOnly("net.industrial-craft:industrialcraft-2:2.2.828-experimental:dev") { transitive = false }
-
+	
+	runtimeOnlyNonPublishable('com.github.GTNewHorizons:GTNHLib:0.3.2:dev')
     runtimeOnly("com.github.GTNewHorizons:Baubles:1.0.4:dev")
 }
