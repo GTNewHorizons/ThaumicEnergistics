@@ -152,14 +152,6 @@ public class PartEssentiaStorageBus extends ThEPartBase
     }
 
     /**
-     * Ignored
-     */
-    @Override
-    public void blinkCell(final int slot) {
-        // Ignored
-    }
-
-    /**
      * How far out from the cable bus to draw the cable graphic.
      */
     @Override
