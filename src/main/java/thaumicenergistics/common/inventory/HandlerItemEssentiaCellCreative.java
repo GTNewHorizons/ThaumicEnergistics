@@ -63,7 +63,7 @@ public class HandlerItemEssentiaCellCreative extends HandlerItemEssentiaCell {
      * Available items based on partition table.
      */
     @Override
-    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> availableList) {
+    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> availableList, int iteration) {
         for (Aspect aspect : this.partitionAspects) {
             // Get the gas
             GaseousEssentia essentiaGas = GaseousEssentia.getGasFromAspect(aspect);
