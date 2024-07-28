@@ -270,7 +270,7 @@ class HandlerEssentiaStorageBusContainer extends HandlerEssentiaStorageBusBase {
      * Gets the list of fluids from the container.
      */
     @Override
-    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> out) {
+    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> out, int iteration) {
         if (this.aspectContainer != null) {
             // Get the contents of the container
             List<IAspectStack> essentiaList = this.getContainerEssentia();
