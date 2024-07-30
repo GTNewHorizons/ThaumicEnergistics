@@ -105,11 +105,11 @@ class HandlerEssentiaStorageBusInterface extends HandlerEssentiaStorageBusBase
      * Gets the gases from the sub-grid.
      */
     @Override
-    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> out) {
+    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> out, int iteration) {
         if (this.handler != null) {
             // Get the subgrids fluids
             IItemList<IAEFluidStack> subGridFluids = this.handler
-                    .getAvailableItems(AEApi.instance().storage().createFluidList());
+                    .getAvailableItems(AEApi.instance().storage().createFluidList(), iteration);
 
             for (IAEFluidStack fluid : subGridFluids) {
                 // Is the fluid as essentia gas?

@@ -257,7 +257,7 @@ public abstract class HandlerEssentiaStorageBusBase implements IMEInventoryHandl
      * Gets the list of 'fluids' that can be extracted from this storage bus.
      */
     @Override
-    public abstract IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> out);
+    public abstract IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> out, int iteration);
 
     /**
      * Gets the storage channel for the storage bus.

@@ -24,6 +24,7 @@ import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.items.storage.ItemBasicStorageCell;
+import appeng.util.IterationCounter;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.research.ScanResult;
@@ -115,7 +116,8 @@ public class ItemCellMicroscope extends ItemThaumometer {
     private void doCellScan(EntityPlayer p, ItemStack cell) {
         IMEInventory<IAEItemStack> inv = AEApi.instance().registries().cell()
                 .getCellInventory(cell, (ISaveProvider) cellSaveManager, StorageChannel.ITEMS);
-        IItemList<IAEItemStack> itemList = inv.getAvailableItems(AEApi.instance().storage().createItemList());
+        IItemList<IAEItemStack> itemList = inv
+                .getAvailableItems(AEApi.instance().storage().createItemList(), IterationCounter.fetchNewId());
 
         for (final IAEItemStack i : itemList) {
             ScanResult sr = new ScanResult((byte) 1, Item.getIdFromItem(i.getItem()), i.getItemDamage(), null, "");

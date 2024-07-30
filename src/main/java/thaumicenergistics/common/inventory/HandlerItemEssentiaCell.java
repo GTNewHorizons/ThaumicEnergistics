@@ -515,7 +515,7 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
      * Gets the list of essentia gasses stored on the cell.
      */
     @Override
-    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> availableList) {
+    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> availableList, int iteration) {
         for (IAspectStack essentiaStack : this.storedEssentia) {
             // Skip if null
             if (essentiaStack == null) {
