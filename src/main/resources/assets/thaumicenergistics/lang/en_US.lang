@@ -8,6 +8,7 @@ thaumicenergistics.fluid.gaseous=Super Critical Fluid
 #Blocks
 thaumicenergistics.block.essentia.provider.name=Essentia Provider
 thaumicenergistics.block.infusion.provider.name=Infusion Provider
+thaumicenergistics.block.advanced.infusion.provider.name=Advanced Infusion Provider
 thaumicenergistics.block.gear.box.name=Iron Gear Box
 thaumicenergistics.block.golem.gear.box.name=Thaumium Gear Box
 thaumicenergistics.block.essentia.cell.workbench.name=Essentia Cell Workbench
@@ -78,6 +79,9 @@ thaumicenergistics.tooltip.button.swap.armor.title=Swap Armor
 thaumicenergistics.tooltip.arcane.assembler.hasVis=Contains Stored Vis
 thaumicenergistics.tooltip.button.reset.aspect=Reset the aspects
 thaumicenergistics.tooltip.button.reset.aspect.description=Reset the left-hand aspects table to its original state
+thaumicenergistics.tooltip.advanced.infusion.provider.working.on=Workig Mode
+thaumicenergistics.tooltip.advanced.infusion.provider.normal=Normal Provider
+thaumicenergistics.tooltip.advanced.infusion.provider.advanced=Advanced Provider
 
 
 #GUI

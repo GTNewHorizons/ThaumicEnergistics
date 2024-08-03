@@ -7,6 +7,7 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.api.ThEApi;
+import thaumicenergistics.client.render.RenderBlockAdvancedInfusionProvider;
 import thaumicenergistics.client.render.RenderBlockEssentiaProvider;
 import thaumicenergistics.client.render.RenderBlockInfusionProvider;
 import thaumicenergistics.client.render.RenderTileArcaneAssembler;
@@ -31,7 +32,7 @@ public class Renderers {
 
     public static int currentRenderPass = 0;
 
-    public static int EssentiaProviderRenderID, InfusionProviderRenderID;
+    public static int EssentiaProviderRenderID, InfusionProviderRenderID, AdvancedInfusionProviderRenderID;
 
     public static void registerRenderers() {
         // Get the next render ID
@@ -41,9 +42,15 @@ public class Renderers {
 
         // Get the next render ID
         Renderers.InfusionProviderRenderID = RenderingRegistry.getNextAvailableRenderId();
+        
+        // Get the next render ID
+        Renderers.AdvancedInfusionProviderRenderID = RenderingRegistry.getNextAvailableRenderId();
 
         // Register the infusion provider renderer
         RenderingRegistry.registerBlockHandler(new RenderBlockInfusionProvider());
+        
+        // Register the advanced infusion provider renderer
+        RenderingRegistry.registerBlockHandler(new RenderBlockAdvancedInfusionProvider());
 
         // Are gearbox models enabled?
         if (!ThEApi.instance().config().disableGearboxModel()) {

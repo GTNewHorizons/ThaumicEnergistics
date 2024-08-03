@@ -48,7 +48,7 @@ import thaumicenergistics.common.utils.EffectiveSide;
 import thaumicenergistics.implementaion.ThEMultiCraftingTracker;
 
 /**
- * Base class of {@link TileEssentiaProvider} and {@link TileInfusionProvider}.
+ * Base class of {@link TileEssentiaProvider} and {@link TileInfusionProvider} and {@link TileAdvancedInfusionProvider}.
  *
  * @author Nividica
  *
@@ -540,7 +540,7 @@ public abstract class TileProviderBase extends AENetworkTile
             if (!craftingGrid.isRequesting(itemStack)) {
                 return this.craftingTracker.handleCrafting(
                         0,
-                        32,
+                        amount,
                         itemStack,
                         this.getWorldObj(),
                         grid,

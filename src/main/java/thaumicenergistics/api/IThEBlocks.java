@@ -45,6 +45,12 @@ public abstract class IThEBlocks {
      */
     @Nonnull
     public IThEItemDescription InfusionProvider;
+    
+    /**
+     * Advanced Infusion Provider.
+     */
+    @Nonnull
+    public IThEItemDescription AdvancedInfusionProvider;
 
     /**
      * Iron Gearbox.

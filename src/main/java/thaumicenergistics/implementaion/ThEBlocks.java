@@ -14,6 +14,7 @@ class ThEBlocks extends IThEBlocks {
     ThEBlocks() {
         this.EssentiaProvider = new ThEItemDescription(BlockEnum.ESSENTIA_PROVIDER.getBlock());
         this.InfusionProvider = new ThEItemDescription(BlockEnum.INFUSION_PROVIDER.getBlock());
+        this.AdvancedInfusionProvider = new ThEItemDescription(BlockEnum.ADVANCED_INFUSION_PROVIDER.getBlock());
         this.IronGearBox = new ThEItemDescription(BlockEnum.IRON_GEAR_BOX.getBlock());
         this.ThaumiumGearBox = new ThEItemDescription(BlockEnum.THAUMIUM_GEAR_BOX.getBlock());
         this.EssentiaCellWorkbench = new ThEItemDescription(BlockEnum.ESSENTIA_CELL_WORKBENCH.getBlock());

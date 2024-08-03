@@ -17,6 +17,7 @@ public enum BlockEnum {
 
     ESSENTIA_PROVIDER(ThEStrings.Block_EssentiaProvider, new BlockEssentiaProvider()),
     INFUSION_PROVIDER(ThEStrings.Block_InfusionProvider, new BlockInfusionProvider()),
+    ADVANCED_INFUSION_PROVIDER(ThEStrings.Block_AdvancedInfusionProvider, new BlockAdvancedInfusionProvider()),
     IRON_GEAR_BOX(ThEStrings.Block_IronGearbox, new BlockGearBox()),
     THAUMIUM_GEAR_BOX(ThEStrings.Block_ThaumiumGearbox, new BlockGolemGearBox()),
     ESSENTIA_CELL_WORKBENCH(ThEStrings.Block_EssentiaCellWorkbench, new BlockEssentiaCellWorkbench()),

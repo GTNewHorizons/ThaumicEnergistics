@@ -14,6 +14,7 @@ public enum TileEnum {
 
     EssentiaProvider("TileEssentiaProvider", TileEssentiaProvider.class),
     InfusionProvider("TileInfusionProvider", TileInfusionProvider.class),
+    AdvancedInfusionProvider("TileAdvancedInfusionProvider", TileAdvancedInfusionProvider.class),
     GearBox("TileGearBox", TileGearBox.class),
     CellWorkbench("TileEssentiaCellWorkbench", TileEssentiaCellWorkbench.class),
     ArcaneAssembler("TileArcaneAssembler", TileArcaneAssembler.class),

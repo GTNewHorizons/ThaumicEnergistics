@@ -8,6 +8,7 @@ thaumicenergistics.fluid.gaseous=气体
 #Blocks
 thaumicenergistics.block.essentia.provider.name=源质供应器
 thaumicenergistics.block.infusion.provider.name=注魔供应器
+thaumicenergistics.block.advanced.infusion.provider.name=进阶注魔供应器
 thaumicenergistics.block.gear.box.name=铁齿轮箱
 thaumicenergistics.block.golem.gear.box.name=神秘齿轮箱
 thaumicenergistics.block.essentia.cell.workbench.name=源质元件工作台
@@ -78,6 +79,9 @@ thaumicenergistics.tooltip.button.swap.armor.title=交换护甲
 thaumicenergistics.tooltip.arcane.assembler.hasVis=已存储Vis
 thaumicenergistics.tooltip.button.reset.aspect=重置源质
 thaumicenergistics.tooltip.button.reset.aspect.description=重置左侧源质表格为初始状态
+thaumicenergistics.tooltip.advanced.infusion.provider.working.on=工作模式
+thaumicenergistics.tooltip.advanced.infusion.provider.normal=普通供应器
+thaumicenergistics.tooltip.advanced.infusion.provider.advanced=进阶供应器
 
 
 #GUI
