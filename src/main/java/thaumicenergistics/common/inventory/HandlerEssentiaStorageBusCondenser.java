@@ -69,7 +69,7 @@ public class HandlerEssentiaStorageBusCondenser extends HandlerEssentiaStorageBu
     }
 
     @Override
-    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> out) {
+    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> out, int iteration) {
         // Nothing is stored in the condenser.
         return out;
     }

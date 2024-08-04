@@ -95,11 +95,11 @@ public class HandlerEssentiaStorageBusDuality extends HandlerEssentiaStorageBusB
     }
 
     @Override
-    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> out) {
+    public IItemList<IAEFluidStack> getAvailableItems(final IItemList<IAEFluidStack> out, int iteration) {
         // Ensure we have an internal handler
         if (this.internalHandler != null) {
             // Pass to handler
-            return this.internalHandler.getAvailableItems(out);
+            return this.internalHandler.getAvailableItems(out, iteration);
         }
 
         // No handler
