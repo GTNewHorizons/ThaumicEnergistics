@@ -121,6 +121,7 @@ public class Packet_S_ConfirmCraftingJob extends ThEServerPacket {
 
                         if (this.player.openContainer instanceof ContainerCraftConfirm) {
                             final ContainerCraftConfirm ccc = (ContainerCraftConfirm) this.player.openContainer;
+                            ccc.setItemToCraft(cca.getItemToCraft());
                             ccc.setAutoStart(this.heldShift);
                             ccc.setJob(futureJob);
                             cca.detectAndSendChanges();
