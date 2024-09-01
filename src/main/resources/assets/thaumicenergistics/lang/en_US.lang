@@ -82,6 +82,7 @@ thaumicenergistics.tooltip.button.reset.aspect.description=Reset the left-hand a
 thaumicenergistics.tooltip.advanced.infusion.provider.working.on=Workig Mode
 thaumicenergistics.tooltip.advanced.infusion.provider.normal=Normal Provider
 thaumicenergistics.tooltip.advanced.infusion.provider.advanced=Advanced Provider
+thaumicenergistics.tooltip.advanced.infusion.provider.bindto=Bind to %s %s %s matrix
 
 
 #GUI

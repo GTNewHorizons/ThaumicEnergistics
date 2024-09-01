@@ -79,6 +79,7 @@ public enum ThEStrings {
     Tooltip_AdvancedInfusionProviderWorkingMode("tooltip.advanced.infusion.provider.working.on", false),
     Tooltip_AdvancedInfusionProviderNormalMode("tooltip.advanced.infusion.provider.normal", false),
     Tooltip_AdvancedInfusionProviderAdvancedMode("tooltip.advanced.infusion.provider.advanced", false),
+    Tooltip_AdvancedInfusionProviderBindTo("tooltip.advanced.infusion.provider.bindto", false),
 
     // Button Tooltips
     TooltipButton_VoidHeader("tooltip.button.void", false),

@@ -42,13 +42,13 @@ public class Renderers {
 
         // Get the next render ID
         Renderers.InfusionProviderRenderID = RenderingRegistry.getNextAvailableRenderId();
-        
+
         // Get the next render ID
         Renderers.AdvancedInfusionProviderRenderID = RenderingRegistry.getNextAvailableRenderId();
 
         // Register the infusion provider renderer
         RenderingRegistry.registerBlockHandler(new RenderBlockInfusionProvider());
-        
+
         // Register the advanced infusion provider renderer
         RenderingRegistry.registerBlockHandler(new RenderBlockAdvancedInfusionProvider());
 

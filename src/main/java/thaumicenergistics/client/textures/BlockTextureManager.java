@@ -44,8 +44,9 @@ public enum BlockTextureManager {
     ESSENTIA_PROVIDER(TextureTypes.Block, new String[] { "essentia.provider", "essentia.provider.overlay" }),
 
     INFUSION_PROVIDER(TextureTypes.Block, new String[] { "infusion.provider", "infusion.provider.overlay" }),
-    
-    ADVANCED_INFUSION_PROVIDER(TextureTypes.Block, new String[] { "advanced.infusion.provider", "infusion.provider.overlay" }),
+
+    ADVANCED_INFUSION_PROVIDER(TextureTypes.Block,
+            new String[] { "advanced.infusion.provider", "infusion.provider.overlay" }),
 
     ARCANE_CRAFTING_TERMINAL(TextureTypes.Part,
             new String[] { "arcane.crafting.overlay1", "arcane.crafting.overlay2", "arcane.crafting.overlay3",

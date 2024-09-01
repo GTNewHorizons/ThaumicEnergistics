@@ -45,7 +45,7 @@ public abstract class IThEBlocks {
      */
     @Nonnull
     public IThEItemDescription InfusionProvider;
-    
+
     /**
      * Advanced Infusion Provider.
      */
