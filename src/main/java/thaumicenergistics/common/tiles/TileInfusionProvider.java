@@ -22,7 +22,7 @@ public class TileInfusionProvider extends TileProviderBase implements IAspectSou
      *
      * @param aspectColor
      */
-    private void doParticalFX(final int aspectColor) {
+    public void doParticalFX(final int aspectColor) {
         // Convert each color to percentage
         float red = (aspectColor & 0xFF0000) / (float) 0xFF0000;
         float green = (aspectColor & 0x00FF00) / (float) 0x00FF00;

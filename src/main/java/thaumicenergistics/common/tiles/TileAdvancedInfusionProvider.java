@@ -10,44 +10,26 @@ import appeng.tile.events.TileEventType;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectSource;
-import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.tiles.TileInfusionMatrix;
 import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.common.registries.ThEStrings;
-import thaumicenergistics.common.tiles.abstraction.TileProviderBase;
 
-public class TileAdvancedInfusionProvider extends TileProviderBase implements IAspectSource {
+/**
+ * Upgrade version of {@link TileInfusionProvider} works like intercepter and old provider can auto order essential it
+ * need
+ * 
+ * @author MCTBL
+ * 
+ */
+public class TileAdvancedInfusionProvider extends TileInfusionProvider implements IAspectSource {
 
-    private static final String NBT_MATRIX_X = "MatrixX", NBT_MATRIX_Y = "MatrixY", NBT_MATRIX_Z = "MatrixZ",
-            NBT_HAS_ADD_STABILITY = "HasAddStability";
+    private static final String NBT_MATRIX_X = "MatrixX", NBT_MATRIX_Y = "MatrixY", NBT_MATRIX_Z = "MatrixZ";
 
     public TileInfusionMatrix matrix = null;
 
     private Integer matrixX = null, matrixY = null, matrixZ = null;
 
-    public boolean hasAddStability = false;
-
-    /**
-     * Shows runes on the infusion provider.
-     *
-     * @param aspectColor
-     */
-    private void doParticalFX(final int aspectColor) {
-        // Convert each color to percentage
-        float red = (aspectColor & 0xFF0000) / (float) 0xFF0000;
-        float green = (aspectColor & 0x00FF00) / (float) 0x00FF00;
-        float blue = (aspectColor & 0x0000FF) / (float) 0x0000FF;
-
-        // Add particles
-        for (int i = 0; i < 5; i++) {
-            Thaumcraft.proxy
-                    .blockRunes(this.worldObj, this.xCoord, this.yCoord, this.zCoord, red, green, blue, 15, -0.1F);
-        }
-        for (int i = 0; i < 5; i++) {
-            Thaumcraft.proxy
-                    .blockRunes(this.worldObj, this.xCoord, this.yCoord, this.zCoord, red, green, blue, 15, 0.1F);
-        }
-    }
+    private int tickCounter = 0;
 
     /**
      * How much power does this require just to be active?
@@ -80,58 +62,26 @@ public class TileAdvancedInfusionProvider extends TileProviderBase implements IA
         return false;
     }
 
-    @Override
-    public AspectList getAspects() {
-        return null;
-    }
-
-    @Override
-    public void setAspects(AspectList var1) {}
-
-    @Override
-    public boolean doesContainerAccept(Aspect var1) {
-        return false;
-    }
-
-    @Override
-    public int addToContainer(Aspect var1, int var2) {
-        return 0;
-    }
-
-    @Override
-    public boolean takeFromContainer(AspectList var1) {
-        return false;
-    }
-
-    @Override
-    public boolean doesContainerContainAmount(Aspect var1, int var2) {
-        return false;
-    }
-
-    @Override
-    public boolean doesContainerContain(AspectList var1) {
-        return false;
-    }
-
-    @Override
-    public int containerContains(Aspect var1) {
-        return 0;
-    }
-
     public void searchMatrix() {
-        if (this.matrix == null && this.worldObj != null) {
-            int x = this.xCoord;
-            int y = this.yCoord;
-            int z = this.zCoord;
-            for (int dx = -4; dx <= 4; dx++) {
-                for (int dy = -4; dy <= 4; dy++) {
-                    for (int dz = -4; dz <= 4; dz++) {
-                        if (this.bindMatrix(x + dx, y + dy, z + dz)) {
-                            this.matrixX = x + dx;
-                            this.matrixY = y + dy;
-                            this.matrixZ = z + dz;
-                            return;
-                        }
+
+        // If allready bind infusion matrix or worldObj is null
+        if (this.matrix != null || this.worldObj == null) {
+            // Do nothing
+            return;
+        }
+
+        int x = this.xCoord;
+        int y = this.yCoord;
+        int z = this.zCoord;
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dy = -4; dy <= 4; dy++) {
+                for (int dz = -4; dz <= 4; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) continue;
+                    if (this.bindMatrix(x + dx, y + dy, z + dz)) {
+                        this.matrixX = x + dx;
+                        this.matrixY = y + dy;
+                        this.matrixZ = z + dz;
+                        return;
                     }
                 }
             }
@@ -154,6 +104,13 @@ public class TileAdvancedInfusionProvider extends TileProviderBase implements IA
         return this.bindMatrix(this.matrixX, this.matrixY, this.matrixZ);
     }
 
+    public void unbindMatrix() {
+        this.matrix = null;
+        this.matrixX = null;
+        this.matrixY = null;
+        this.matrixZ = null;
+    }
+
     public void grabAllAspects() {
         if (this.matrix.getAspects().size() != 0) {
             AspectList aspectList = this.matrix.getAspects().copy();
@@ -165,8 +122,12 @@ public class TileAdvancedInfusionProvider extends TileProviderBase implements IA
                     if (needAspectsAmount != extractAmount) {
                         this.orderSomeEssentia(aspect, needAspectsAmount - extractAmount);
                     }
-                    this.doParticalFX(aspect.getColor());
-                    matrix.getAspects().remove(aspect, extractAmount);
+
+                    // Try to remove essentia from network and render runes
+                    if (extractAmount > 0) {
+                        this.doParticalFX(aspect.getColor());
+                        matrix.getAspects().remove(aspect, extractAmount);
+                    }
                 }
             }
         }
@@ -180,7 +141,6 @@ public class TileAdvancedInfusionProvider extends TileProviderBase implements IA
             data.setInteger(NBT_MATRIX_Y, this.matrix.yCoord);
             data.setInteger(NBT_MATRIX_Z, this.matrix.zCoord);
         }
-        data.setBoolean(NBT_HAS_ADD_STABILITY, this.hasAddStability);
         super.onSaveNBT(data);
     }
 
@@ -191,9 +151,6 @@ public class TileAdvancedInfusionProvider extends TileProviderBase implements IA
             this.matrixX = data.getInteger(NBT_MATRIX_X);
             this.matrixY = data.getInteger(NBT_MATRIX_Y);
             this.matrixZ = data.getInteger(NBT_MATRIX_Z);
-        }
-        if (data.hasKey(NBT_HAS_ADD_STABILITY)) {
-            this.hasAddStability = data.getBoolean(NBT_HAS_ADD_STABILITY);
         }
         super.onLoadNBT(data);
     }
@@ -220,13 +177,16 @@ public class TileAdvancedInfusionProvider extends TileProviderBase implements IA
 
     @TileEvent(TileEventType.TICK)
     public void onTick() {
-        if (this.matrix == null && this.isActive) {
+        // Try binding matrix every 20 tick
+        if (++tickCounter % 20 == 0 && this.matrix == null && this.isActive) {
             if (this.matrixX == null || this.matrixY == null || this.matrixZ == null) {
                 this.searchMatrix();
             } else {
                 this.bindMatrix();
             }
+            tickCounter = 0;
         }
+
         if (this.isActive && this.matrix != null) {
             this.grabAllAspects();
         }
