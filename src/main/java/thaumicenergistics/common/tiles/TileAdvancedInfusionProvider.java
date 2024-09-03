@@ -109,6 +109,9 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
         this.matrixX = null;
         this.matrixY = null;
         this.matrixZ = null;
+
+        this.markForUpdate();
+        this.saveChanges();
     }
 
     public void grabAllAspects() {
