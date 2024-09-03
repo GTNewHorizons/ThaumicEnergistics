@@ -74,6 +74,7 @@ public class ResearchRegistry {
         ESSENTIA_TERMINAL("ESSTERM", -1, -4),
         ESSENTIA_PROVIDER("ESSPROV", -2, -4),
         INFUSION_PROVIDER("INFPROV", -5, -2),
+        ADVANCED_INFUSION_PROVIDER("ADVINFPROV", -7, -2),
         IRON_GEARBOX("IRONGEARBOX", 4, -5),
         THAUMIUM_GEARBOX("THAUMGBOX", 4, -6),
         CERTUS_DUPE("CERTUSDUPE", -5, -5),

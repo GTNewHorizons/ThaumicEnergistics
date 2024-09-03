@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import thaumicenergistics.common.features.CommonDependantItems;
 import thaumicenergistics.common.features.FeatureACT;
+import thaumicenergistics.common.features.FeatureAdvancedInfusionProvider;
 import thaumicenergistics.common.features.FeatureAutocrafting_Arcane;
 import thaumicenergistics.common.features.FeatureAutocrafting_Essentia;
 import thaumicenergistics.common.features.FeatureCellMicroscope;
@@ -93,6 +94,11 @@ public class FeatureRegistry {
     public final FeatureInfusionProvider featureInfusionProvider;
 
     /**
+     * Advanced Infusion provider.
+     */
+    public final FeatureAdvancedInfusionProvider featureAdvancedInfusionProvider;
+
+    /**
      * Essentia Provider.
      */
     public final FeatureEssentiaProvider featureEssentiaProvider;
@@ -175,6 +181,9 @@ public class FeatureRegistry {
 
         // Build infusion provider
         this.featuresList.add(this.featureInfusionProvider = new FeatureInfusionProvider());
+
+        // Build infusion provider
+        this.featuresList.add(this.featureAdvancedInfusionProvider = new FeatureAdvancedInfusionProvider());
 
         // Build essentia provider
         this.featuresList.add(this.featureEssentiaProvider = new FeatureEssentiaProvider());

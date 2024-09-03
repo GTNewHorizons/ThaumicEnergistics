@@ -145,6 +145,11 @@ tc.research_name.thaumicenergistics.TEINFPROV=Infusion Provider
 tc.research_text.thaumicenergistics.TEINFPROV=Infusion made easier.
 thaumicenergistics.research_page.TEINFPROV.1=By researching the process of essentia infusion, you have discovered a method for instantaneous conversion between digi-sentia and essentia that can be used for infusion.<BR>By placing the §lInfusion Provider§r near a thaumic device, the device can draw essentia directly from the network as if it were a warded jar.<BR>This could prove to be very useful for the infusion alter.
 
+# Research Advanced Infusion Provider
+tc.research_name.thaumicenergistics.TEADVINFPROV=Advanced Infusion Provider
+tc.research_text.thaumicenergistics.TEADVINFPROV=easiest Infusion.
+thaumicenergistics.research_page.TEADVINFPROV.1=As you continue to optimize your ae network auto crafting, you've been stumped countless times by infusion recipes.<BR>Now, you have a new idea, why not leave the task of prepareing essentia to your ae network?<BR>So you developed a new infusion provider that includes the functionality of the Interceptor, and automatically orders the missing essentia. Also it can bind infusion matrix in a 9*9*9 area. Right click allows him to search the area for matrix and rebind it.
+
 # Research Vis Interface
 tc.research_name.thaumicenergistics.TEVISINT=Vis Relay Interface
 tc.research_text.thaumicenergistics.TEVISINT=Using Vis Digitally
