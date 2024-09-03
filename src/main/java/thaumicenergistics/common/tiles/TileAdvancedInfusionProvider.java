@@ -181,7 +181,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
         if (++tickCounter % 20 == 0 && this.matrix == null && this.isActive) {
             if (this.matrixX == null || this.matrixY == null || this.matrixZ == null) {
                 this.searchMatrix();
-            } else if(! this.bindMatrix()) {
+            } else if (!this.bindMatrix()) {
                 this.unbindMatrix();
             }
             tickCounter = 0;
