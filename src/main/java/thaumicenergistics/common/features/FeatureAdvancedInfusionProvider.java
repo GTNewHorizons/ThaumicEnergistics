@@ -36,6 +36,7 @@ public class FeatureAdvancedInfusionProvider extends ThEThaumcraftResearchFeatur
 
     @Override
     protected void registerResearch() {
+        // What aspects does research note have
         AspectList advancedInfusionProviderList = new AspectList();
         advancedInfusionProviderList.add(Aspect.MECHANISM, 1);
         advancedInfusionProviderList.add(Aspect.MAGIC, 1);
@@ -45,20 +46,23 @@ public class FeatureAdvancedInfusionProvider extends ThEThaumcraftResearchFeatur
         advancedInfusionProviderList.add(Aspect.MIND, 1);
         advancedInfusionProviderList.add(Aspect.SENSES, 1);
 
+        // Research icon
         ItemStack advancedInfusionProviderIcon = new ItemStack(BlockEnum.ADVANCED_INFUSION_PROVIDER.getBlock(), 1);
 
+        // Research Page
         ResearchPage[] advancedInfusionProviderPages = new ResearchPage[] {
                 new ResearchPage(ResearchTypes.ADVANCED_INFUSION_PROVIDER.getPageName(1)),
                 new ResearchPage(RecipeRegistry.BLOCK_ADVANCED_INFUSION_PROVIDER) };
 
-        // Create the infusion provider research
+        // Create the advanced infusion provider research
         ResearchTypes.ADVANCED_INFUSION_PROVIDER.createResearchItem(
                 advancedInfusionProviderList,
                 ResearchRegistry.COMPLEXITY_LARGE,
                 advancedInfusionProviderIcon,
                 advancedInfusionProviderPages);
-        ResearchTypes.ADVANCED_INFUSION_PROVIDER.researchItem.setParents(ResearchTypes.INFUSION_PROVIDER.getKey());
 
+        ResearchTypes.ADVANCED_INFUSION_PROVIDER.researchItem.setParents(ResearchTypes.INFUSION_PROVIDER.getKey());
+        ResearchTypes.ADVANCED_INFUSION_PROVIDER.researchItem.setConcealed().setSpecial();
         ResearchTypes.ADVANCED_INFUSION_PROVIDER.researchItem.registerResearchItem();
     }
 

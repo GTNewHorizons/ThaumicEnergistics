@@ -9,7 +9,7 @@ import thaumicenergistics.common.tiles.TileInfusionProvider;
 /**
  * Renders the {@link TileInfusionProvider}
  *
- * @author Nividica
+ * @author MCTBL
  *
  */
 @SideOnly(Side.CLIENT)
