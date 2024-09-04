@@ -76,4 +76,5 @@ public class RecipeRegistry {
     public static InfusionRecipe BLOCK_INFUSION_PROVIDER;
     public static InfusionRecipe BLOCK_ESSENTIA_PROVIDER;
     public static InfusionRecipe BLOCK_ARCANE_ASSEMBLER;
+    public static InfusionRecipe BLOCK_ADVANCED_INFUSION_PROVIDER;
 }

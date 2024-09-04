@@ -18,6 +18,7 @@ public enum ThEStrings {
     // Blocks
     Block_EssentiaProvider("block.essentia.provider", true),
     Block_InfusionProvider("block.infusion.provider", true),
+    Block_AdvancedInfusionProvider("block.advanced.infusion.provider", true),
     Block_IronGearbox("block.gear.box", true),
     Block_ThaumiumGearbox("block.golem.gear.box", true),
     Block_EssentiaCellWorkbench("block.essentia.cell.workbench", true),
@@ -75,6 +76,10 @@ public enum ThEStrings {
     Tooltip_CellTypes("tooltip.essentia.cell.types", false),
     Tooltip_CellContains("tooltip.essentia.cell.contains", false),
     Tooltip_ArcaneAssemblerHasVis("tooltip.arcane.assembler.hasVis", false),
+    Tooltip_AdvancedInfusionProviderWorkingMode("tooltip.advanced.infusion.provider.working.on", false),
+    Tooltip_AdvancedInfusionProviderNormalMode("tooltip.advanced.infusion.provider.normal", false),
+    Tooltip_AdvancedInfusionProviderAdvancedMode("tooltip.advanced.infusion.provider.advanced", false),
+    Tooltip_AdvancedInfusionProviderBindTo("tooltip.advanced.infusion.provider.bindto", false),
 
     // Button Tooltips
     TooltipButton_VoidHeader("tooltip.button.void", false),
