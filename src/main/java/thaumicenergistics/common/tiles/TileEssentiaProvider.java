@@ -152,7 +152,7 @@ public class TileEssentiaProvider extends TileProviderBase implements IEssentiaT
     public int takeEssentiaOrder(Aspect aspect, int amount) {
         long aspectAmountInNetwork = this.getAspectAmountInNetwork(aspect);
         if (aspectAmountInNetwork < amount) {
-            this.orderSomeEssentia(aspect, (int)(aspectAmountInNetwork - amount));
+            this.orderSomeEssentia(aspect, (int) (aspectAmountInNetwork - amount));
         }
         return (int) aspectAmountInNetwork;
     }
