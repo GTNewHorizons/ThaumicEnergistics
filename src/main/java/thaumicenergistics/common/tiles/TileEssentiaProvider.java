@@ -149,6 +149,14 @@ public class TileEssentiaProvider extends TileProviderBase implements IEssentiaT
         return 0;
     }
 
+    public int takeEssentiaOrder(Aspect aspect, int amount) {
+        long aspectAmountInNetwork = this.getAspectAmountInNetwork(aspect);
+        if (aspectAmountInNetwork < amount) {
+            this.orderSomeEssentia(aspect, (int)(aspectAmountInNetwork - amount));
+        }
+        return (int) aspectAmountInNetwork;
+    }
+
     @Override
     public Aspect getEssentiaType(final ForgeDirection side) {
         // Get the aspect this neighbor wants
