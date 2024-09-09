@@ -57,8 +57,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
     /**
      * Status of the cell.
      */
-    private static final int CELL_STATUS_MISSING = 0, CELL_STATUS_EMPTY = 1, CELL_STATUS_HAS_ROOM = 2,
-            CELL_STATUS_TYPES_FULL = 3, CELL_STATUS_FULL = 4;
+    private static final int CELL_STATUS_MISSING = 0;
 
     /**
      * Icons for each type.
@@ -255,29 +254,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
         }
 
         // Get the inventory handler
-        HandlerItemEssentiaCell cellHandler = (HandlerItemEssentiaCell) handler;
-
-        // Creative?
-        if (cellHandler.isCreative()) {
-            return ItemEssentiaCell.CELL_STATUS_TYPES_FULL;
-        }
-
-        // Total Empty
-        if (cellHandler.getUsedBytes() == 0) {
-            return ItemEssentiaCell.CELL_STATUS_EMPTY;
-        }
-
-        // Full bytes?
-        if (cellHandler.getUsedBytes() == cellHandler.getTotalBytes()) {
-            return ItemEssentiaCell.CELL_STATUS_FULL;
-        }
-
-        // Full types?
-        if (cellHandler.getUsedTypes() == cellHandler.getTotalTypes()) {
-            return ItemEssentiaCell.CELL_STATUS_TYPES_FULL;
-        }
-
-        return ItemEssentiaCell.CELL_STATUS_HAS_ROOM;
+        return ((HandlerItemEssentiaCell) handler).getCellStatus();
     }
 
     /**
