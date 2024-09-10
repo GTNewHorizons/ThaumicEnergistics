@@ -878,13 +878,19 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
 
     @Override
     public int getCellStatus() {
-        if (this.getFreeBytes() == 0) {
-            return 3;
-        } else if (this.getFreeTypes() == 0) {
-            return 2;
-        } else {
+        if (this.isCreative()) {
+            return 4;
+        }
+        if (this.getUsedBytes() == 0) {
             return 1;
         }
+        if (this.getFreeTypes() > 0) {
+            return 2;
+        }
+        if (this.getFreeTypes() == 0) {
+            return 3;
+        }
+        return 4;
     }
 
     @Override
