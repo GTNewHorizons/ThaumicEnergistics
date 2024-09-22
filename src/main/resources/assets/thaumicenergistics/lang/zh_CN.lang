@@ -82,7 +82,7 @@ thaumicenergistics.tooltip.button.reset.aspect.description=重置左侧源质表
 thaumicenergistics.tooltip.advanced.infusion.provider.working.on=工作模式
 thaumicenergistics.tooltip.advanced.infusion.provider.normal=普通供应器
 thaumicenergistics.tooltip.advanced.infusion.provider.advanced=进阶供应器
-thaumicenergistics.tooltip.advanced.infusion.provider.bindto=绑定至 %s %s %s 矩阵
+thaumicenergistics.tooltip.advanced.infusion.provider.totalbind=已绑定 %d 个矩阵
 
 
 #GUI
