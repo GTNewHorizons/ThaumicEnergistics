@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
@@ -25,10 +24,12 @@ import thaumicenergistics.implementaion.ThEMultiCraftingTracker;
  */
 public class TileAdvancedInfusionProvider extends TileInfusionProvider implements IAspectSource {
 
-    public List<TileInfusionMatrix> matrixs = new ArrayList<>();
-    private List<TileInfusionMatrix> waitToRemoveMatrix = new ArrayList<>();
+    public List<TileInfusionMatrix> matrices = new ArrayList<>();
+    private List<TileInfusionMatrix> matricesToRemove = new ArrayList<>();
 
-    private int tickCounter = 50;
+    public static final int HORIZONTAL_RADIUS = 12;
+    public static final int VERTICAL_RADIUS = 5;
+    private int currentZ = -HORIZONTAL_RADIUS;
 
     public TileAdvancedInfusionProvider() {
         super();
@@ -52,7 +53,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
     @Override
     public boolean takeFromContainer(final Aspect tag, final int amount) {
         // Not in advanced mode
-        if (this.matrixs.isEmpty()) {
+        if (this.matrices.isEmpty()) {
             // Can we extract the essentia from the network?
             if (this.extractEssentiaFromNetwork(tag, amount, true) == amount) {
                 // Show partical FX
@@ -68,29 +69,27 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
 
     public void searchMatrix() {
 
-        // If allready bind infusion matrix or worldObj is null
-        if ((this.matrixs != null && !this.matrixs.isEmpty()) || this.worldObj == null) {
+        // If worldObj is null
+        if (this.worldObj == null) {
             // Do nothing
             return;
         }
 
-        int x = this.xCoord;
-        int y = this.yCoord;
-        int z = this.zCoord;
-
-        for (int dx = -12; dx <= 12; dx++) {
-            for (int dy = -5; dy <= 5; dy++) {
-                for (int dz = -12; dz <= 12; dz++) {
-                    if (dx == 0 && dy == 0 && dz == 0) continue;
-                    this.bindMatrixs(x + dx, y + dy, z + dz);
-                }
+        for (int dx = -HORIZONTAL_RADIUS; dx <= HORIZONTAL_RADIUS; dx++) {
+            for (int dy = -VERTICAL_RADIUS; dy <= VERTICAL_RADIUS; dy++) {
+                if (dx == 0 && dy == 0 && currentZ == 0) continue;
+                this.bindMatrixs(this.xCoord + dx, this.yCoord + dy, this.zCoord + this.currentZ);
             }
+        }
+
+        if (++this.currentZ > HORIZONTAL_RADIUS) {
+            this.currentZ = -HORIZONTAL_RADIUS;
         }
     }
 
     public void bindMatrixs(final int x, final int y, final int z) {
         if (this.worldObj != null && this.worldObj.getTileEntity(x, y, z) instanceof TileInfusionMatrix tim) {
-            this.matrixs.add(tim);
+            this.matrices.add(tim);
 
             this.markForUpdate();
             this.saveChanges();
@@ -98,7 +97,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
     }
 
     public void unbindMatrixs() {
-        this.matrixs.clear();
+        this.matrices.clear();
 
         this.markForUpdate();
         this.saveChanges();
@@ -106,6 +105,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
 
     public void grabAllAspects(final TileInfusionMatrix matrix) {
         if (matrix.getAspects().size() != 0) {
+
             AspectList aspectList = matrix.getAspects().copy();
             for (Aspect aspect : aspectList.getAspects()) {
                 if (aspect != null) {
@@ -127,21 +127,9 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
     }
 
     @Override
-    @TileEvent(TileEventType.WORLD_NBT_WRITE)
-    public void onSaveNBT(final NBTTagCompound data) {
-        super.onSaveNBT(data);
-    }
-
-    @Override
-    @TileEvent(TileEventType.WORLD_NBT_READ)
-    public void onLoadNBT(final NBTTagCompound data) {
-        super.onLoadNBT(data);
-    }
-
-    @Override
     public void addWailaInformation(List<String> tooltip) {
         super.addWailaInformation(tooltip);
-        if (this.matrixs == null || (this.matrixs != null && this.matrixs.isEmpty())) {
+        if (this.matrices == null || (this.matrices != null && this.matrices.isEmpty())) {
             tooltip.add(
                     ThEStrings.Tooltip_AdvancedInfusionProviderWorkingMode.getLocalized() + ":"
                             + ThEStrings.Tooltip_AdvancedInfusionProviderNormalMode.getLocalized());
@@ -152,32 +140,30 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
             tooltip.add(
                     String.format(
                             ThEStrings.Tooltip_AdvancedInfusionProviderTotalBind.getLocalized(),
-                            this.matrixs.size()));
+                            this.matrices.size()));
         }
     }
 
     @TileEvent(TileEventType.TICK)
     public void onTick() {
-        // Try binding matrix every 5s
-        if (++tickCounter >= 100 && this.matrixs.isEmpty() && this.isActive) {
+        // Try binding matrix when is active
+        if (this.isActive) {
             this.searchMatrix();
-
-            tickCounter = 0;
         }
 
-        if (!this.matrixs.isEmpty() && this.isActive) {
-            for (TileInfusionMatrix matrix : this.matrixs) {
+        if (!this.matrices.isEmpty() && this.isActive) {
+            for (TileInfusionMatrix matrix : this.matrices) {
                 if (matrix == null) {
-                    this.waitToRemoveMatrix.add(matrix);
+                    this.matricesToRemove.add(matrix);
                 } else {
                     this.grabAllAspects(matrix);
                 }
             }
         }
 
-        if (!this.waitToRemoveMatrix.isEmpty()) {
-            this.matrixs.removeAll(this.waitToRemoveMatrix);
-            this.waitToRemoveMatrix.clear();
+        if (!this.matricesToRemove.isEmpty()) {
+            this.matrices.removeAll(this.matricesToRemove);
+            this.matricesToRemove.clear();
             this.markForUpdate();
             this.saveChanges();
         }
