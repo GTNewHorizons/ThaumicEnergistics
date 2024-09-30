@@ -87,7 +87,7 @@ public abstract class TileProviderBase extends AENetworkTile
      */
     protected boolean isColorForced = false;
 
-    protected final ThEMultiCraftingTracker craftingTracker = new ThEMultiCraftingTracker(this, 1);
+    protected ThEMultiCraftingTracker craftingTracker = new ThEMultiCraftingTracker(this, 1);
 
     public TileProviderBase() {
         // Create the source
@@ -538,14 +538,17 @@ public abstract class TileProviderBase extends AENetworkTile
             IAEItemStack itemStack = AEApi.instance().storage()
                     .createItemStack(ItemCraftingAspect.createStackForAspect(aspect, 1));
             if (!craftingGrid.isRequesting(itemStack)) {
-                return this.craftingTracker.handleCrafting(
-                        0,
-                        amount,
-                        itemStack,
-                        this.getWorldObj(),
-                        grid,
-                        craftingGrid,
-                        this.getMachineSource());
+                int index = this.craftingTracker.getFirstEmptySlot();
+                if (index >= 0) {
+                    return this.craftingTracker.handleCrafting(
+                            index,
+                            amount,
+                            itemStack,
+                            this.getWorldObj(),
+                            grid,
+                            craftingGrid,
+                            this.getMachineSource());
+                }
             }
         } catch (Exception e) {}
         return false;

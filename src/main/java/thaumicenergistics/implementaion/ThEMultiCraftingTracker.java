@@ -100,6 +100,20 @@ public class ThEMultiCraftingTracker {
         return ImmutableSet.copyOf(result);
     }
 
+    public int getFirstEmptySlot() {
+        if (this.links == null) {
+            this.links = new ICraftingLink[this.size];
+        }
+
+        for (int index = 0; index < this.size; index++) {
+            ICraftingLink link = this.links[index];
+            if (link == null || link.isDone() || link.isCanceled()) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
     public void jobStateChange(final ICraftingLink link) {
         if (this.links != null) {
             for (int x = 0; x < this.links.length; x++) {
@@ -130,7 +144,6 @@ public class ThEMultiCraftingTracker {
                     l.cancel();
                 }
             }
-
             this.links = null;
         }
 
@@ -140,7 +153,6 @@ public class ThEMultiCraftingTracker {
                     l.cancel(true);
                 }
             }
-
             this.jobs = null;
         }
     }
