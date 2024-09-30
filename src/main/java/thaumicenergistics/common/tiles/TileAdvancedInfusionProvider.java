@@ -129,7 +129,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
     @Override
     public void addWailaInformation(List<String> tooltip) {
         super.addWailaInformation(tooltip);
-        if (this.matrices == null || (this.matrices != null && this.matrices.isEmpty())) {
+        if (this.matrices.isEmpty()) {
             tooltip.add(
                     ThEStrings.Tooltip_AdvancedInfusionProviderWorkingMode.getLocalized() + ":"
                             + ThEStrings.Tooltip_AdvancedInfusionProviderNormalMode.getLocalized());
