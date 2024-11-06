@@ -89,6 +89,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
 
     public void bindMatrixs(final int x, final int y, final int z) {
         if (this.worldObj != null && this.worldObj.getTileEntity(x, y, z) instanceof TileInfusionMatrix tim) {
+            if (this.matrices.contains(tim)) return;
             this.matrices.add(tim);
 
             this.markForUpdate();
