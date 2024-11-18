@@ -154,7 +154,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
 
         if (!this.matrices.isEmpty() && this.isActive) {
             for (TileInfusionMatrix matrix : this.matrices) {
-                if (matrix == null) {
+                if (matrix == null || matrix.getWorldObj().isAirBlock(matrix.xCoord, matrix.yCoord, matrix.zCoord)) {
                     this.matricesToRemove.add(matrix);
                 } else {
                     this.grabAllAspects(matrix);
