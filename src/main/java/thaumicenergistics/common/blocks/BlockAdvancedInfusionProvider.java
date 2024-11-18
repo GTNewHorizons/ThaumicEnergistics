@@ -47,7 +47,7 @@ public class BlockAdvancedInfusionProvider extends AbstractBlockProviderBase {
             final EntityPlayer player) {
         if (world.getTileEntity(x, y, z) instanceof TileAdvancedInfusionProvider taip && taip.isActive()) {
             if (!taip.matrices.isEmpty()) {
-                taip.unbindMatrixs();
+                taip.unbindMatrices();
             }
             taip.searchMatrix();
             return true;
