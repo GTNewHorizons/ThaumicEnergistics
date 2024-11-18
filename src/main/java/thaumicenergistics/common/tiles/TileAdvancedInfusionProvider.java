@@ -78,7 +78,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
         for (int dx = -HORIZONTAL_RADIUS; dx <= HORIZONTAL_RADIUS; dx++) {
             for (int dy = -VERTICAL_RADIUS; dy <= VERTICAL_RADIUS; dy++) {
                 if (dx == 0 && dy == 0 && currentZ == 0) continue;
-                this.bindMatrixs(this.xCoord + dx, this.yCoord + dy, this.zCoord + this.currentZ);
+                this.bindMatrices(this.xCoord + dx, this.yCoord + dy, this.zCoord + this.currentZ);
             }
         }
 
@@ -87,7 +87,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
         }
     }
 
-    public void bindMatrixs(final int x, final int y, final int z) {
+    public void bindMatrices(final int x, final int y, final int z) {
         if (this.worldObj != null && this.worldObj.getTileEntity(x, y, z) instanceof TileInfusionMatrix tim) {
             if (this.matrices.contains(tim)) return;
             this.matrices.add(tim);
@@ -97,7 +97,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
         }
     }
 
-    public void unbindMatrixs() {
+    public void unbindMatrices() {
         this.matrices.clear();
 
         this.markForUpdate();
@@ -154,7 +154,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
 
         if (!this.matrices.isEmpty() && this.isActive) {
             for (TileInfusionMatrix matrix : this.matrices) {
-                if (matrix == null) {
+                if (matrix == null || matrix.getWorldObj().isAirBlock(matrix.xCoord, matrix.yCoord, matrix.zCoord)) {
                     this.matricesToRemove.add(matrix);
                 } else {
                     this.grabAllAspects(matrix);
