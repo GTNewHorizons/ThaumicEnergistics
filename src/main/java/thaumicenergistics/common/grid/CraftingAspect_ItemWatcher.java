@@ -37,8 +37,9 @@ class CraftingAspect_ItemWatcher implements IMEMonitorHandlerReceiver<IAEItemSta
                 // Remove any fake aspect stacks in the ME system immediately
                 // We'll also try to remove any that snuck in another way (legacy items, etc) when updating the essentia
                 // cache
-                if (monitor instanceof IMEMonitor<IAEItemStack>itemMonitor) {
-                    itemMonitor.extractItems(stack, Actionable.MODULATE, new BaseActionSource());
+                if (monitor instanceof IMEMonitor) {
+                    ((IMEMonitor<IAEItemStack>) monitor)
+                            .extractItems(stack, Actionable.MODULATE, new BaseActionSource());
                 }
                 break;
             }
