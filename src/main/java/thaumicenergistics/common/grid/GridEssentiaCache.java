@@ -1,6 +1,7 @@
 package thaumicenergistics.common.grid;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import net.minecraft.item.ItemStack;
 
@@ -104,6 +105,8 @@ public class GridEssentiaCache extends EssentiaMonitor implements IEssentiaGrid 
         // Create the aspect list
         HashSet<Aspect> craftableAspects = new HashSet<Aspect>();
 
+        LinkedList<IAEItemStack> toExtract = new LinkedList<>();
+
         // Check each item for craftability and type
         for (IAEItemStack stack : storedItems) {
             if (stack == null) {
@@ -118,12 +121,22 @@ public class GridEssentiaCache extends EssentiaMonitor implements IEssentiaGrid 
                     // Add the aspect
                     craftableAspects.add(aspect);
                 }
+
+                if (stack.getStackSize() > 0) {
+                    toExtract.add(stack);
+                }
             }
         }
 
         // Anything added?
         if (craftableAspects.size() > 0) {
             this.setCraftableAspects(craftableAspects);
+        }
+
+        // Remove any fake essentia stacks that snuck in somehow
+        BaseActionSource dummyActionSource = new BaseActionSource();
+        for (IAEItemStack stack : toExtract) {
+            itemMonitor.extractItems(stack, Actionable.MODULATE, dummyActionSource);
         }
     }
 
