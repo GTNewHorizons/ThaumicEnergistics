@@ -5,10 +5,13 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
+import appeng.parts.automation.UpgradeInventory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
@@ -49,7 +52,7 @@ public class GuiEssentiaCellWorkbench extends ThEBaseGui implements IAspectSlotG
     /**
      * Gui size.
      */
-    private static final int GUI_WIDTH = 176, GUI_HEIGHT = 251;
+    private static final int GUI_WIDTH = 212, GUI_HEIGHT = 251;
 
     /**
      * Title position.
@@ -145,7 +148,13 @@ public class GuiEssentiaCellWorkbench extends ThEBaseGui implements IAspectSlotG
         Minecraft.getMinecraft().renderEngine.bindTexture(GuiTextureManager.CELL_WORKBENCH.getTexture());
 
         // Draw the gui texture
-        this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+        this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, 176, this.ySize);
+        if (this.workbench.hasEssentiaCell()) {
+            this.drawTexturedModalRect(this.guiLeft + 177, this.guiTop, 177, 0, 35, 7 + 5 * 18);
+            this.drawTexturedModalRect(this.guiLeft + 177, this.guiTop + (7 + 5 * 18), 177, 151, 35, 7);
+            this.showUpgradeSlots();
+            super.drawAEToolAndUpgradeSlots(alpha, mouseX, mouseY);
+        }
 
         // Bind the AE states texture
         Minecraft.getMinecraft().renderEngine.bindTexture(AEStateIconsEnum.AE_STATES_TEXTURE);
@@ -300,5 +309,32 @@ public class GuiEssentiaCellWorkbench extends ThEBaseGui implements IAspectSlotG
         for (int index = count; index < GuiEssentiaCellWorkbench.NUMBER_OF_WIDGETS; index++) {
             this.partitionWidgets[index].setAspect(null);
         }
+    }
+
+    public void hideUpgradeSlots() {
+        for (int i = 0; i < this.inventorySlots.inventorySlots.size(); i++) {
+            Slot slot = (Slot) this.inventorySlots.inventorySlots.get(i);
+            if (slot.inventory instanceof UpgradeInventory) {
+                slot.xDisplayPosition = 1000;
+            }
+        }
+    }
+
+    public void showUpgradeSlots() {
+        for (int i = 0; i < this.inventorySlots.inventorySlots.size(); i++) {
+            Slot slot = (Slot) this.inventorySlots.inventorySlots.get(i);
+            if (slot.inventory instanceof UpgradeInventory) {
+                slot.xDisplayPosition = 187;
+            }
+        }
+    }
+
+    public void updateSlots(final ItemStack stack, int slot) {
+        if (stack == null) {
+            hideUpgradeSlots();
+        } else {
+            showUpgradeSlots();
+        }
+        ((Slot) this.inventorySlots.inventorySlots.get(slot)).putStack(stack);
     }
 }
