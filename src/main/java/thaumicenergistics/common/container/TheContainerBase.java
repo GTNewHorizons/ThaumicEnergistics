@@ -61,6 +61,10 @@ public abstract class TheContainerBase extends Container {
         return slot;
     }
 
+    protected void removeSlot(int slotIndex) {
+        this.slotMap.remove(slotIndex);
+    }
+
     /**
      * Detects server side changes to send to the player.<br/>
      * When modifying slots, return true to set {@code playerMP.isChangingQuantityOnly} to {@code false}, or set it

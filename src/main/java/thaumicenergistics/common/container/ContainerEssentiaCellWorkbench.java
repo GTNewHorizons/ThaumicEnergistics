@@ -1,7 +1,6 @@
 package thaumicenergistics.common.container;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -11,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import appeng.items.contents.CellUpgrades;
-import appeng.parts.automation.UpgradeInventory;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.common.container.slot.SlotRestrictive;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
@@ -51,7 +49,6 @@ public class ContainerEssentiaCellWorkbench extends ContainerWithNetworkTool {
      * The cell slot.
      */
     private final Slot cellSlot;
-    private final List<Slot> upgradeSlots = new ArrayList<>();
 
     public ContainerEssentiaCellWorkbench(final EntityPlayer player, final World world, final int x, final int y,
             final int z) {
@@ -68,19 +65,12 @@ public class ContainerEssentiaCellWorkbench extends ContainerWithNetworkTool {
                 ContainerEssentiaCellWorkbench.CELL_SLOT_X,
                 ContainerEssentiaCellWorkbench.CELL_SLOT_Y);
         this.addSlotToContainer(this.cellSlot);
+
         // Bind to the player's inventory
         this.bindPlayerInventory(
                 this.player.inventory,
                 ContainerEssentiaCellWorkbench.PLAYER_INV_POSITION_Y,
                 ContainerEssentiaCellWorkbench.HOTBAR_INV_POSITION_Y);
-
-        addUpgradeSlots(new CellUpgrades(this.workbench.fakeECell, 5), 5, 1000, 8);
-        for (Object inventorySlot : this.inventorySlots) {
-            Slot slot = (Slot) inventorySlot;
-            if (slot.inventory instanceof UpgradeInventory) {
-                upgradeSlots.add(slot);
-            }
-        }
 
         // Register with the workbench
         if (EffectiveSide.isServerSide()) {
@@ -97,16 +87,20 @@ public class ContainerEssentiaCellWorkbench extends ContainerWithNetworkTool {
         return false;
     }
 
-    public void wipeSlots() {
-        for (Slot slot : upgradeSlots) {
-            slot.putStack(null);
-            Packet_C_AspectSlot.setUpgradeSlots(slot, this.player);
+    public void createUpgradeSlots(ItemStack stack) {
+        if (stack != null) {
+            if (haveUpgradeSlots()) {
+                removeUpgradeSlots();
+            }
+            addUpgradeSlots(new CellUpgrades(stack, 5), 5, 187, 8);
+        } else {
+            if (haveUpgradeSlots()) {
+                removeUpgradeSlots();
+            }
         }
-    }
-
-    public void updateUpgradeSlots(ItemStack stack, int index) {
-        upgradeSlots.get(index).putStack(stack);
-        Packet_C_AspectSlot.setUpgradeSlots(upgradeSlots.get(index), this.player);
+        if (EffectiveSide.isServerSide()) {
+            Packet_C_AspectSlot.setUpgradeSlots(stack, this.player);
+        }
     }
 
     /**
@@ -130,6 +124,7 @@ public class ContainerEssentiaCellWorkbench extends ContainerWithNetworkTool {
      * Called when the partition list changes.
      */
     public void onPartitionChanged(final ArrayList<Aspect> partitionList) {
+        createUpgradeSlots(this.workbench.getStackInSlot(0));
         // Send to client
         Packet_C_AspectSlot.setFilterList(partitionList, this.player);
     }

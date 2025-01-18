@@ -2,7 +2,6 @@ package thaumicenergistics.common.tiles;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -13,7 +12,6 @@ import net.minecraft.tileentity.TileEntity;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.ISaveProvider;
 import thaumcraft.api.aspects.Aspect;
-import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.container.ContainerEssentiaCellWorkbench;
 import thaumicenergistics.common.inventory.HandlerItemEssentiaCell;
@@ -38,8 +36,6 @@ public class TileEssentiaCellWorkbench extends TileEntity implements IInventory,
      * The stored essentia cell.
      */
     private ItemStack eCell = null;
-
-    public ItemStack fakeECell = ThEApi.instance().items().EssentiaCell_64k.getStack();
 
     /**
      * Cell handler
@@ -300,29 +296,14 @@ public class TileEssentiaCellWorkbench extends TileEntity implements IInventory,
         if (this.isItemValidForSlot(slotIndex, stack)) {
             // Set the cell
             this.eCell = stack;
+
             if (EffectiveSide.isServerSide()) {
                 if (stack == null) {
                     // Null the handler
-                    this.fakeECell.setTagCompound(new NBTTagCompound());
                     this.eCellHandler = null;
-                    for (ContainerEssentiaCellWorkbench container : this.listeners) {
-                        container.wipeSlots();
-                    }
                 } else {
                     // Get the handler
-                    this.fakeECell.setTagCompound(stack.getTagCompound());
                     this.eCellHandler = new HandlerItemEssentiaCell(stack, this);
-                    if (stack.getTagCompound().hasKey("upgrades")) {
-                        NBTTagCompound upgrades = stack.getTagCompound().getCompoundTag("upgrades");
-                        for (int i = 0; i < 5; i++) {
-                            NBTTagCompound upgrade = upgrades.getCompoundTag("#" + i);
-                            if (!Objects.equals(upgrade.toString(), "{}")) {
-                                for (ContainerEssentiaCellWorkbench container : this.listeners) {
-                                    container.updateUpgradeSlots(ItemStack.loadItemStackFromNBT(upgrade), i);
-                                }
-                            }
-                        }
-                    }
                 }
 
                 // Update containers

@@ -6,7 +6,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import cpw.mods.fml.relauncher.Side;
@@ -15,6 +14,7 @@ import io.netty.buffer.ByteBuf;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.api.gui.IAspectSlotGui;
 import thaumicenergistics.client.gui.GuiEssentiaCellWorkbench;
+import thaumicenergistics.common.container.ContainerEssentiaCellWorkbench;
 import thaumicenergistics.common.network.NetworkHandler;
 import thaumicenergistics.common.network.ThEBasePacket;
 
@@ -33,8 +33,6 @@ public class Packet_C_AspectSlot extends ThEClientPacket {
     private static final byte MODE_SLOTS_UPDATE = 1;
 
     private ItemStack slotStack;
-
-    private int slotIndex;
 
     public static void setFilterList(final List<Aspect> filterAspects, final EntityPlayer player) {
         Packet_C_AspectSlot packet = new Packet_C_AspectSlot();
@@ -55,7 +53,7 @@ public class Packet_C_AspectSlot extends ThEClientPacket {
         NetworkHandler.sendPacketToClient(packet);
     }
 
-    public static void setUpgradeSlots(final Slot slot, final EntityPlayer player) {
+    public static void setUpgradeSlots(final ItemStack stack, final EntityPlayer player) {
         Packet_C_AspectSlot packet = new Packet_C_AspectSlot();
 
         // Set the player
@@ -64,9 +62,7 @@ public class Packet_C_AspectSlot extends ThEClientPacket {
         // Set the mode
         packet.mode = Packet_C_AspectSlot.MODE_SLOTS_UPDATE;
 
-        packet.slotStack = slot.getStack();
-
-        packet.slotIndex = slot.slotNumber;
+        packet.slotStack = stack;
 
         // Send it
         NetworkHandler.sendPacketToClient(packet);
@@ -88,7 +84,8 @@ public class Packet_C_AspectSlot extends ThEClientPacket {
                 ((IAspectSlotGui) gui).updateAspects(this.filterAspects);
                 break;
             case Packet_C_AspectSlot.MODE_SLOTS_UPDATE:
-                ((GuiEssentiaCellWorkbench) gui).updateSlots(this.slotStack, this.slotIndex);
+                ((ContainerEssentiaCellWorkbench) ((GuiEssentiaCellWorkbench) gui).inventorySlots)
+                        .createUpgradeSlots(this.slotStack);
                 break;
         }
     }
@@ -109,7 +106,6 @@ public class Packet_C_AspectSlot extends ThEClientPacket {
                 }
                 break;
             case Packet_C_AspectSlot.MODE_SLOTS_UPDATE:
-                this.slotIndex = stream.readInt();
                 this.slotStack = ThEBasePacket.readItemstack(stream);
                 break;
         }
@@ -128,9 +124,6 @@ public class Packet_C_AspectSlot extends ThEClientPacket {
                 }
                 break;
             case Packet_C_AspectSlot.MODE_SLOTS_UPDATE:
-                // Write the size of the list
-                stream.writeInt(this.slotIndex);
-
                 // Write each aspect
                 ThEBasePacket.writeItemstack(this.slotStack, stream);
                 break;
