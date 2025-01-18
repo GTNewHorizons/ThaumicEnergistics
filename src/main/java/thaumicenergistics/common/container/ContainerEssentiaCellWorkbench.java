@@ -9,6 +9,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import appeng.items.contents.CellUpgrades;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.common.container.slot.SlotRestrictive;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
@@ -22,7 +23,7 @@ import thaumicenergistics.common.utils.EffectiveSide;
  * @author Nividica
  *
  */
-public class ContainerEssentiaCellWorkbench extends ContainerWithPlayerInventory {
+public class ContainerEssentiaCellWorkbench extends ContainerWithNetworkTool {
 
     /**
      * Y position for the player inventory
@@ -86,6 +87,22 @@ public class ContainerEssentiaCellWorkbench extends ContainerWithPlayerInventory
         return false;
     }
 
+    public void createUpgradeSlots(ItemStack stack) {
+        if (stack != null) {
+            if (haveUpgradeSlots()) {
+                removeUpgradeSlots();
+            }
+            addUpgradeSlots(new CellUpgrades(stack, 5), 5, 187, 8);
+        } else {
+            if (haveUpgradeSlots()) {
+                removeUpgradeSlots();
+            }
+        }
+        if (EffectiveSide.isServerSide()) {
+            Packet_C_AspectSlot.setUpgradeSlots(stack, this.player);
+        }
+    }
+
     /**
      * Called when a client has requested the full list.
      */
@@ -107,6 +124,7 @@ public class ContainerEssentiaCellWorkbench extends ContainerWithPlayerInventory
      * Called when the partition list changes.
      */
     public void onPartitionChanged(final ArrayList<Aspect> partitionList) {
+        createUpgradeSlots(this.workbench.getStackInSlot(0));
         // Send to client
         Packet_C_AspectSlot.setFilterList(partitionList, this.player);
     }

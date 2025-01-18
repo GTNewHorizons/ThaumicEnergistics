@@ -1,5 +1,7 @@
 package thaumicenergistics.common.container;
 
+import java.util.ArrayList;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
@@ -115,6 +117,27 @@ public abstract class ContainerWithNetworkTool extends ContainerWithPlayerInvent
         if (upgradeSlot != null) {
             this.lastUpgradeSlot = upgradeSlot.slotNumber;
         }
+    }
+
+    protected void removeUpgradeSlots() {
+        ArrayList<Object> slots = new ArrayList<>();
+        for (int slotIndex = this.firstUpgradeSlot; slotIndex <= this.lastUpgradeSlot; slotIndex++) {
+            slots.add(this.inventorySlots.get(slotIndex));
+            removeSlot(slotIndex);
+        }
+        for (Object slot : slots) {
+            this.inventorySlots.remove(slot);
+        }
+    }
+
+    protected boolean haveUpgradeSlots() {
+        for (Object inventorySlot : this.inventorySlots) {
+            Slot slot = (Slot) inventorySlot;
+            if (slot.inventory instanceof UpgradeInventory) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected void bindToNetworkTool(final InventoryPlayer playerInventory, final DimensionalCoord partLocation,

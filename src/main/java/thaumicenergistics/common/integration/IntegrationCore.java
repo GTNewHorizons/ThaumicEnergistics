@@ -58,6 +58,35 @@ public final class IntegrationCore {
         Upgrades.SPEED.registerItem(
                 ThEApi.instance().blocks().ArcaneAssembler.getStack(),
                 BlockArcaneAssembler.MAX_SPEED_UPGRADES);
+        Upgrades.VOID_OVERFLOW.registerItem(ThEApi.instance().items().EssentiaCell_1k.getStack(), 1);
+        Upgrades.VOID_OVERFLOW.registerItem(ThEApi.instance().items().EssentiaCell_4k.getStack(), 1);
+        Upgrades.VOID_OVERFLOW.registerItem(ThEApi.instance().items().EssentiaCell_16k.getStack(), 1);
+        Upgrades.VOID_OVERFLOW.registerItem(ThEApi.instance().items().EssentiaCell_64k.getStack(), 1);
+        Upgrades.VOID_OVERFLOW.registerItem(ThEApi.instance().items().EssentiaCell_256k.getStack(), 1);
+        Upgrades.VOID_OVERFLOW.registerItem(ThEApi.instance().items().EssentiaCell_1024k.getStack(), 1);
+        Upgrades.VOID_OVERFLOW.registerItem(ThEApi.instance().items().EssentiaCell_4096k.getStack(), 1);
+        Upgrades.VOID_OVERFLOW.registerItem(ThEApi.instance().items().EssentiaCell_16384k.getStack(), 1);
+        Upgrades.VOID_OVERFLOW.registerItem(ThEApi.instance().items().EssentiaCell_Quantum.getStack(), 1);
+
+        Upgrades.DISTRIBUTION.registerItem(ThEApi.instance().items().EssentiaCell_1k.getStack(), 1);
+        Upgrades.DISTRIBUTION.registerItem(ThEApi.instance().items().EssentiaCell_4k.getStack(), 1);
+        Upgrades.DISTRIBUTION.registerItem(ThEApi.instance().items().EssentiaCell_16k.getStack(), 1);
+        Upgrades.DISTRIBUTION.registerItem(ThEApi.instance().items().EssentiaCell_64k.getStack(), 1);
+        Upgrades.DISTRIBUTION.registerItem(ThEApi.instance().items().EssentiaCell_256k.getStack(), 1);
+        Upgrades.DISTRIBUTION.registerItem(ThEApi.instance().items().EssentiaCell_1024k.getStack(), 1);
+        Upgrades.DISTRIBUTION.registerItem(ThEApi.instance().items().EssentiaCell_4096k.getStack(), 1);
+        Upgrades.DISTRIBUTION.registerItem(ThEApi.instance().items().EssentiaCell_16384k.getStack(), 1);
+
+        Upgrades.STICKY.registerItem(ThEApi.instance().items().EssentiaCell_1k.getStack(), 1);
+        Upgrades.STICKY.registerItem(ThEApi.instance().items().EssentiaCell_4k.getStack(), 1);
+        Upgrades.STICKY.registerItem(ThEApi.instance().items().EssentiaCell_16k.getStack(), 1);
+        Upgrades.STICKY.registerItem(ThEApi.instance().items().EssentiaCell_64k.getStack(), 1);
+        Upgrades.STICKY.registerItem(ThEApi.instance().items().EssentiaCell_256k.getStack(), 1);
+        Upgrades.STICKY.registerItem(ThEApi.instance().items().EssentiaCell_1024k.getStack(), 1);
+        Upgrades.STICKY.registerItem(ThEApi.instance().items().EssentiaCell_4096k.getStack(), 1);
+        Upgrades.STICKY.registerItem(ThEApi.instance().items().EssentiaCell_16384k.getStack(), 1);
+        Upgrades.STICKY.registerItem(ThEApi.instance().items().EssentiaCell_Quantum.getStack(), 1);
+        Upgrades.STICKY.registerItem(ThEApi.instance().items().EssentiaCell_Singularity.getStack(), 1);
 
         ThELog.endSection("Integration", startTime);
     }

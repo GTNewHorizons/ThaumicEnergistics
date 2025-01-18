@@ -2,6 +2,7 @@ package thaumicenergistics.common.inventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -9,7 +10,9 @@ import net.minecraftforge.fluids.Fluid;
 
 import appeng.api.config.AccessRestriction;
 import appeng.api.config.Actionable;
+import appeng.api.config.Upgrades;
 import appeng.api.config.ViewItems;
+import appeng.api.implementations.items.IUpgradeModule;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.storage.ICellCacheRegistry;
 import appeng.api.storage.IMEInventoryHandler;
@@ -107,6 +110,10 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
      */
     protected final ArrayList<Aspect> partitionAspects = new ArrayList<Aspect>();
 
+    private boolean hasVoidOverflow = false;
+    private boolean hasDistribution = false;
+    private boolean hasSticky = false;
+
     public HandlerItemEssentiaCell(final ItemStack storageStack, final ISaveProvider saveProvider) {
         // Ensure we have a NBT tag
         if (!storageStack.hasTagCompound()) {
@@ -143,17 +150,39 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
      * @return Amount not stored
      */
     private long addEssentiaToCell(final Aspect aspect, final long amount, final Actionable mode) {
-        // Calculate amount to store
-        long amountToStore = Math.min(amount, this.totalEssentiaStorage - this.usedEssentiaStorage);
+        long amountToStore;
+        // Get the slot for this aspect
+        int slotIndex = this.getSlotFor(aspect);
+        // Get the slot
+        IAspectStack stackToAddTo = this.storedEssentia[slotIndex];
+        if (hasDistribution) {
+            int types;
+            if (this.isPartitioned()) {
+                types = this.partitionAspects.size();
+            } else {
+                types = this.storedEssentia.length;
+            }
+            if (stackToAddTo == null) {
+                amountToStore = Math.min(amount, this.totalEssentiaStorage / types);
+            } else {
+                amountToStore = Math.min(
+                        amount,
+                        (this.totalEssentiaStorage / types) - this.storedEssentia[slotIndex].getStackSize());
+            }
+        } else {
+            amountToStore = Math.min(amount, this.totalEssentiaStorage - this.usedEssentiaStorage);
+        }
 
         // Ensure we can store any
         if (amountToStore == 0) {
+            if (hasVoidOverflow) {
+                if (stackToAddTo != null) {
+                    return 0;
+                }
+            }
             // Cell is full
             return amount;
         }
-
-        // Get the slot for this aspect
-        int slotIndex = this.getSlotFor(aspect);
 
         // Ensure there is somewhere to put the essentia
         if (slotIndex == -1) {
@@ -162,8 +191,6 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
 
         // Are we modulating?
         if (mode == Actionable.MODULATE) {
-            // Get the slot
-            IAspectStack stackToAddTo = this.storedEssentia[slotIndex];
 
             // Is the slot null?
             if (stackToAddTo == null) {
@@ -326,6 +353,27 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
                 if (partitionAspect != null) {
                     // Add the aspect
                     this.partitionAspects.add(partitionAspect);
+                }
+            }
+        }
+
+        if (this.cellData.hasKey("upgrades")) {
+            NBTTagCompound upgrades = this.cellData.getCompoundTag("upgrades");
+            for (int i = 0; i < 5; i++) {
+                NBTTagCompound upgrade = upgrades.getCompoundTag("#" + i);
+                if (!Objects.equals(upgrade.toString(), "{}")) {
+                    ItemStack is = ItemStack.loadItemStackFromNBT(upgrade);
+                    if (is != null && is.getItem() instanceof IUpgradeModule) {
+                        final Upgrades u = ((IUpgradeModule) is.getItem()).getType(is);
+                        if (u != null) {
+                            switch (u) {
+                                case VOID_OVERFLOW -> hasVoidOverflow = true;
+                                case DISTRIBUTION -> hasDistribution = true;
+                                case STICKY -> hasSticky = true;
+                                default -> {}
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -896,6 +944,11 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
     @Override
     public TYPE getCellType() {
         return TYPE.ESSENTIA;
+    }
+
+    @Override
+    public boolean getSticky() {
+        return hasSticky;
     }
 
 }

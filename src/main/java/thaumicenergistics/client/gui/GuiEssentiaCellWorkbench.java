@@ -49,7 +49,7 @@ public class GuiEssentiaCellWorkbench extends ThEBaseGui implements IAspectSlotG
     /**
      * Gui size.
      */
-    private static final int GUI_WIDTH = 176, GUI_HEIGHT = 251;
+    private static final int GUI_WIDTH = 212, GUI_HEIGHT = 251;
 
     /**
      * Title position.
@@ -145,7 +145,13 @@ public class GuiEssentiaCellWorkbench extends ThEBaseGui implements IAspectSlotG
         Minecraft.getMinecraft().renderEngine.bindTexture(GuiTextureManager.CELL_WORKBENCH.getTexture());
 
         // Draw the gui texture
-        this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+        this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, 176, this.ySize);
+
+        if (this.workbench.hasEssentiaCell()) {
+            this.drawTexturedModalRect(this.guiLeft + 177, this.guiTop, 177, 0, 35, 7 + 5 * 18);
+            this.drawTexturedModalRect(this.guiLeft + 177, this.guiTop + (7 + 5 * 18), 177, 151, 35, 7);
+            super.drawAEToolAndUpgradeSlots(alpha, mouseX, mouseY);
+        }
 
         // Bind the AE states texture
         Minecraft.getMinecraft().renderEngine.bindTexture(AEStateIconsEnum.AE_STATES_TEXTURE);
