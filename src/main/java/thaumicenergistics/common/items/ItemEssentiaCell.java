@@ -162,17 +162,6 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
         displayList.add(bytesTip);
         displayList.add(typesTip);
 
-        // Add upgrades
-        if (cellHandler.getDistribution()) {
-            displayList.add(GuiText.Sticky.getLocal());
-        }
-        if (cellHandler.getVoidOverflow()) {
-            displayList.add("Void Overflow");
-        }
-        if (cellHandler.getSticky()) {
-            displayList.add("Distribution");
-        }
-
         // Is the cell pre-formated?
         if (cellHandler.isPartitioned()) {
             displayList.add(GuiText.Partitioned.getLocal());

@@ -951,12 +951,4 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
         return hasSticky;
     }
 
-    public boolean getVoidOverflow() {
-        return hasVoidOverflow;
-    }
-
-    public boolean getDistribution() {
-        return hasDistribution;
-    }
-
 }
