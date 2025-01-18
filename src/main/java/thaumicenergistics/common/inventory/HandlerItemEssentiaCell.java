@@ -112,7 +112,7 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
 
     private boolean hasVoidOverflow = false;
     private boolean hasDistribution = false;
-    private boolean isSticky = false;
+    private boolean hasSticky = false;
 
     public HandlerItemEssentiaCell(final ItemStack storageStack, final ISaveProvider saveProvider) {
         // Ensure we have a NBT tag
@@ -369,7 +369,7 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
                             switch (u) {
                                 case VOID_OVERFLOW -> hasVoidOverflow = true;
                                 case DISTRIBUTION -> hasDistribution = true;
-                                case STICKY -> isSticky = true;
+                                case STICKY -> hasSticky = true;
                                 default -> {}
                             }
                         }
@@ -948,7 +948,15 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
 
     @Override
     public boolean getSticky() {
-        return isSticky;
+        return hasSticky;
+    }
+
+    public boolean getVoidOverflow() {
+        return hasVoidOverflow;
+    }
+
+    public boolean getDistribution() {
+        return hasDistribution;
     }
 
 }
