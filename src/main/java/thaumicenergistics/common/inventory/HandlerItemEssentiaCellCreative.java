@@ -27,7 +27,7 @@ public class HandlerItemEssentiaCellCreative extends HandlerItemEssentiaCell {
 
     public HandlerItemEssentiaCellCreative(final ItemStack storageStack, final ISaveProvider saveProvider) {
         super(storageStack, saveProvider);
-
+        this.partitionAspects.addAll(Aspect.aspects.values());
         this.totalBytes = 0;
         this.totalEssentiaStorage = 0;
     }
