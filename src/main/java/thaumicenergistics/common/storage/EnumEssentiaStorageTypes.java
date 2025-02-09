@@ -3,6 +3,7 @@ package thaumicenergistics.common.storage;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 
+import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.common.items.ItemEnum;
 import thaumicenergistics.common.registries.ThEStrings;
 
@@ -22,7 +23,8 @@ public enum EnumEssentiaStorageTypes {
             ThEStrings.Item_StorageComponent_16k),
     Type_64K(3, 1 << 16, 12, "64k", EnumRarity.rare, 2.0, ThEStrings.Item_EssentiaCell_64k,
             ThEStrings.Item_StorageComponent_64k),
-    Type_Creative(4, 0, 63, "creative", EnumRarity.epic, 0.0, ThEStrings.Item_EssentiaCell_Creative, null),
+    Type_Creative(4, 0, Aspect.aspects.size(), "creative", EnumRarity.epic, 0.0, ThEStrings.Item_EssentiaCell_Creative,
+            null),
     Type_256K(5, 1 << 18, 24, "256k", EnumRarity.rare, 2.5, ThEStrings.Item_EssentiaCell_256k,
             ThEStrings.Item_StorageComponent_256k),
     Type_1024K(6, 1 << 20, 36, "1024k", EnumRarity.rare, 3.0, ThEStrings.Item_EssentiaCell_1024k,
