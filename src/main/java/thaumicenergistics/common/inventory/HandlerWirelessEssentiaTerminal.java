@@ -91,6 +91,12 @@ public class HandlerWirelessEssentiaTerminal extends WirelessAELink
         public void setHasInfiniteStore(boolean b) {}
 
         @Override
+        public boolean getHasInfiniteStore() {
+            // Ignored
+            return false;
+        }
+
+        @Override
         public double getEnergyDemand(final double d, final Set<IEnergyGrid> seen) {
             // Ignored
             return 0;

@@ -51,17 +51,8 @@ public class GuiCraftAmountBridge extends GuiCraftAmount {
         if (btn == this.buttonReturnToTerminalHost) {
             // Change back to host GUI
             this.host.launchGUI(this.player);
-        } else if (btn == this.nextBtn) {
-            try {
-                // Parse the amount
-                long amount = Long.parseLong(this.amountTextField.getText());
-
-                // Ask server to show confirm gui
-                Packet_S_ConfirmCraftingJob.sendConfirmAutoCraft(this.player, amount, isShiftKeyDown());
-            } catch (final NumberFormatException e) {
-                // Reset amount to 1
-                this.amountTextField.setText("1");
-            }
+        } else if (btn == this.nextBtn && btn.enabled) {
+            Packet_S_ConfirmCraftingJob.sendConfirmAutoCraft(this.player, this.getAmountLong(), isShiftKeyDown());
         } else {
             // Call super
             super.actionPerformed(btn);
