@@ -387,14 +387,14 @@ public final class EssentiaTileContainerHelper {
             this.perms.addAspectStorageTileToBothPermissions(c);
         } catch (Exception ignored) {}
         try {
-            // I hope some day Kekztech jars will have a namespace
-            Class c = Class.forName("common.tileentities.TE_IchorJar");
+            // Kekztech jars finally have a namespace :)
+            Class c = Class.forName("kekztech.common.tileentities.TileEntityIchorJar");
             this.perms.addAspectContainerTileToBothPermissions(c, 4096);
-            c = Class.forName("common.tileentities.TE_IchorVoidJar");
+            c = Class.forName("kekztech.common.tileentities.TileEntityIchorVoidJar");
             this.perms.addAspectContainerTileToBothPermissions(c, 4096);
-            c = Class.forName("common.tileentities.TE_ThaumiumReinforcedJar");
+            c = Class.forName("kekztech.common.tileentities.TileEntityThaumiumReinforcedJar");
             this.perms.addAspectContainerTileToBothPermissions(c, 256);
-            c = Class.forName("common.tileentities.TE_ThaumiumReinforcedVoidJar");
+            c = Class.forName("kekztech.common.tileentities.TileEntityThaumiumReinforcedVoidJar");
             this.perms.addAspectContainerTileToBothPermissions(c, 256);
         } catch (Exception ignored) {}
         try {
