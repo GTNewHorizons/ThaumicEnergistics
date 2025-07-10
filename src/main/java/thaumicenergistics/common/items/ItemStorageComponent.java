@@ -48,12 +48,6 @@ public class ItemStorageComponent extends Item implements IStorageComponent {
         return this.icons[damage];
     }
 
-    @Override
-    public EnumRarity getRarity(final ItemStack itemStack) {
-        // Return the rarity
-        return EnumEssentiaStorageTypes.fromIndex[itemStack.getItemDamage()].rarity;
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public void getSubItems(final Item item, final CreativeTabs creativeTab,
