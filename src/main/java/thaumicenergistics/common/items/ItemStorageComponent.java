@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -46,12 +45,6 @@ public class ItemStorageComponent extends Item implements IStorageComponent {
     public IIcon getIconFromDamage(final int damage) {
         // Return icon
         return this.icons[damage];
-    }
-
-    @Override
-    public EnumRarity getRarity(final ItemStack itemStack) {
-        // Return the rarity
-        return EnumEssentiaStorageTypes.fromIndex[itemStack.getItemDamage()].rarity;
     }
 
     @SuppressWarnings("unchecked")

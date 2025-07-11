@@ -3,6 +3,7 @@ package thaumicenergistics.common.items;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -147,20 +148,30 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
         HandlerItemEssentiaCell cellHandler = (HandlerItemEssentiaCell) handler;
 
         // Create the bytes tooltip
-        String bytesTip = String.format(
-                ThEStrings.Tooltip_CellBytes.getLocalized(),
-                NumberFormat.getInstance().format(cellHandler.getUsedBytes()),
-                NumberFormat.getInstance().format(cellHandler.getTotalBytes()));
+        displayList.add(
+                EnumChatFormatting.WHITE + NumberFormat.getInstance(Locale.ENGLISH).format(cellHandler.getUsedBytes())
+                        + EnumChatFormatting.GRAY
+                        + " "
+                        + GuiText.Of.getLocal()
+                        + " "
+                        + EnumChatFormatting.DARK_GREEN
+                        + NumberFormat.getInstance(Locale.ENGLISH).format(cellHandler.getTotalBytes())
+                        + " "
+                        + EnumChatFormatting.GRAY
+                        + ThEStrings.Tooltip_CellBytes.getLocalized());
 
         // Create the types tooltip
-        String typesTip = String.format(
-                ThEStrings.Tooltip_CellTypes.getLocalized(),
-                NumberFormat.getInstance().format(cellHandler.getUsedTypes()),
-                NumberFormat.getInstance().format(cellHandler.getTotalTypes()));
-
-        // Add the tooltips
-        displayList.add(bytesTip);
-        displayList.add(typesTip);
+        displayList.add(
+                EnumChatFormatting.WHITE + NumberFormat.getInstance(Locale.ENGLISH).format(cellHandler.getUsedTypes())
+                        + EnumChatFormatting.GRAY
+                        + " "
+                        + GuiText.Of.getLocal()
+                        + " "
+                        + EnumChatFormatting.DARK_GREEN
+                        + NumberFormat.getInstance(Locale.ENGLISH).format(cellHandler.getTotalTypes())
+                        + " "
+                        + EnumChatFormatting.GRAY
+                        + ThEStrings.Tooltip_CellTypes.getLocalized());
 
         // Is the cell pre-formated?
         if (cellHandler.isPartitioned()) {
