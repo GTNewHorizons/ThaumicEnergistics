@@ -84,10 +84,10 @@ thaumicenergistics.tooltip.button.swap.armor.title=Swap Armor
 thaumicenergistics.tooltip.arcane.assembler.hasVis=Contains Stored Vis
 thaumicenergistics.tooltip.button.reset.aspect=Reset the aspects
 thaumicenergistics.tooltip.button.reset.aspect.description=Reset the left-hand aspects table to its original state
-thaumicenergistics.tooltip.advanced.infusion.provider.working.on=Workig Mode
+thaumicenergistics.tooltip.advanced.infusion.provider.working.on=Working Mode
 thaumicenergistics.tooltip.advanced.infusion.provider.normal=Normal Provider
 thaumicenergistics.tooltip.advanced.infusion.provider.advanced=Advanced Provider
-thaumicenergistics.tooltip.advanced.infusion.provider.totalbind=Total binded to %d matrices
+thaumicenergistics.tooltip.advanced.infusion.provider.totalbind=Total bound to %d matrices
 
 
 #GUI
