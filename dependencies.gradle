@@ -3,7 +3,7 @@
 dependencies {
     implementation("com.github.GTNewHorizons:NotEnoughItems:2.7.59-GTNH:dev")
     implementation("com.github.GTNewHorizons:CodeChickenCore:1.4.3:dev")
-    implementation("com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-645-GTNH:dev")
+    implementation("com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-658-GTNH:dev")
     implementation("thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev")
     implementation("curse.maven:thaumcraft-nei-plugin-225095:2241913") { transitive = false }
 
