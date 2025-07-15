@@ -88,14 +88,14 @@ public class ThEInteractionHelper implements IThEInteractionHelper {
         // Ensure the terminal has power
         if (terminalInterface.getAECurrentPower(wirelessTerminal) == 0) {
             // Terminal is dead
-            player.addChatMessage(PlayerMessages.DeviceNotPowered.get());
+            player.addChatMessage(PlayerMessages.DeviceNotPowered.toChat());
             return;
         }
 
         // Ensure the terminal is linked
         if (!HandlerWirelessEssentiaTerminal.isTerminalLinked(terminalInterface, wirelessTerminal)) {
             // Unlinked terminal
-            player.addChatMessage(PlayerMessages.CommunicationError.get());
+            player.addChatMessage(PlayerMessages.CommunicationError.toChat());
             return;
         }
 
@@ -107,11 +107,11 @@ public class ThEInteractionHelper implements IThEInteractionHelper {
 
         // Error occured
         if (accessPoints == null) {
-            player.addChatMessage(PlayerMessages.CommunicationError.get());
+            player.addChatMessage(PlayerMessages.CommunicationError.toChat());
         }
         // None in range
         else if (accessPoints.isEmpty()) {
-            player.addChatMessage(PlayerMessages.OutOfRange.get());
+            player.addChatMessage(PlayerMessages.OutOfRange.toChat());
         }
         // Launch the gui
         else {

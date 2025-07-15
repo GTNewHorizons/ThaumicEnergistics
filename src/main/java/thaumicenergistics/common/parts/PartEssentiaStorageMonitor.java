@@ -290,10 +290,10 @@ public class PartEssentiaStorageMonitor extends ThEPartBase
             // Report to the player
             if (this.monitorLocked) {
                 // Locked
-                player.addChatMessage(PlayerMessages.isNowLocked.get());
+                player.addChatMessage(PlayerMessages.isNowLocked.toChat());
             } else {
                 // Unlocked
-                player.addChatMessage(PlayerMessages.isNowUnlocked.get());
+                player.addChatMessage(PlayerMessages.isNowUnlocked.toChat());
             }
 
             // Mark for sync & save
