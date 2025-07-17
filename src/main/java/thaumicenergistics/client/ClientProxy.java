@@ -33,6 +33,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     public class EventHandler {
+
         @SubscribeEvent
         public void registerTextures(final TextureStitchEvent.Pre event) {
             // Register all block textures
