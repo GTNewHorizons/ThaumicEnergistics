@@ -20,7 +20,7 @@ import thaumicenergistics.common.registries.Renderers;
 public class ClientProxy extends CommonProxy {
 
     public ClientProxy() {
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
     }
 
     @Override
@@ -32,11 +32,13 @@ public class ClientProxy extends CommonProxy {
         MinecraftForgeClient.registerItemRenderer(ItemEnum.CELL_MICROSCOPE.getItem(), new ItemCellMicroscopeRenderer());
     }
 
-    @SubscribeEvent
-    public void registerTextures(final TextureStitchEvent.Pre event) {
-        // Register all block textures
-        for (BlockTextureManager texture : BlockTextureManager.ALLVALUES) {
-            texture.registerTexture(event.map);
+    public class EventHandler {
+        @SubscribeEvent
+        public void registerTextures(final TextureStitchEvent.Pre event) {
+            // Register all block textures
+            for (BlockTextureManager texture : BlockTextureManager.ALLVALUES) {
+                texture.registerTexture(event.map);
+            }
         }
     }
 }
