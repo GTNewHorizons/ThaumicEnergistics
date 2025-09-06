@@ -135,7 +135,7 @@ public class SlotArcaneCraftingResult extends SlotCrafting {
                             || !player.inventory.addItemStackToInventory(slotContainerStack)) {
                         // Place it back in the grid
                         this.terminalInventory.setInventorySlotContents(slotIndex, slotContainerStack);
-                        return;
+                        continue;
                     }
                 }
             }
@@ -152,7 +152,7 @@ public class SlotArcaneCraftingResult extends SlotCrafting {
                         // Set the slot contents to the replenishment
                         this.terminalInventory.setInventorySlotContents(slotIndex, replenishment);
                     }
-                    return;
+                    continue;
                 }
             }
 
