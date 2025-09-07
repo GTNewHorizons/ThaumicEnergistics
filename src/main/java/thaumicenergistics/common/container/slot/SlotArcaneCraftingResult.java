@@ -117,28 +117,16 @@ public class SlotArcaneCraftingResult extends SlotCrafting {
                 continue;
             }
 
-            // Checked at the end to see if we need to decrement the slot
-            boolean shouldDecrement = true;
-
+            // Get the container item
+            ItemStack slotContainerStack = slotStack.getItem().getContainerItem(slotStack);
             // Does the item have a container?
-            if (slotStack.getItem().hasContainerItem(slotStack)) {
-                // Get the container item
-                ItemStack slotContainerStack = slotStack.getItem().getContainerItem(slotStack);
+            if (slotContainerStack != null) {
 
-                // Is the container item damage-able?
-                if (slotContainerStack.isItemStackDamageable()) {
-                    // Did we kill it?
-                    if (slotContainerStack.getItemDamage() >= slotContainerStack.getMaxDamage()) {
-                        // Fire forge event
-                        MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(player, slotContainerStack));
-
-                        // Null the container stack
-                        slotContainerStack = null;
-                    }
-                }
-
-                // Did we not kill the container item?
-                if (slotContainerStack != null) {
+                if (slotContainerStack.isItemStackDamageable()
+                        && slotContainerStack.getItemDamage() >= slotContainerStack.getMaxDamage()) {
+                    MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(player, slotContainerStack));
+                } else {
+                    // Did we not kill the container item?
                     /*
                      * Should the item stay in the crafting grid, or if it is supposed to go back to the players
                      * inventory but can't?
@@ -147,15 +135,13 @@ public class SlotArcaneCraftingResult extends SlotCrafting {
                             || !player.inventory.addItemStackToInventory(slotContainerStack)) {
                         // Place it back in the grid
                         this.terminalInventory.setInventorySlotContents(slotIndex, slotContainerStack);
-
-                        // Set NOT to decrement
-                        shouldDecrement = false;
+                        continue;
                     }
                 }
             }
 
             // If decrementing it would result in it being empty, ask the ME system for a replenishment.
-            if (shouldDecrement && (slotStack.stackSize == 1)) {
+            if (slotStack.stackSize == 1) {
                 // First check if we can replenish it from the ME network
                 ItemStack replenishment = this.hostContianer.requestCraftingReplenishment(slotStack);
 
@@ -166,16 +152,12 @@ public class SlotArcaneCraftingResult extends SlotCrafting {
                         // Set the slot contents to the replenishment
                         this.terminalInventory.setInventorySlotContents(slotIndex, replenishment);
                     }
-
-                    // And mark not to decrement
-                    shouldDecrement = false;
+                    continue;
                 }
             }
 
-            // Decrement the stack?
-            if (shouldDecrement) {
-                this.terminalInventory.decrStackSize(slotIndex, 1);
-            }
+            // Decrement the stack
+            this.terminalInventory.decrStackSize(slotIndex, 1);
         }
     }
 
