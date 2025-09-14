@@ -24,6 +24,8 @@ import appeng.api.networking.events.MENetworkChannelsChanged;
 import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.security.MachineSource;
+import appeng.api.networking.storage.IStorageGrid;
+import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
@@ -32,6 +34,7 @@ import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
 import appeng.tile.networking.TileCableBus;
+import appeng.util.IterationCounter;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -527,8 +530,6 @@ public abstract class TileProviderBase extends AENetworkTile
     /**
      * When network Essentia is not enough, let provider can auto order some.
      * 
-     * @param aspect
-     * @param amount
      * @return orderIsSuccessful
      */
     public boolean orderSomeEssentia(final Aspect aspect, final int amount) {
@@ -537,6 +538,13 @@ public abstract class TileProviderBase extends AENetworkTile
             IGrid grid = this.getProxy().getGrid();
             IAEItemStack itemStack = AEApi.instance().storage()
                     .createItemStack(ItemCraftingAspect.createStackForAspect(aspect, 1));
+
+            IMEMonitor<IAEItemStack> items = grid.<IStorageGrid>getCache(IStorageGrid.class).getItemInventory();
+
+            IAEItemStack existing = items.getAvailableItem(itemStack, IterationCounter.fetchNewId());
+
+            if (existing == null || !existing.isCraftable()) return false;
+
             if (!craftingGrid.isRequesting(itemStack)) {
                 int index = this.craftingTracker.getFirstEmptySlot();
                 if (index >= 0) {
@@ -550,7 +558,10 @@ public abstract class TileProviderBase extends AENetworkTile
                             this.getMachineSource());
                 }
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            // do nothing
+        }
+
         return false;
     }
 
