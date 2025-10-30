@@ -21,6 +21,7 @@ import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.me.storage.MEInventoryHandler;
 import appeng.parts.misc.PartInterface;
@@ -34,8 +35,7 @@ import thaumicenergistics.common.parts.PartEssentiaStorageBus;
  * @author Nividica
  *
  */
-class HandlerEssentiaStorageBusInterface extends HandlerEssentiaStorageBusBase
-        implements IMEMonitorHandlerReceiver<IAEFluidStack> {
+class HandlerEssentiaStorageBusInterface extends HandlerEssentiaStorageBusBase implements IMEMonitorHandlerReceiver {
 
     /**
      * Interface the storage bus is facing.
@@ -257,7 +257,7 @@ class HandlerEssentiaStorageBusInterface extends HandlerEssentiaStorageBusBase
      * A change occurred in the sub-grid, inform the host grid.
      */
     @Override
-    public void postChange(final IBaseMonitor<IAEFluidStack> monitor, final Iterable<IAEFluidStack> change,
+    public void postChange(final IBaseMonitor monitor, final Iterable<IAEStack<?>> change,
             final BaseActionSource actionSource) {
         try {
             IActionHost actionHost = null;

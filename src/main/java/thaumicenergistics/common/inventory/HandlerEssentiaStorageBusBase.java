@@ -17,6 +17,7 @@ import appeng.api.parts.IPartHost;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.api.ThEApi;
@@ -220,7 +221,7 @@ public abstract class HandlerEssentiaStorageBusBase implements IMEInventoryHandl
      *
      * @param change
      */
-    protected void postAlterationToHostGrid(final Iterable<IAEFluidStack> change) {
+    protected void postAlterationToHostGrid(final Iterable<IAEStack<?>> change) {
         try {
             if (this.partStorageBus.getActionableNode().isActive()) {
                 this.partStorageBus.getGridBlock().getStorageGrid()

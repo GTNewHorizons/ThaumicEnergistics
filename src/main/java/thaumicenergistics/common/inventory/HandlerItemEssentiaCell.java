@@ -146,7 +146,7 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
      * Attempts to add the essentia to the cell
      *
      * @param aspect
-     * @param Amount
+     * @param amount
      * @return Amount not stored
      */
     private long addEssentiaToCell(final Aspect aspect, final long amount, final Actionable mode) {
@@ -418,7 +418,7 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
      * Synchronizes the data tag to the changed slot.
      *
      * @param slotIndex
-     * @param fluidStack
+     * @param aspectStack
      */
     private void writeStorageChanges(final int slotIndex, final IAspectStack aspectStack) {
         // Create a new NBT
@@ -939,6 +939,11 @@ public class HandlerItemEssentiaCell implements IMEInventoryHandler<IAEFluidStac
             return 3;
         }
         return 4;
+    }
+
+    @Override
+    public StorageChannel getStorageChannel() {
+        return StorageChannel.FLUIDS;
     }
 
     @Override

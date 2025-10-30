@@ -6,9 +6,10 @@ import appeng.api.networking.storage.IBaseMonitor;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import thaumicenergistics.common.items.ItemCraftingAspect;
 
-class CraftingAspect_ItemWatcher implements IMEMonitorHandlerReceiver<IAEItemStack> {
+class CraftingAspect_ItemWatcher implements IMEMonitorHandlerReceiver {
 
     private final GridEssentiaCache gridCache;
 
@@ -27,19 +28,19 @@ class CraftingAspect_ItemWatcher implements IMEMonitorHandlerReceiver<IAEItemSta
     }
 
     @Override
-    public void postChange(final IBaseMonitor<IAEItemStack> monitor, final Iterable<IAEItemStack> change,
+    public void postChange(final IBaseMonitor monitor, final Iterable<IAEStack<?>> change,
             final BaseActionSource actionSource) {
-        for (IAEItemStack stack : change) {
+        for (IAEStack<?> stack : change) {
             // Is the stack craftable, has NBT tag, and is a crafting aspect?
-            if (stack.hasTagCompound() && (stack.getItem() instanceof ItemCraftingAspect)) {
+            if (stack instanceof IAEItemStack ais && ais.hasTagCompound()
+                    && (ais.getItem() instanceof ItemCraftingAspect)) {
                 this.gridCache.markForUpdate();
 
                 // Remove any fake aspect stacks in the ME system immediately
                 // We'll also try to remove any that snuck in another way (legacy items, etc) when updating the essentia
                 // cache
                 if (monitor instanceof IMEMonitor) {
-                    ((IMEMonitor<IAEItemStack>) monitor)
-                            .extractItems(stack, Actionable.MODULATE, new BaseActionSource());
+                    ((IMEMonitor<IAEItemStack>) monitor).extractItems(ais, Actionable.MODULATE, new BaseActionSource());
                 }
                 break;
             }

@@ -153,7 +153,6 @@ public class ContainerEssentiaTerminal extends ContainerEssentiaCellTerminalBase
                     .createItemStack(ItemCraftingAspect.createStackForAspect(aspect, 1));
 
             // Set the item
-            cca.getCraftingItem().putStack(result.getItemStack());
             cca.setItemToCraft(result);
 
             // Issue update

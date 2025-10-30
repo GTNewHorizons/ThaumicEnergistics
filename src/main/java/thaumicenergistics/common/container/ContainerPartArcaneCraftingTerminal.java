@@ -29,6 +29,7 @@ import appeng.api.networking.storage.IBaseMonitor;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.container.ContainerOpenContext;
 import appeng.container.implementations.ContainerCraftAmount;
@@ -60,7 +61,7 @@ import thaumicenergistics.common.utils.ThEUtils;
  *
  */
 public class ContainerPartArcaneCraftingTerminal extends ContainerWithPlayerInventory
-        implements IMEMonitorHandlerReceiver<IAEItemStack>, ICraftingIssuerContainer {
+        implements IMEMonitorHandlerReceiver, ICraftingIssuerContainer {
 
     /**
      * Holds a single aspect cost for the current recipe.
@@ -976,7 +977,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerWithPlayerInve
             cca.getOpenContext().setSide(this.terminal.getSide());
 
             // Set the item
-            cca.getCraftingItem().putStack(result.getItemStack());
+
             cca.setItemToCraft(result);
 
             // Issue update
@@ -1388,20 +1389,21 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerWithPlayerInve
      * Called when the amount of an item on the network changes.
      */
     @Override
-    public void postChange(final IBaseMonitor<IAEItemStack> monitor, final Iterable<IAEItemStack> changes,
+    public void postChange(final IBaseMonitor monitor, final Iterable<IAEStack<?>> changes,
             final BaseActionSource actionSource) {
         if (this.monitor == null) {
             return;
         }
 
-        for (IAEItemStack change : changes) {
+        for (IAEStack<?> change : changes) {
             // Get the total amount of the item in the network
-            IAEItemStack newAmount = this.monitor.getStorageList().findPrecise(change);
+            if (!(change instanceof IAEItemStack ais)) continue;
+            IAEItemStack newAmount = this.monitor.getStorageList().findPrecise(ais);
 
             // Is there no more?
             if (newAmount == null) {
                 // Copy the item type from the change
-                newAmount = change.copy();
+                newAmount = ais.copy();
 
                 // Set amount to 0
                 newAmount.setStackSize(0);

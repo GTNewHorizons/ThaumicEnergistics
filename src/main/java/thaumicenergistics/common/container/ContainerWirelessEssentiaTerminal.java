@@ -201,7 +201,6 @@ public class ContainerWirelessEssentiaTerminal extends ContainerEssentiaCellTerm
                     .createItemStack(ItemCraftingAspect.createStackForAspect(aspect, 1));
 
             // Set the item
-            cca.getCraftingItem().putStack(result.getItemStack());
             cca.setItemToCraft(result);
 
             // Issue update

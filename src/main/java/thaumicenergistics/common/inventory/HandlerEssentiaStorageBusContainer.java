@@ -13,6 +13,7 @@ import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IAspectContainer;
@@ -466,7 +467,7 @@ class HandlerEssentiaStorageBusContainer extends HandlerEssentiaStorageBusBase {
         }
 
         // Alteration list
-        List<IAEFluidStack> alterations = null;
+        List<IAEStack<?>> alterations = null;
 
         // Compare all amounts
         for (Aspect aspect : aspectsToCheck) {

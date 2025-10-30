@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL11;
 
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.render.AppEngRenderItem;
-import appeng.util.item.AEItemStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.api.gui.IWidgetHost;
@@ -141,7 +140,7 @@ public class WidgetAEItem extends ThEWidget {
             }
 
             // Get the mod name
-            String modName = ((AEItemStack) this.aeItemStack).getModID();
+            String modName = this.aeItemStack.getModId();
             modName = modName.substring(0, 1).toUpperCase() + modName.substring(1);
 
             // Add the mod name

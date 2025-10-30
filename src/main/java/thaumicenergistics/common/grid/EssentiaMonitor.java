@@ -22,6 +22,7 @@ import appeng.api.networking.storage.IBaseMonitor;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.api.grid.IMEEssentiaMonitor;
@@ -39,7 +40,7 @@ import thaumicenergistics.common.storage.EssentiaRepo;
  * @author Nividica
  *
  */
-public class EssentiaMonitor implements IMEEssentiaMonitor, IMEMonitorHandlerReceiver<IAEFluidStack> {
+public class EssentiaMonitor implements IMEEssentiaMonitor, IMEMonitorHandlerReceiver {
 
     /**
      * The amount of power required to transfer 1 essentia.
@@ -543,7 +544,7 @@ public class EssentiaMonitor implements IMEEssentiaMonitor, IMEMonitorHandlerRec
     }
 
     @Override
-    public void postChange(final IBaseMonitor<IAEFluidStack> monitor, final Iterable<IAEFluidStack> fluidChanges,
+    public void postChange(final IBaseMonitor monitor, final Iterable<IAEStack<?>> fluidChanges,
             final BaseActionSource actionSource) {
         // Ensure the cache is up to date
         if (this.cacheNeedsUpdate) {
@@ -569,7 +570,8 @@ public class EssentiaMonitor implements IMEEssentiaMonitor, IMEMonitorHandlerRec
         List<IAspectStack> aspectChanges = null;
 
         // Search the changes for essentia gas
-        for (IAEFluidStack change : fluidChanges) {
+        for (IAEStack<?> aes : fluidChanges) {
+            if (!(aes instanceof IAEFluidStack change)) continue;
             // Is the change an essentia gas?
             if ((change.getFluid() instanceof GaseousEssentia)) {
                 // Get the aspect
