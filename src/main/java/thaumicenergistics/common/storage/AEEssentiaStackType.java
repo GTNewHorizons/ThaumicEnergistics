@@ -22,6 +22,6 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
 
     @Override
     public IItemList<AEEssentiaStack> createList() {
-        return null;
+        return new EssentiaList();
     }
 }
