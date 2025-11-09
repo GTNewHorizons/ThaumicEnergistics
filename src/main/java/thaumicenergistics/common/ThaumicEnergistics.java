@@ -1,10 +1,13 @@
 package thaumicenergistics.common;
 
+import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STACK_TYPE;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import appeng.api.AEApi;
+import appeng.api.storage.data.AEStackTypeRegistry;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -191,6 +194,8 @@ public class ThaumicEnergistics {
 
         // Sync with config
         ThaumicEnergistics.config = ConfigurationHandler.loadAndSyncConfigFile(event.getSuggestedConfigurationFile());
+
+        AEStackTypeRegistry.register(ESSENTIA_STACK_TYPE);
 
         // Register the gui handler
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new ThEGuiHandler());

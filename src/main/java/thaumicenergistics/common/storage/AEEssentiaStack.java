@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
@@ -53,6 +54,10 @@ public class AEEssentiaStack extends AEStack<AEEssentiaStack> {
         this.setCountRequestable(stack.getCountRequestable());
         this.setCountRequestableCrafts(stack.getCountRequestableCrafts());
         this.setUsedPercent(stack.getUsedPercent());
+    }
+
+    public Aspect getAspect() {
+        return this.aspect;
     }
 
     @Override
@@ -120,6 +125,14 @@ public class AEEssentiaStack extends AEStack<AEEssentiaStack> {
         return this.aspect.getName();
     }
 
+    public String getDisplayName(final EntityPlayer player) {
+        if (!this.hasPlayerDiscovered(player)) {
+            return StatCollector.translateToLocal("tc.aspect.unknown");
+        }
+
+        return this.getDisplayName();
+    }
+
     @Override
     public boolean hasTagCompound() {
         return false;
@@ -170,8 +183,39 @@ public class AEEssentiaStack extends AEStack<AEEssentiaStack> {
         return stack;
     }
 
+    public static AEEssentiaStack loadEssentiaStackFromPacket(final ByteBuf data) throws IOException {
+        final byte mask = data.readByte();
+        final byte stackType = (byte) ((mask & 0x0C) >> 2);
+        final byte countReqType = (byte) ((mask & 0x30) >> 4);
+        final boolean isCraftable = (mask & 0x40) > 0;
+
+        final byte len2 = data.readByte();
+        final byte[] name = new byte[len2];
+        data.readBytes(name, 0, len2);
+
+        final long stackSize = getPacketValue(stackType, data);
+        final long countRequestable = getPacketValue(countReqType, data);
+
+        final byte mask2 = data.readByte();
+        final byte countReqMadeType = (byte) ((mask2 & 0x3));
+        final byte usedPercentType = (byte) ((mask2 & 0xC) >> 2);
+        final long countRequestableCrafts = getPacketValue(countReqMadeType, data);
+        final long longUsedPercent = getPacketValue(usedPercentType, data);
+
+        Aspect aspect = Aspect.getAspect(new String(name, StandardCharsets.UTF_8));
+        if (aspect == null) return null;
+
+        final AEEssentiaStack aes = new AEEssentiaStack(aspect);
+        aes.setStackSize(stackSize);
+        aes.setCountRequestable(countRequestable);
+        aes.setCraftable(isCraftable);
+        aes.setCountRequestableCrafts(countRequestableCrafts);
+        aes.setUsedPercent(longUsedPercent / 10000f);
+        return aes;
+    }
+
     protected void writeIdentity(final ByteBuf i) throws IOException {
-        final byte[] name = this.aspect.getName().getBytes(StandardCharsets.UTF_8);
+        final byte[] name = this.aspect.getTag().getBytes(StandardCharsets.UTF_8);
         i.writeByte((byte) name.length);
         i.writeBytes(name);
     }

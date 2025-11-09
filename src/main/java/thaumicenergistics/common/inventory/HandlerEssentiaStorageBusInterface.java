@@ -1,5 +1,7 @@
 package thaumicenergistics.common.inventory;
 
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+
 import net.minecraft.tileentity.TileEntity;
 
 import appeng.api.AEApi;
@@ -19,7 +21,6 @@ import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.IStorageMonitorable;
-import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
 import appeng.me.storage.MEInventoryHandler;
@@ -223,7 +224,7 @@ class HandlerEssentiaStorageBusInterface extends HandlerEssentiaStorageBusBase
                 // Ensure the fluid inventory was retrieved
                 if (inv != null) {
                     // Create the handler
-                    this.handler = new MEInventoryHandler<IAEFluidStack>(inv, StorageChannel.FLUIDS);
+                    this.handler = new MEInventoryHandler<IAEFluidStack>(inv, FLUID_STACK_TYPE);
 
                     // Set the handler properties
                     this.handler.setBaseAccess(this.getAccess());
