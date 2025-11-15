@@ -1,14 +1,14 @@
 package thaumicenergistics.client.gui.buttons;
 
-import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
+import appeng.client.gui.widgets.ITooltip;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.common.config.ConfigBlocks;
@@ -22,7 +22,7 @@ import thaumicenergistics.common.registries.ThEStrings;
  *
  */
 @SideOnly(Side.CLIENT)
-public class GuiButtonAllowVoid extends ThEGuiButtonBase {
+public class GuiButtonAllowVoid extends GuiButton implements ITooltip {
 
     /**
      * Cache the render engine
@@ -47,7 +47,7 @@ public class GuiButtonAllowVoid extends ThEGuiButtonBase {
     /**
      * Create an item renderer
      */
-    private static RenderItem itemRenderer = new RenderItem();
+    private static final RenderItem itemRenderer = new RenderItem();
 
     /**
      * Void jar itemstack.
@@ -57,7 +57,7 @@ public class GuiButtonAllowVoid extends ThEGuiButtonBase {
     /**
      * Disabled icon from the AE sprite sheet.
      */
-    private AEStateIconsEnum disabledIcon = AEStateIconsEnum.DISABLED;
+    private final AEStateIconsEnum disabledIcon = AEStateIconsEnum.DISABLED;
 
     /**
      * When false, draws the disabled icon over the jar
@@ -103,22 +103,6 @@ public class GuiButtonAllowVoid extends ThEGuiButtonBase {
         }
     }
 
-    @Override
-    public void getTooltip(final List<String> tooltip) {
-        // Add the title
-        tooltip.add(ThEStrings.TooltipButton_VoidHeader.getLocalized());
-
-        // Add allowed/disabled
-        if (this.isVoidAllowed) {
-            tooltip.add(EnumChatFormatting.GRAY + ThEStrings.TooltipButton_VoidAllow.getLocalized());
-        } else {
-            tooltip.add(EnumChatFormatting.GRAY + ThEStrings.TooltipButton_VoidDisable.getLocalized());
-        }
-
-        // Add the note
-        tooltip.add(EnumChatFormatting.ITALIC + ThEStrings.TooltipButton_VoidNote.getLocalized());
-    }
-
     /**
      * Is void allowed?
      *
@@ -126,5 +110,45 @@ public class GuiButtonAllowVoid extends ThEGuiButtonBase {
      */
     public void setIsVoidAllowed(final boolean allowed) {
         this.isVoidAllowed = allowed;
+    }
+
+    @Override
+    public String getMessage() {
+        String tooltip = ThEStrings.TooltipButton_VoidHeader.getLocalized();
+
+        if (this.isVoidAllowed) {
+            tooltip += "\n" + EnumChatFormatting.GRAY + ThEStrings.TooltipButton_VoidAllow.getLocalized();
+        } else {
+            tooltip += "\n" + EnumChatFormatting.GRAY + ThEStrings.TooltipButton_VoidDisable.getLocalized();
+        }
+
+        tooltip += "\n" + EnumChatFormatting.ITALIC + ThEStrings.TooltipButton_VoidNote.getLocalized();
+
+        return tooltip;
+    }
+
+    @Override
+    public int xPos() {
+        return this.xPosition;
+    }
+
+    @Override
+    public int yPos() {
+        return this.yPosition;
+    }
+
+    @Override
+    public int getWidth() {
+        return this.width;
+    }
+
+    @Override
+    public int getHeight() {
+        return this.height;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return this.visible;
     }
 }

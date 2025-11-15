@@ -11,7 +11,6 @@ import appeng.api.exceptions.AppEngException;
 import appeng.api.storage.ISaveProvider;
 import appeng.api.storage.data.IAEStackType;
 import appeng.api.storage.data.IItemList;
-import appeng.core.AELog;
 import appeng.me.storage.CellInventory;
 import thaumicenergistics.common.storage.AEEssentiaStack;
 
@@ -102,7 +101,6 @@ public class EssentiaCellInventory extends CellInventory<AEEssentiaStack> {
 
     @Override
     public IItemList<AEEssentiaStack> getAvailableItems(IItemList<AEEssentiaStack> out, int iteration) {
-        AELog.info("get available items %d", this.cellStacks.size());
         return super.getAvailableItems(out, iteration);
     }
 }

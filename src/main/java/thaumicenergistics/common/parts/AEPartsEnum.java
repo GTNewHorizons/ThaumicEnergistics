@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import appeng.api.config.Upgrades;
+import appeng.api.parts.IPart;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.items.ItemEnum;
 import thaumicenergistics.common.registries.ThEStrings;
@@ -58,17 +59,17 @@ public enum AEPartsEnum {
 
     private ThEStrings unlocalizedName;
 
-    private Class<? extends ThEPartBase> partClass;
+    private Class<? extends IPart> partClass;
 
     private String groupName;
 
     private Map<Upgrades, Integer> upgrades = new HashMap<Upgrades, Integer>();
 
-    private AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends ThEPartBase> partClass) {
+    private AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass) {
         this(unlocalizedName, partClass, null);
     }
 
-    private AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends ThEPartBase> partClass,
+    private AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass,
             final String groupName) {
         // Set the localization string
         this.unlocalizedName = unlocalizedName;
@@ -80,7 +81,7 @@ public enum AEPartsEnum {
         this.groupName = groupName;
     }
 
-    private AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends ThEPartBase> partClass,
+    private AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass,
             final String groupName, final Pair<Upgrades, Integer>... upgrades) {
         this(unlocalizedName, partClass, groupName);
 
@@ -125,17 +126,18 @@ public enum AEPartsEnum {
         return id;
     }
 
-    public ThEPartBase createPartInstance(final ItemStack itemStack)
-            throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException {
+    public IPart createPartInstance(final ItemStack itemStack) throws InstantiationException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         // Create a new instance of the part
-        ThEPartBase part = this.partClass.getDeclaredConstructor().newInstance();
-
-        // Setup based on the itemStack
-        part.setupPartFromItem(itemStack);
-
-        // Return the newly created part
-        return part;
+        try {
+            ThEPartBase part = (ThEPartBase) this.partClass.getDeclaredConstructor().newInstance();
+            // Setup based on the itemStack
+            part.setupPartFromItem(itemStack);
+            return part;
+        } catch (Throwable e) {
+            IPart part = this.partClass.getConstructor(ItemStack.class).newInstance(itemStack);
+            return part;
+        }
     }
 
     /**
@@ -156,7 +158,7 @@ public enum AEPartsEnum {
      *
      * @return
      */
-    public Class<? extends ThEPartBase> getPartClass() {
+    public Class<? extends IPart> getPartClass() {
         return this.partClass;
     }
 

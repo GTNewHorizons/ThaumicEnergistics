@@ -1,22 +1,41 @@
 package thaumicenergistics.common.parts;
 
+import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STACK_TYPE;
+
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import appeng.api.config.Actionable;
-import appeng.api.config.SecurityPermissions;
+import appeng.api.config.FuzzyMode;
+import appeng.api.config.RedstoneMode;
+import appeng.api.config.Settings;
+import appeng.api.config.Upgrades;
+import appeng.api.networking.energy.IEnergyGrid;
+import appeng.api.networking.energy.IEnergySource;
 import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartRenderHelper;
+import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.StorageName;
+import appeng.api.storage.data.IAEStackType;
 import appeng.api.util.AEColor;
+import appeng.me.GridAccessException;
+import appeng.parts.automation.PartBaseImportBus;
+import appeng.parts.automation.UpgradeInventory;
+import appeng.tile.inventory.IAEStackInventory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IAspectContainer;
-import thaumicenergistics.api.grid.IMEEssentiaMonitor;
 import thaumicenergistics.client.textures.BlockTextureManager;
 import thaumicenergistics.common.integration.tc.EssentiaTileContainerHelper;
+import thaumicenergistics.common.registries.EnumCache;
+import thaumicenergistics.common.storage.AEEssentiaStack;
 
 /**
  * Imports essentia from {@link IAspectContainer}
@@ -24,98 +43,136 @@ import thaumicenergistics.common.integration.tc.EssentiaTileContainerHelper;
  * @author Nividica
  *
  */
-public class PartEssentiaImportBus extends ThEPartEssentiaIOBus_Base {
+public class PartEssentiaImportBus extends PartBaseImportBus<AEEssentiaStack> {
 
-    public PartEssentiaImportBus() {
-        super(AEPartsEnum.EssentiaImportBus, SecurityPermissions.INJECT);
+    public PartEssentiaImportBus(ItemStack is) {
+        super(is);
     }
 
     @Override
-    public boolean aspectTransferAllowed(final Aspect aspect) {
-        boolean noFilters = true;
+    protected Object getTarget() {
+        TileEntity self = this.getHost().getTile();
+        final World w = self.getWorldObj();
 
-        if (aspect != null) {
-            for (Aspect filterAspect : this.filteredAspects) {
-                // Is the aspect not null?
-                if (filterAspect != null) {
-                    // Does it match this aspect?
-                    if (aspect == filterAspect) {
-                        // Found a match, return true
-                        return true;
-                    }
+        ForgeDirection side = this.getSide();
+        int x = self.xCoord + side.offsetX;
+        int y = self.yCoord + side.offsetY;
+        int z = self.zCoord + side.offsetZ;
 
-                    // Mark that there are filtered aspects
-                    noFilters = false;
-                }
-            }
-
-            // Return true if no filters set
-            return noFilters;
+        if (w.getChunkProvider().chunkExists(x >> 4, z >> 4)) {
+            return w.getTileEntity(x, y, z);
         }
 
+        return null;
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked" })
+    protected IMEMonitor<AEEssentiaStack> getMonitor() {
+        try {
+            return (IMEMonitor<AEEssentiaStack>) this.getProxy().getStorage().getMEMonitor(ESSENTIA_STACK_TYPE);
+        } catch (final GridAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public int calculateAmountToSend() {
+        return 4 + (this.getInstalledUpgrades(Upgrades.SPEED) * 8);
+    }
+
+    @Override
+    protected boolean importStuff(Object myTarget, AEEssentiaStack whatToImport, IMEMonitor<AEEssentiaStack> monitor,
+            IEnergySource energy, FuzzyMode fzMode) {
+        if (!(myTarget instanceof IAspectContainer container)) return true;
+
+        final Aspect aspect = EssentiaTileContainerHelper.INSTANCE.getAspectInContainer(container);
+        if (aspect == null || (whatToImport != null && !whatToImport.getAspect().getTag().equals(aspect.getTag())))
+            return true;
+
+        final int maxDrain = this.calculateAmountToSend();
+        final long toDrainAmount = EssentiaTileContainerHelper.INSTANCE
+                .extractFromContainer(container, maxDrain, aspect, Actionable.SIMULATE);
+
+        if (toDrainAmount <= 0) {
+            return true;
+        }
+
+        AEEssentiaStack aes = new AEEssentiaStack(aspect);
+        aes.setStackSize(toDrainAmount);
+
+        final AEEssentiaStack leftover = monitor.injectItems(aes, Actionable.MODULATE, this.mySrc);
+        if (leftover != null && leftover.getStackSize() > 0) {
+            aes.decStackSize(leftover.getStackSize());
+            if (aes.getStackSize() <= 0) return true;
+        }
+
+        EssentiaTileContainerHelper.INSTANCE
+                .extractFromContainer(container, (int) aes.getStackSize(), aspect, Actionable.MODULATE);
+
+        return true;
+    }
+
+    @Override
+    protected boolean doOreDict(Object myTarget, IMEMonitor<AEEssentiaStack> inv, IEnergyGrid energy,
+            FuzzyMode fzMode) {
         return false;
     }
 
     @Override
-    public int cableConnectionRenderTo() {
-        return 5;
+    protected int getPowerMultiplier() {
+        return 1;
     }
 
     @Override
-    public boolean doWork(final int transferAmount) {
-        if (this.facingContainer == null) {
-            return false;
+    public IAEStackType<AEEssentiaStack> getStackType() {
+        return ESSENTIA_STACK_TYPE;
+    }
+
+    private static final String NBT_KEY_REDSTONE_MODE = "redstoneMode";
+    private static final String NBT_KEY_FILTER_NUMBER = "AspectFilter#";
+    private static final String NBT_KEY_UPGRADE_INV = "upgradeInventory";
+    private static final String NBT_KEY_OWNER = "Owner";
+    private static final int MAX_FILTER_SIZE = 9;
+
+    @Override
+    public void readFromNBT(NBTTagCompound data) {
+        super.readFromNBT(data);
+
+        // Read redstone mode
+        if (data.hasKey(NBT_KEY_REDSTONE_MODE)) {
+            RedstoneMode redstoneMode = EnumCache.AE_REDSTONE_MODES[data.getInteger(NBT_KEY_REDSTONE_MODE)];
+            this.getConfigManager().putSetting(Settings.REDSTONE_CONTROLLED, redstoneMode);
         }
 
-        // Get the aspect in the container
-        Aspect aspect = EssentiaTileContainerHelper.INSTANCE.getAspectInContainer(this.facingContainer);
-
-        // Ensure the aspect is allowed to be transfered
-        if ((aspect == null) || (!this.aspectTransferAllowed(aspect))) {
-            return false;
-        }
-
-        // Simulate a drain from the container
-        long drainedAmount = EssentiaTileContainerHelper.INSTANCE
-                .extractFromContainer(this.facingContainer, transferAmount, aspect, Actionable.SIMULATE);
-
-        // Was any drained?
-        if (drainedAmount <= 0) {
-            return false;
-        }
-
-        // Get the monitor
-        IMEEssentiaMonitor essMonitor = this.getGridBlock().getEssentiaMonitor();
-        if (essMonitor == null) {
-            return false;
-        }
-
-        // Simulate inject into the network
-        long rejectedAmount = essMonitor
-                .injectEssentia(aspect, drainedAmount, Actionable.SIMULATE, this.asMachineSource, true);
-
-        // Was any rejected?
-        if (rejectedAmount > 0) {
-            // Calculate how much was injected into the network
-            int amountInjected = (int) (drainedAmount - rejectedAmount);
-
-            // None could be injected
-            if (amountInjected <= 0) {
-                return false;
+        // Read filters
+        for (int index = 0; index < MAX_FILTER_SIZE; index++) {
+            if (data.hasKey(NBT_KEY_FILTER_NUMBER + index)) {
+                Aspect aspect = Aspect.aspects.get(data.getString(NBT_KEY_FILTER_NUMBER + index));
+                if (aspect != null) {
+                    IAEStackInventory config = this.getAEInventoryByName(StorageName.NONE);
+                    config.putAEStackInSlot(index, new AEEssentiaStack(aspect));
+                }
             }
-
-            // Some was unable to be injected, adjust the drain amount
-            drainedAmount = amountInjected;
         }
 
-        // Inject
-        essMonitor.injectEssentia(aspect, drainedAmount, Actionable.MODULATE, this.asMachineSource, true);
+        // Read upgrade inventory
+        if (data.hasKey(NBT_KEY_UPGRADE_INV)) {
+            UpgradeInventory upgradeInventory = (UpgradeInventory) this.getInventoryByName("upgrades");
+            upgradeInventory.readFromNBT(data, NBT_KEY_UPGRADE_INV);
+        }
+    }
 
-        // Drain
-        EssentiaTileContainerHelper.INSTANCE
-                .extractFromContainer(this.facingContainer, transferAmount, aspect, Actionable.MODULATE);
+    @Override
+    public void addToWorld() {
+        super.addToWorld();
 
-        return true;
+        // For back compatibility
+        NBTTagCompound data = this.getItemStack().getTagCompound();
+        if (data != null && data.hasKey(NBT_KEY_OWNER)) {
+            int ownerID = data.getInteger(NBT_KEY_OWNER);
+            this.getProxy().getNode().setPlayerID(ownerID);
+        }
     }
 
     @Override
@@ -133,6 +190,36 @@ public class PartEssentiaImportBus extends ThEPartEssentiaIOBus_Base {
     @Override
     public IIcon getBreakingTexture() {
         return BlockTextureManager.ESSENTIA_IMPORT_BUS.getTextures()[2];
+    }
+
+    @SideOnly(Side.CLIENT)
+    private static void renderInventoryBusLights(final IPartRenderHelper helper, final RenderBlocks renderer) {
+        // Set color to white
+        helper.setInvColor(0xFFFFFF);
+
+        IIcon busColorTexture = BlockTextureManager.BUS_COLOR.getTextures()[0];
+
+        IIcon sideTexture = BlockTextureManager.BUS_COLOR.getTextures()[2];
+
+        helper.setTexture(busColorTexture, busColorTexture, sideTexture, sideTexture, busColorTexture, busColorTexture);
+
+        // Rend the box
+        helper.renderInventoryBox(renderer);
+
+        // Set the brightness
+        Tessellator.instance.setBrightness(0xD000D0);
+
+        helper.setInvColor(AEColor.Transparent.blackVariant);
+
+        IIcon lightTexture = BlockTextureManager.BUS_COLOR.getTextures()[1];
+
+        // Render the lights
+        helper.renderInventoryFace(lightTexture, ForgeDirection.UP, renderer);
+        helper.renderInventoryFace(lightTexture, ForgeDirection.DOWN, renderer);
+        helper.renderInventoryFace(lightTexture, ForgeDirection.NORTH, renderer);
+        helper.renderInventoryFace(lightTexture, ForgeDirection.EAST, renderer);
+        helper.renderInventoryFace(lightTexture, ForgeDirection.SOUTH, renderer);
+        helper.renderInventoryFace(lightTexture, ForgeDirection.WEST, renderer);
     }
 
     @SideOnly(Side.CLIENT)
@@ -185,7 +272,42 @@ public class PartEssentiaImportBus extends ThEPartEssentiaIOBus_Base {
 
         // Lights
         helper.setBounds(6.0F, 6.0F, 11.0F, 10.0F, 10.0F, 12.0F);
-        this.renderInventoryBusLights(helper, renderer);
+        renderInventoryBusLights(helper, renderer);
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void renderStaticBusLights(final int x, final int y, final int z, final IPartRenderHelper helper,
+            final RenderBlocks renderer) {
+        IIcon busColorTexture = BlockTextureManager.BUS_COLOR.getTextures()[0];
+
+        IIcon sideTexture = BlockTextureManager.BUS_COLOR.getTextures()[2];
+
+        helper.setTexture(busColorTexture, busColorTexture, sideTexture, sideTexture, busColorTexture, busColorTexture);
+
+        // Render the box
+        helper.renderBlock(x, y, z, renderer);
+
+        // Are we active?
+        if (this.isActive()) {
+            // Set the brightness
+            Tessellator.instance.setBrightness(0xD000D0);
+
+            // Set the color to match the cable
+            Tessellator.instance.setColorOpaque_I(this.host.getColor().blackVariant);
+        } else {
+            // Set the color to black
+            Tessellator.instance.setColorOpaque_I(0);
+        }
+
+        IIcon lightTexture = BlockTextureManager.BUS_COLOR.getTextures()[1];
+
+        // Render the lights
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.UP, renderer);
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.DOWN, renderer);
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.NORTH, renderer);
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.EAST, renderer);
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.SOUTH, renderer);
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.WEST, renderer);
     }
 
     @SideOnly(Side.CLIENT)

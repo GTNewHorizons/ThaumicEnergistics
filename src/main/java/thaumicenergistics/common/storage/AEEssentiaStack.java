@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 
 import com.djgiannuzz.thaumcraftneiplugin.ModItems;
@@ -56,6 +57,7 @@ public class AEEssentiaStack extends AEStack<AEEssentiaStack> {
         this.setUsedPercent(stack.getUsedPercent());
     }
 
+    @NotNull
     public Aspect getAspect() {
         return this.aspect;
     }

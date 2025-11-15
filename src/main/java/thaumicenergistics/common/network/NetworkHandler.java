@@ -13,9 +13,9 @@ import thaumicenergistics.common.network.packet.client.Packet_C_ArcaneCraftingTe
 import thaumicenergistics.common.network.packet.client.Packet_C_AspectSlot;
 import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaCellTerminal;
 import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaEmitter;
-import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaIOBus;
 import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaStorageBus;
 import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaVibrationChamber;
+import thaumicenergistics.common.network.packet.client.Packet_C_ExportBusVoidButtonUpdate;
 import thaumicenergistics.common.network.packet.client.Packet_C_KnowledgeInscriber;
 import thaumicenergistics.common.network.packet.client.Packet_C_Priority;
 import thaumicenergistics.common.network.packet.client.Packet_C_Sync;
@@ -31,8 +31,8 @@ import thaumicenergistics.common.network.packet.server.Packet_S_DistillationEnco
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellTerminal;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellWorkbench;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaEmitter;
-import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaIOBus;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaStorageBus;
+import thaumicenergistics.common.network.packet.server.Packet_S_ExportBusVoidButtonUpdate;
 import thaumicenergistics.common.network.packet.server.Packet_S_KnowledgeInscriber;
 import thaumicenergistics.common.network.packet.server.Packet_S_NEIRecipe;
 import thaumicenergistics.common.network.packet.server.Packet_S_Priority;
@@ -114,8 +114,8 @@ public class NetworkHandler {
         registerPacket(Packet_S_AspectSlot.class);
 
         // Essentia import/export bus
-        registerPacket(Packet_C_EssentiaIOBus.class);
-        registerPacket(Packet_S_EssentiaIOBus.class);
+        registerPacket(Packet_C_ExportBusVoidButtonUpdate.class);
+        registerPacket(Packet_S_ExportBusVoidButtonUpdate.class);
 
         // Essentia storage bus
         registerPacket(Packet_C_EssentiaStorageBus.class);
