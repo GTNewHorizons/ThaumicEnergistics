@@ -116,6 +116,11 @@ public class ItemCellMicroscope extends ItemThaumometer {
     private void doCellScan(EntityPlayer p, ItemStack cell) {
         IMEInventory<IAEItemStack> inv = AEApi.instance().registries().cell()
                 .getCellInventory(cell, (ISaveProvider) cellSaveManager, StorageChannel.ITEMS);
+
+        if (inv == null) {
+            return;
+        }
+
         IItemList<IAEItemStack> itemList = inv
                 .getAvailableItems(AEApi.instance().storage().createItemList(), IterationCounter.fetchNewId());
 
