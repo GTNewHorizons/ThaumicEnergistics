@@ -1,11 +1,11 @@
 package thaumicenergistics.common.container.slot;
 
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
+import appeng.container.slot.AppEngSlot;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.IVisDiscountGear;
@@ -16,7 +16,7 @@ import thaumcraft.api.IVisDiscountGear;
  * @author Nividica
  *
  */
-public class SlotArmor extends Slot {
+public class SlotArmor extends AppEngSlot {
 
     /**
      * The armor type.

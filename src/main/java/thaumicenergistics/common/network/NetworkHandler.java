@@ -19,6 +19,7 @@ import thaumicenergistics.common.network.packet.client.Packet_C_ExportBusVoidBut
 import thaumicenergistics.common.network.packet.client.Packet_C_KnowledgeInscriber;
 import thaumicenergistics.common.network.packet.client.Packet_C_Priority;
 import thaumicenergistics.common.network.packet.client.Packet_C_Sync;
+import thaumicenergistics.common.network.packet.client.Packet_C_UpdatePlayerArmor;
 import thaumicenergistics.common.network.packet.client.Packet_R_ParticleFX;
 import thaumicenergistics.common.network.packet.client.ThEAreaPacket;
 import thaumicenergistics.common.network.packet.client.ThEClientPacket;
@@ -132,6 +133,7 @@ public class NetworkHandler {
         // Arcane crafting terminal
         registerPacket(Packet_C_ArcaneCraftingTerminal.class);
         registerPacket(Packet_S_ArcaneCraftingTerminal.class);
+        registerPacket(Packet_C_UpdatePlayerArmor.class);
 
         // Change GUI
         registerPacket(Packet_S_ChangeGui.class);

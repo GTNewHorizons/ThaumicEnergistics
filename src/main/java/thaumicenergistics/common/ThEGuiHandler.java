@@ -7,14 +7,17 @@ import net.minecraftforge.common.util.ForgeDirection;
 import appeng.api.parts.IPart;
 import appeng.api.parts.IPartHost;
 import appeng.container.AEBaseContainer;
+import appeng.container.ContainerOpenContext;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.container.implementations.ContainerCraftConfirm;
 import appeng.container.implementations.ContainerCraftingStatus;
 import appeng.helpers.IPriorityHost;
+import appeng.parts.AEBasePart;
 import cpw.mods.fml.common.network.IGuiHandler;
 import thaumicenergistics.api.grid.ICraftingIssuerHost;
 import thaumicenergistics.api.gui.ICraftingIssuerContainer;
 import thaumicenergistics.client.gui.GuiArcaneAssembler;
+import thaumicenergistics.client.gui.GuiArcaneCraftingTerminal;
 import thaumicenergistics.client.gui.GuiCraftAmountBridge;
 import thaumicenergistics.client.gui.GuiCraftConfirmBridge;
 import thaumicenergistics.client.gui.GuiCraftingStatusBridge;
@@ -30,9 +33,11 @@ import thaumicenergistics.common.container.ContainerEssentiaCell;
 import thaumicenergistics.common.container.ContainerEssentiaCellWorkbench;
 import thaumicenergistics.common.container.ContainerEssentiaVibrationChamber;
 import thaumicenergistics.common.container.ContainerKnowledgeInscriber;
+import thaumicenergistics.common.container.ContainerPartArcaneCraftingTerminal;
 import thaumicenergistics.common.container.ContainerPriority;
 import thaumicenergistics.common.container.ContainerWirelessEssentiaTerminal;
 import thaumicenergistics.common.inventory.HandlerWirelessEssentiaTerminal;
+import thaumicenergistics.common.parts.PartArcaneCraftingTerminal;
 import thaumicenergistics.common.parts.ThEPartBase;
 
 /**
@@ -191,8 +196,27 @@ public class ThEGuiHandler implements IGuiHandler {
      */
     private static Object getPartGuiElement(final ForgeDirection tileSide, final EntityPlayer player, final World world,
             final int x, final int y, final int z, final boolean isServerSide) {
+        IPart ipart = ThEGuiHandler.getPart(tileSide, world, x, y, z);
+
+        if (ipart instanceof PartArcaneCraftingTerminal arcaneCraftingTerminalNew) {
+            if (isServerSide) {
+                AEBaseContainer container = new ContainerPartArcaneCraftingTerminal(
+                        player.inventory,
+                        arcaneCraftingTerminalNew);
+                ContainerOpenContext ctx = new ContainerOpenContext(arcaneCraftingTerminalNew);
+                ctx.setWorld(world);
+                ctx.setX(x);
+                ctx.setY(y);
+                ctx.setZ(z);
+                ctx.setSide(tileSide);
+                container.setOpenContext(ctx);
+                return container;
+            }
+            return new GuiArcaneCraftingTerminal(player.inventory, arcaneCraftingTerminalNew);
+        }
+
         // Get the part
-        ThEPartBase part = (ThEPartBase) ThEGuiHandler.getPart(tileSide, world, x, y, z);
+        ThEPartBase part = (ThEPartBase) ipart;
 
         // Ensure we got the part
         if (part == null) {
@@ -280,6 +304,13 @@ public class ThEGuiHandler implements IGuiHandler {
         if (part.isPartUseableByPlayer(player)) {
             player.openGui(ThaumicEnergistics.INSTANCE, part.getSide().ordinal(), world, x, y, z);
         }
+    }
+
+    public static void launchGui(final AEBasePart part, final EntityPlayer player, final World world, final int x,
+            final int y, final int z) {
+        // Ensure the player is allowed to open the gui
+        // TODO: permission check
+        player.openGui(ThaumicEnergistics.INSTANCE, part.getSide().ordinal(), world, x, y, z);
     }
 
     @Override
