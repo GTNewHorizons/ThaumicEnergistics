@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import appeng.api.AEApi;
@@ -17,6 +18,7 @@ import appeng.api.config.Upgrades;
 import appeng.api.implementations.items.IItemGroup;
 import appeng.api.parts.IPart;
 import appeng.api.parts.IPartItem;
+import appeng.items.parts.PartType;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.common.ThaumicEnergistics;
@@ -125,4 +127,13 @@ public class ItemAEPart extends Item implements IPartItem, IItemGroup {
     @SideOnly(Side.CLIENT)
     @Override
     public void registerIcons(final IIconRegister par1IconRegister) {}
+
+    @Override
+    public IIcon getIconFromDamage(int damage) {
+        if (damage == AEPartsEnum.EssentiaLevelEmitter.ordinal()) {
+            Item emitter = AEApi.instance().definitions().parts().levelEmitter().maybeItem().get();
+            return emitter.getIconFromDamage(PartType.LevelEmitter.baseDamage);
+        }
+        return super.getIconFromDamage(damage);
+    }
 }
