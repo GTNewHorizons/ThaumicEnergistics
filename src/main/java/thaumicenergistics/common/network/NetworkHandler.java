@@ -11,7 +11,6 @@ import cpw.mods.fml.relauncher.Side;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.network.packet.client.Packet_C_ArcaneCraftingTerminal;
 import thaumicenergistics.common.network.packet.client.Packet_C_AspectSlot;
-import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaCellTerminal;
 import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaStorageBus;
 import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaVibrationChamber;
 import thaumicenergistics.common.network.packet.client.Packet_C_ExportBusVoidButtonUpdate;
@@ -28,7 +27,6 @@ import thaumicenergistics.common.network.packet.server.Packet_S_AspectSlot;
 import thaumicenergistics.common.network.packet.server.Packet_S_ChangeGui;
 import thaumicenergistics.common.network.packet.server.Packet_S_ConfirmCraftingJob;
 import thaumicenergistics.common.network.packet.server.Packet_S_DistillationEncoder;
-import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellTerminal;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellWorkbench;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaStorageBus;
 import thaumicenergistics.common.network.packet.server.Packet_S_ExportBusVoidButtonUpdate;
@@ -119,10 +117,6 @@ public class NetworkHandler {
         // Essentia storage bus
         registerPacket(Packet_C_EssentiaStorageBus.class);
         registerPacket(Packet_S_EssentiaStorageBus.class);
-
-        // Essentia terminal
-        registerPacket(Packet_C_EssentiaCellTerminal.class);
-        registerPacket(Packet_S_EssentiaCellTerminal.class);
 
         // Arcane crafting terminal
         registerPacket(Packet_C_ArcaneCraftingTerminal.class);

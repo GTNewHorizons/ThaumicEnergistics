@@ -4,7 +4,6 @@ import net.minecraft.inventory.Container;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import thaumicenergistics.client.gui.GuiEssentiaCellTerminal;
 
 /**
  * Holds all the constants for {@link GuiEssentiaCellTerminal}.

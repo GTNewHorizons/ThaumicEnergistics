@@ -22,21 +22,17 @@ import thaumicenergistics.client.gui.GuiCraftAmountBridge;
 import thaumicenergistics.client.gui.GuiCraftConfirmBridge;
 import thaumicenergistics.client.gui.GuiCraftingStatusBridge;
 import thaumicenergistics.client.gui.GuiDistillationPatternEncoder;
-import thaumicenergistics.client.gui.GuiEssentiaCellTerminal;
 import thaumicenergistics.client.gui.GuiEssentiaCellWorkbench;
 import thaumicenergistics.client.gui.GuiEssentiaVibrationChamber;
 import thaumicenergistics.client.gui.GuiKnowledgeInscriber;
 import thaumicenergistics.client.gui.GuiPriority;
 import thaumicenergistics.common.container.ContainerArcaneAssembler;
 import thaumicenergistics.common.container.ContainerDistillationPatternEncoder;
-import thaumicenergistics.common.container.ContainerEssentiaCell;
 import thaumicenergistics.common.container.ContainerEssentiaCellWorkbench;
 import thaumicenergistics.common.container.ContainerEssentiaVibrationChamber;
 import thaumicenergistics.common.container.ContainerKnowledgeInscriber;
 import thaumicenergistics.common.container.ContainerPartArcaneCraftingTerminal;
 import thaumicenergistics.common.container.ContainerPriority;
-import thaumicenergistics.common.container.ContainerWirelessEssentiaTerminal;
-import thaumicenergistics.common.inventory.HandlerWirelessEssentiaTerminal;
 import thaumicenergistics.common.parts.PartArcaneCraftingTerminal;
 import thaumicenergistics.common.parts.ThEPartBase;
 
@@ -330,17 +326,9 @@ public class ThEGuiHandler implements IGuiHandler {
 
         // Check basic ID's
         switch (ID) {
-            // Is this the essentia cell?
-            case ThEGuiHandler.ESSENTIA_CELL_ID:
-                return GuiEssentiaCellTerminal.NewEssentiaCellGui(player, world, x, y, z);
-
             // Is this the cell workbench?
             case ThEGuiHandler.CELL_WORKBENCH_ID:
                 return new GuiEssentiaCellWorkbench(player, world, x, y, z);
-
-            // Is this the wireless gui?
-            case ThEGuiHandler.WIRELESS_TERMINAL_ID:
-                return GuiEssentiaCellTerminal.NewWirelessEssentiaTerminalGui(player);
 
             // Is this the arcane assembler?
             case ThEGuiHandler.ARCANE_ASSEMBLER_ID:
@@ -417,18 +405,9 @@ public class ThEGuiHandler implements IGuiHandler {
         ID -= ThEGuiHandler.DIRECTION_OFFSET;
 
         switch (ID) {
-            // Is this the essentia cell?
-            case ThEGuiHandler.ESSENTIA_CELL_ID:
-                return new ContainerEssentiaCell(player, world, x, y, z);
-
             // Is this the cell workbench?
             case ThEGuiHandler.CELL_WORKBENCH_ID:
                 return new ContainerEssentiaCellWorkbench(player, world, x, y, z);
-
-            // Is this the wireless gui?
-            case ThEGuiHandler.WIRELESS_TERMINAL_ID:
-                HandlerWirelessEssentiaTerminal handler = (HandlerWirelessEssentiaTerminal) ThEGuiHandler.extraData[0];
-                return new ContainerWirelessEssentiaTerminal(player, handler);
 
             // Is this the arcane assembler?
             case ThEGuiHandler.ARCANE_ASSEMBLER_ID:
