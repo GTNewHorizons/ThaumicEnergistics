@@ -48,6 +48,11 @@ public class AEEssentiaStack extends AEStack<AEEssentiaStack> {
         this.aspect = aspect;
     }
 
+    public AEEssentiaStack(@Nonnull Aspect aspect, long amount) {
+        this.aspect = aspect;
+        this.setStackSize(amount);
+    }
+
     private AEEssentiaStack(@Nonnull AEEssentiaStack stack) {
         this.aspect = stack.aspect;
         this.setStackSize(stack.getStackSize());

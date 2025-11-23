@@ -1,6 +1,7 @@
 package thaumicenergistics.common.integration.tc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -23,6 +24,7 @@ import thaumicenergistics.api.IThETransportPermissions;
 import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.api.storage.IAspectStack;
 import thaumicenergistics.common.fluids.GaseousEssentia;
+import thaumicenergistics.common.storage.AEEssentiaStack;
 import thaumicenergistics.common.storage.AspectStack;
 import thaumicenergistics.common.tiles.TileEssentiaVibrationChamber;
 import thaumicenergistics.common.tiles.abstraction.TileEVCBase;
@@ -209,6 +211,29 @@ public final class EssentiaTileContainerHelper {
         for (Entry<Aspect, Integer> essentia : aspectList.aspects.entrySet()) {
             if ((essentia != null) && (essentia.getValue() != 0)) {
                 stacks.add(new AspectStack(essentia.getKey(), essentia.getValue()));
+            }
+        }
+
+        return stacks;
+    }
+
+    public List<AEEssentiaStack> getEssentiaStacksFromContainer(final IAspectContainer container) {
+        if (container == null) {
+            return Collections.emptyList();
+        }
+
+        // Get the list of aspects in the container
+        AspectList aspectList = container.getAspects();
+
+        if (aspectList == null) {
+            return Collections.emptyList();
+        }
+
+        List<AEEssentiaStack> stacks = new ArrayList<>();
+
+        for (Entry<Aspect, Integer> entry : aspectList.aspects.entrySet()) {
+            if ((entry != null) && (entry.getValue() != 0)) {
+                stacks.add(new AEEssentiaStack(entry.getKey(), entry.getValue()));
             }
         }
 

@@ -29,6 +29,7 @@ import thaumicenergistics.common.integration.tc.EssentiaTileContainerHelper;
 import thaumicenergistics.common.items.ItemCraftingAspect;
 import thaumicenergistics.common.network.NetworkHandler;
 import thaumicenergistics.common.registries.AEAspectRegister;
+import thaumicenergistics.common.storage.EssentiaExternalStorageHandler;
 import thaumicenergistics.common.utils.ThELog;
 
 /**
@@ -196,6 +197,9 @@ public class ThaumicEnergistics {
         ThaumicEnergistics.config = ConfigurationHandler.loadAndSyncConfigFile(event.getSuggestedConfigurationFile());
 
         AEStackTypeRegistry.register(ESSENTIA_STACK_TYPE);
+
+        AEApi.instance().registries().externalStorage()
+                .addExternalStorageInterface(new EssentiaExternalStorageHandler());
 
         // Register the gui handler
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new ThEGuiHandler());
