@@ -1,5 +1,7 @@
 package thaumicenergistics.common.tiles.abstraction;
 
+import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STACK_TYPE;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -40,11 +42,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import thaumcraft.api.aspects.Aspect;
-import thaumicenergistics.api.grid.IEssentiaGrid;
-import thaumicenergistics.api.grid.IMEEssentiaMonitor;
 import thaumicenergistics.common.integration.IWailaSource;
 import thaumicenergistics.common.items.ItemCraftingAspect;
 import thaumicenergistics.common.registries.EnumCache;
+import thaumicenergistics.common.storage.AEEssentiaStack;
 import thaumicenergistics.common.tiles.TileEssentiaProvider;
 import thaumicenergistics.common.tiles.TileInfusionProvider;
 import thaumicenergistics.common.utils.EffectiveSide;
@@ -78,7 +79,7 @@ public abstract class TileProviderBase extends AENetworkTile
     /**
      * ME monitor that watches for changes in essentia.
      */
-    protected IMEEssentiaMonitor monitor = null;
+    protected IMEMonitor<AEEssentiaStack> monitor = null;
 
     /**
      * True if the provider is connected and powered.
@@ -138,8 +139,12 @@ public abstract class TileProviderBase extends AENetworkTile
         // Ensure we have a monitor
         if (this.getEssentiaMonitor()) {
             // Request the essentia
-            long amountExtracted = this.monitor
-                    .extractEssentia(wantedAspect, wantedAmount, Actionable.SIMULATE, this.asMachineSource, true);
+            final AEEssentiaStack extracted = this.monitor.extractItems(
+                    new AEEssentiaStack(wantedAspect, wantedAmount),
+                    Actionable.SIMULATE,
+                    this.asMachineSource);
+
+            long amountExtracted = extracted != null ? extracted.getStackSize() : 0;
 
             // Was any essentia extracted?
             if (amountExtracted == 0) {
@@ -157,7 +162,10 @@ public abstract class TileProviderBase extends AENetworkTile
             }
 
             // Extract the essentia
-            this.monitor.extractEssentia(wantedAspect, wantedAmount, Actionable.MODULATE, this.asMachineSource, true);
+            this.monitor.extractItems(
+                    new AEEssentiaStack(wantedAspect, wantedAmount),
+                    Actionable.MODULATE,
+                    this.asMachineSource);
 
             // Return how much was extracted
             return (int) amountExtracted;
@@ -173,29 +181,24 @@ public abstract class TileProviderBase extends AENetworkTile
      * @return
      */
     protected boolean getEssentiaMonitor() {
-        IMEEssentiaMonitor essentiaMonitor = null;
-        IGrid grid = null;
-
-        // Get the grid node
         IGridNode node = this.getProxy().getNode();
 
         // Ensure we have the node
         if (node != null) {
             // Get the grid that node is connected to
-            grid = node.getGrid();
+            IGrid grid = node.getGrid();
 
             // Is there a grid?
             if (grid != null) {
                 // Get the monitor
-                essentiaMonitor = (IMEEssentiaMonitor) grid.getCache(IEssentiaGrid.class);
+                IStorageGrid storage = grid.getCache(IStorageGrid.class);
+                this.monitor = (IMEMonitor<AEEssentiaStack>) storage.getMEMonitor(ESSENTIA_STACK_TYPE);
+                return true;
             }
         }
 
-        // Set the monitor
-        this.monitor = essentiaMonitor;
-
-        // Return true if the monitor is not null
-        return (this.monitor != null);
+        this.monitor = null;
+        return false;
     }
 
     protected abstract double getIdlePowerusage();
@@ -344,7 +347,9 @@ public abstract class TileProviderBase extends AENetworkTile
         // Ensure there is a monitor
         if (this.getEssentiaMonitor()) {
             // Return the amount in the network
-            return this.monitor.getEssentiaAmount(searchAspect);
+            final AEEssentiaStack stack = this.monitor
+                    .getAvailableItem(new AEEssentiaStack(searchAspect), IterationCounter.fetchNewId());
+            return stack != null ? stack.getStackSize() : 0;
         }
 
         // No monitor.
