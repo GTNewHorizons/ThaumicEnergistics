@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 
-import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_ItemGolemPlacer;
-
 public class ASMTransformer implements IClassTransformer {
 
     /**
@@ -19,7 +17,6 @@ public class ASMTransformer implements IClassTransformer {
         this.tranformers = new HashMap<>();
 
         // Add Thaumcraft transformers
-        this.addTransformer(new ClassTransformer_ItemGolemPlacer());
     }
 
     /**
