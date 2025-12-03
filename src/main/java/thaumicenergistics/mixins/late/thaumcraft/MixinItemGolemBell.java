@@ -19,7 +19,6 @@ public class MixinItemGolemBell {
     @ModifyVariable(
             method = "onLeftClickEntity",
             remap = false,
-            print = true,
             at = @At(value = "STORE", ordinal = 1),
             name = "dropped")
     private ItemStack injectOnLeftClickEntity(ItemStack dropped, ItemStack stack, EntityPlayer player, Entity entity) {
