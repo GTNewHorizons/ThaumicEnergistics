@@ -12,34 +12,23 @@ import cpw.mods.fml.relauncher.Side;
 public final class EffectiveSide {
 
     /**
-     * Cache the handler
-     */
-    private static FMLCommonHandler FCH = FMLCommonHandler.instance();
-
-    /**
      * True if the thread executing this code is client side.
-     *
-     * @return
      */
-    public static final boolean isClientSide() {
-        return FCH.getEffectiveSide().isClient();
+    public static boolean isClientSide() {
+        return FMLCommonHandler.instance().getEffectiveSide().isClient();
     }
 
     /**
      * True if the thread executing this code is server side.
-     *
-     * @return
      */
-    public static final boolean isServerSide() {
-        return FCH.getEffectiveSide().isServer();
+    public static boolean isServerSide() {
+        return FMLCommonHandler.instance().getEffectiveSide().isServer();
     }
 
     /**
      * Returns the effective side for the context in the game.
-     *
-     * @return
      */
-    public static final Side side() {
-        return FCH.getEffectiveSide();
+    public static Side side() {
+        return FMLCommonHandler.instance().getEffectiveSide();
     }
 }

@@ -14,7 +14,6 @@ import thaumicenergistics.common.registries.RecipeRegistry;
 import thaumicenergistics.common.registries.ResearchRegistry;
 import thaumicenergistics.common.registries.ResearchRegistry.PseudoResearchTypes;
 import thaumicenergistics.common.registries.ResearchRegistry.ResearchTypes;
-import thaumicenergistics.fml.ThECore;
 
 /**
  * {@link ItemGolemWirelessBackpack} feature.
@@ -30,11 +29,6 @@ public class FeatureGolemBackpack extends ThEThaumcraftResearchFeature {
 
     @Override
     protected boolean checkConfigs(final IThEConfig theConfig) {
-        // Did the core fail to transform the required classes?
-        if (ThECore.golemHooksTransformFailed) {
-            return false;
-        }
-
         return theConfig.craftGolemWifiBackpack();
     }
 

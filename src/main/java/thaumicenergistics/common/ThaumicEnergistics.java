@@ -40,7 +40,7 @@ import thaumicenergistics.common.utils.ThELog;
         modid = ThaumicEnergistics.MOD_ID,
         name = "Thaumic Energistics",
         version = ThaumicEnergistics.VERSION,
-        dependencies = "required-after:ThE-core;required-after:appliedenergistics2@[rv3-beta-214,);required-after:Thaumcraft@[4.2.3.5,);after:Waila;after:extracells")
+        dependencies = "required-after:appliedenergistics2@[rv3-beta-214,);required-after:Thaumcraft@[4.2.3.5,);after:Waila;after:extracells")
 public class ThaumicEnergistics {
 
     /**

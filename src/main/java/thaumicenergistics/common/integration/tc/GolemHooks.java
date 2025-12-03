@@ -18,7 +18,6 @@ import thaumicenergistics.api.entities.IGolemHookHandler.InteractionLevel;
 import thaumicenergistics.api.entities.IGolemHookSyncRegistry;
 import thaumicenergistics.common.utils.EffectiveSide;
 import thaumicenergistics.common.utils.ThELog;
-import thaumicenergistics.fml.ThECore;
 
 /**
  * Golem hook system.<br>
@@ -565,11 +564,6 @@ public class GolemHooks {
      * @param handler
      */
     public static void registerHandler(final @Nonnull IGolemHookHandler handler) {
-        // Ensure the required transforms are present.
-        if (ThECore.golemHooksTransformFailed) {
-            return;
-        }
-
         try {
             // Add the handler
             GolemHooks.registeredHandlers.add(handler);

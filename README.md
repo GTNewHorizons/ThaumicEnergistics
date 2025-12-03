@@ -33,9 +33,3 @@ How To Compile
 2. Run ./gradlew setupDecompWorkspace build
 3. Your build shall be in build/libs/
 
-How To Debug
-----
-1. Do step 1 of compile
-2. Add "-Dfml.coreMods.load=thaumicenergistics.fml.ThECore", without quotes, to your run & debug configuration.
-In Eclipse, Menu: Run > Run|Debug Configurations > Arguments Tab > VM Arguments.
-
