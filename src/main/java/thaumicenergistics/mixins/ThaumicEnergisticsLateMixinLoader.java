@@ -28,6 +28,7 @@ public class ThaumicEnergisticsLateMixinLoader implements ILateMixinLoader {
         }
         mixins.add("thaumcraft.MixinAspect");
         mixins.add("thaumcraft.MixinEntityGolemBase");
+        mixins.add("thaumcraft.MixinItemGolemBell");
         return mixins;
     }
 }
