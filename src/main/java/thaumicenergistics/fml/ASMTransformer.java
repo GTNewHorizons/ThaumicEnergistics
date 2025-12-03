@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 
-import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_EntityGolemBase;
 import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_ItemGolemBell;
 import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_ItemGolemPlacer;
 import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_RenderGolemBase;
@@ -25,7 +24,6 @@ public class ASMTransformer implements IClassTransformer {
         this.addTransformer(new ClassTransformer_RenderGolemBase());
         this.addTransformer(new ClassTransformer_ItemGolemPlacer());
         this.addTransformer(new ClassTransformer_ItemGolemBell());
-        this.addTransformer(new ClassTransformer_EntityGolemBase());
     }
 
     /**

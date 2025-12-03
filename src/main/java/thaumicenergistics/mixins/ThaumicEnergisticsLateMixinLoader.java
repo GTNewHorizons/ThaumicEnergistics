@@ -21,6 +21,7 @@ public class ThaumicEnergisticsLateMixinLoader implements ILateMixinLoader {
     public List<String> getMixins(Set<String> loadedMods) {
         List<String> mixins = new ArrayList<>();
         mixins.add("thaumcraft.MixinAspect");
+        mixins.add("thaumcraft.MixinEntityGolemBase");
         return mixins;
     }
 }
