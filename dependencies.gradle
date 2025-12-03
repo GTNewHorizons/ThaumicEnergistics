@@ -5,7 +5,7 @@ dependencies {
     implementation("com.github.GTNewHorizons:CodeChickenCore:1.4.8:dev")
     implementation("com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-751-GTNH:dev")
     implementation("thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev")
-    implementation("curse.maven:thaumcraft-nei-plugin-225095:2241913") { transitive = false }
+    implementation(rfg.deobf("curse.maven:thaumcraft-nei-plugin-225095:2241913")) { transitive = false }
 
     compileOnly('com.github.GTNewHorizons:ExtraCells2:2.5.35:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:AE2FluidCraft-Rework:1.5.26-gtnh:dev') { transitive = false }
