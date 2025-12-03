@@ -6,7 +6,6 @@ import net.minecraft.launchwrapper.IClassTransformer;
 
 import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_ItemGolemBell;
 import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_ItemGolemPlacer;
-import thaumicenergistics.fml.classtransformers.tc.ClassTransformer_RenderGolemBase;
 
 public class ASMTransformer implements IClassTransformer {
 
@@ -21,7 +20,6 @@ public class ASMTransformer implements IClassTransformer {
         this.tranformers = new HashMap<>();
 
         // Add Thaumcraft transformers
-        this.addTransformer(new ClassTransformer_RenderGolemBase());
         this.addTransformer(new ClassTransformer_ItemGolemPlacer());
         this.addTransformer(new ClassTransformer_ItemGolemBell());
     }
