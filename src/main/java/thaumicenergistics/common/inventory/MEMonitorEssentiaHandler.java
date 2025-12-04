@@ -18,9 +18,9 @@ import appeng.api.storage.IStorageBusMonitor;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEStackType;
 import appeng.api.storage.data.IItemList;
+import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.common.tiles.TileEssentiaReservoir;
-import thaumicenergistics.api.storage.IAspectStack;
 import thaumicenergistics.common.integration.tc.EssentiaTileContainerHelper;
 import thaumicenergistics.common.storage.AEEssentiaStack;
 import thaumicenergistics.common.storage.EssentiaList;
@@ -175,14 +175,13 @@ public class MEMonitorEssentiaHandler implements IStorageBusMonitor<AEEssentiaSt
             return true;
         }
 
-        IAspectStack containerStack = EssentiaTileContainerHelper.INSTANCE
-                .getAspectStackFromContainer(this.aspectContainer);
+        Aspect storedAspect = EssentiaTileContainerHelper.INSTANCE.getAspectInContainer(this.aspectContainer);
 
-        if (containerStack == null) {
+        if (storedAspect == null) {
             return true;
         }
 
-        return input.getAspect() == containerStack.getAspect();
+        return input.getAspect() == storedAspect;
     }
 
     @Override

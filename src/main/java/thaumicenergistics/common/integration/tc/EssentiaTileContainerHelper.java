@@ -8,8 +8,11 @@ import java.util.Map.Entry;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.jetbrains.annotations.Nullable;
+
 import appeng.api.config.Actionable;
-import appeng.api.storage.data.IAEFluidStack;
+import it.unimi.dsi.fastutil.objects.ObjectLongImmutablePair;
+import it.unimi.dsi.fastutil.objects.ObjectLongPair;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
@@ -22,10 +25,8 @@ import thaumcraft.common.tiles.TileJarFillableVoid;
 import thaumcraft.common.tiles.TileTubeBuffer;
 import thaumicenergistics.api.IThETransportPermissions;
 import thaumicenergistics.api.ThEApi;
-import thaumicenergistics.api.storage.IAspectStack;
 import thaumicenergistics.common.fluids.GaseousEssentia;
 import thaumicenergistics.common.storage.AEEssentiaStack;
-import thaumicenergistics.common.storage.AspectStack;
 import thaumicenergistics.common.tiles.TileEssentiaVibrationChamber;
 import thaumicenergistics.common.tiles.abstraction.TileEVCBase;
 
@@ -139,25 +140,24 @@ public final class EssentiaTileContainerHelper {
         return amountToDrain;
     }
 
-    /**
-     * Returns the aspect of the essentia in the container.
-     *
-     * @param container
-     * @return
-     */
+    @Nullable
     public Aspect getAspectInContainer(final IAspectContainer container) {
-        // Get the aspect list from the container
-        IAspectStack containerStack = this.getAspectStackFromContainer(container);
-
-        // Did we get a stack?
-        if (containerStack == null) {
+        if (container == null) {
             return null;
         }
 
-        return containerStack.getAspect();
+        // Get the list of aspects in the container
+        AspectList aspectList = container.getAspects();
+
+        if (aspectList == null) {
+            return null;
+        }
+
+        return aspectList.getAspectsSortedAmount()[0];
     }
 
-    public IAspectStack getAspectStackFromContainer(final IAspectContainer container) {
+    @Nullable
+    public ObjectLongPair<Aspect> getAspectStackFromContainer(final IAspectContainer container) {
         // Ensure we have a container
         if (container == null) {
             return null;
@@ -170,51 +170,12 @@ public final class EssentiaTileContainerHelper {
             return null;
         }
 
-        // Create the stack
-        IAspectStack aspectStack = new AspectStack();
-
-        // Set the aspect
-        aspectStack.setAspect(aspectList.getAspectsSortedAmount()[0]);
-
-        if (!aspectStack.hasAspect()) {
+        Aspect aspect = aspectList.getAspectsSortedAmount()[0];
+        if (aspect == null) {
             return null;
         }
 
-        // Set the amount
-        aspectStack.setStackSize(aspectList.getAmount(aspectStack.getAspect()));
-
-        return aspectStack;
-    }
-
-    /**
-     * Gets the list of aspects in the container.
-     *
-     * @param container
-     * @return
-     */
-    public List<IAspectStack> getAspectStacksFromContainer(final IAspectContainer container) {
-        List<IAspectStack> stacks = new ArrayList<IAspectStack>();
-
-        // Ensure we have a container
-        if (container == null) {
-            return stacks;
-        }
-
-        // Get the list of aspects in the container
-        AspectList aspectList = container.getAspects();
-
-        if (aspectList == null) {
-            return stacks;
-        }
-
-        // Populate the list
-        for (Entry<Aspect, Integer> essentia : aspectList.aspects.entrySet()) {
-            if ((essentia != null) && (essentia.getValue() != 0)) {
-                stacks.add(new AspectStack(essentia.getKey(), essentia.getValue()));
-            }
-        }
-
-        return stacks;
+        return new ObjectLongImmutablePair<>(aspect, aspectList.getAmount(aspect));
     }
 
     public List<AEEssentiaStack> getEssentiaStacksFromContainer(final IAspectContainer container) {
@@ -256,13 +217,16 @@ public final class EssentiaTileContainerHelper {
             return storedAspects != null ? storedAspects.getAmount(aspect) : 0;
         }
 
+        AspectList aspectList = container.getAspects();
+
+        if (aspectList == null) {
+            return 0;
+        }
+
         int stored = 0;
 
-        // Get the essentia list
-        for (IAspectStack essentia : this.getAspectStacksFromContainer(container)) {
-            if (essentia != null) {
-                stored += (int) essentia.getStackSize();
-            }
+        for (Integer amount : aspectList.aspects.values()) {
+            stored += amount;
         }
 
         return stored;
@@ -286,12 +250,12 @@ public final class EssentiaTileContainerHelper {
         }
 
         // Get the aspect in the container
-        IAspectStack storedEssentia = this.getAspectStackFromContainer(container);
+        Aspect storedEssentia = this.getAspectInContainer(container);
 
         // Match types on jars
-        if ((storedEssentia != null) && (container instanceof TileJarFillable)) {
+        if (storedEssentia != null && container instanceof TileJarFillable) {
             // Do the aspects match?
-            if (aspectToFill != storedEssentia.getAspect()) {
+            if (aspectToFill != storedEssentia) {
                 // Aspects do not match;
                 return 0;
             }
@@ -319,50 +283,6 @@ public final class EssentiaTileContainerHelper {
         }
 
         return amountToFill;
-    }
-
-    /**
-     * Attempts to inject the fluid into the container. Returns the amount that was injected in milibuckets.
-     *
-     * @param container
-     * @param fluidStack
-     * @param mode
-     * @return
-     */
-    public long injectFluidIntoContainer(final IAspectContainer container, final IAEFluidStack fluidStack,
-            final Actionable mode) {
-        // Do we have an input?
-        if (fluidStack == null) {
-            // No input
-            return 0;
-        }
-
-        // Is the container whitelisted?
-        if (!this.perms.canInjectToAspectContainerTile(container)) {
-            // Not whitelisted
-            return 0;
-        }
-
-        // Get the fluid.
-        Fluid fluid = fluidStack.getFluid();
-
-        // Ensure it is a gas
-        if (!(fluid instanceof GaseousEssentia)) {
-            // Not essentia gas
-            return 0;
-        }
-
-        // Get the aspect of the gas
-        Aspect gasAspect = ((GaseousEssentia) fluid).getAspect();
-
-        // Get the amount to fill
-        long amountToFill = EssentiaConversionHelper.INSTANCE
-                .convertFluidAmountToEssentiaAmount(fluidStack.getStackSize());
-
-        // Inject
-        long injectedAmount_EU = this.injectEssentiaIntoContainer(container, (int) amountToFill, gasAspect, mode);
-
-        return EssentiaConversionHelper.INSTANCE.convertEssentiaAmountToFluidAmount(injectedAmount_EU);
     }
 
     /**
