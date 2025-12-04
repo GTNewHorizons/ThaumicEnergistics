@@ -5,6 +5,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -12,13 +13,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import appeng.core.sync.GuiBridge;
+import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.client.textures.BlockTextureManager;
 import thaumicenergistics.common.ThEGuiHandler;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.tiles.TileEssentiaCellWorkbench;
-import thaumicenergistics.common.utils.EffectiveSide;
 
 /**
  * {@link TileEssentiaCellWorkbench} block.
@@ -58,8 +60,16 @@ public class BlockEssentiaCellWorkbench extends AbstractBlockAEWrenchable {
      * @return
      */
     @Override
-    protected boolean onBlockActivated(final World world, final int x, final int y, final int z,
+    protected boolean onBlockActivated(final World world, final int x, final int y, final int z, final int side,
             final EntityPlayer player) {
+        final TileEntity te = world.getTileEntity(x, y, z);
+        if (te instanceof TileEssentiaCellWorkbench) {
+            if (Platform.isServer()) {
+                Platform.openGUI(player, te, ForgeDirection.getOrientation(side), GuiBridge.GUI_CELL_WORKBENCH);
+            }
+            return true;
+        }
+
         // Launch the gui.
         ThEGuiHandler.launchGui(ThEGuiHandler.CELL_WORKBENCH_ID, player, world, x, y, z);
 
@@ -72,22 +82,14 @@ public class BlockEssentiaCellWorkbench extends AbstractBlockAEWrenchable {
     @Override
     public void breakBlock(final World world, final int x, final int y, final int z, final Block block,
             final int metaData) {
-        // Is this server side?
-        if (EffectiveSide.isServerSide()) {
-            // Get the tile
+        if (!world.isRemote) {
             TileEntity tileWorkBench = world.getTileEntity(x, y, z);
 
-            // Does the workbench have a cell?
-            if ((tileWorkBench instanceof TileEssentiaCellWorkbench)
-                    && (((TileEssentiaCellWorkbench) tileWorkBench).hasEssentiaCell())) {
-                // Spawn the cell as an item entity.
-                world.spawnEntityInWorld(
-                        new EntityItem(
-                                world,
-                                0.5 + x,
-                                0.5 + y,
-                                0.2 + z,
-                                ((TileEssentiaCellWorkbench) tileWorkBench).getStackInSlot(0)));
+            if (tileWorkBench instanceof TileEssentiaCellWorkbench workbench) {
+                ItemStack cell = workbench.getInventoryByName("cell").getStackInSlot(0);
+                if (cell != null) {
+                    world.spawnEntityInWorld(new EntityItem(world, 0.5 + x, 0.5 + y, 0.2 + z, cell));
+                }
             }
         }
 

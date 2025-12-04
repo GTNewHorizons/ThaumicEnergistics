@@ -46,7 +46,7 @@ public class BlockDistillationEncoder extends AbstractBlockAEWrenchable {
     }
 
     @Override
-    protected final boolean onBlockActivated(final World world, final int x, final int y, final int z,
+    protected final boolean onBlockActivated(final World world, final int x, final int y, final int z, final int side,
             final EntityPlayer player) {
         // Launch the gui.
         ThEGuiHandler.launchGui(ThEGuiHandler.DISTILLATION_ENCODER, player, world, x, y, z);

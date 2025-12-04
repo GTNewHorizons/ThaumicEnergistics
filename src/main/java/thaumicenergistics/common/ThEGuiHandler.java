@@ -21,12 +21,10 @@ import thaumicenergistics.client.gui.GuiCraftAmountBridge;
 import thaumicenergistics.client.gui.GuiCraftConfirmBridge;
 import thaumicenergistics.client.gui.GuiCraftingStatusBridge;
 import thaumicenergistics.client.gui.GuiDistillationPatternEncoder;
-import thaumicenergistics.client.gui.GuiEssentiaCellWorkbench;
 import thaumicenergistics.client.gui.GuiEssentiaVibrationChamber;
 import thaumicenergistics.client.gui.GuiKnowledgeInscriber;
 import thaumicenergistics.common.container.ContainerArcaneAssembler;
 import thaumicenergistics.common.container.ContainerDistillationPatternEncoder;
-import thaumicenergistics.common.container.ContainerEssentiaCellWorkbench;
 import thaumicenergistics.common.container.ContainerEssentiaVibrationChamber;
 import thaumicenergistics.common.container.ContainerKnowledgeInscriber;
 import thaumicenergistics.common.container.ContainerPartArcaneCraftingTerminal;
@@ -318,10 +316,6 @@ public class ThEGuiHandler implements IGuiHandler {
 
         // Check basic ID's
         switch (ID) {
-            // Is this the cell workbench?
-            case ThEGuiHandler.CELL_WORKBENCH_ID:
-                return new GuiEssentiaCellWorkbench(player, world, x, y, z);
-
             // Is this the arcane assembler?
             case ThEGuiHandler.ARCANE_ASSEMBLER_ID:
                 return new GuiArcaneAssembler(player, world, x, y, z);
@@ -383,10 +377,6 @@ public class ThEGuiHandler implements IGuiHandler {
         ID -= ThEGuiHandler.DIRECTION_OFFSET;
 
         switch (ID) {
-            // Is this the cell workbench?
-            case ThEGuiHandler.CELL_WORKBENCH_ID:
-                return new ContainerEssentiaCellWorkbench(player, world, x, y, z);
-
             // Is this the arcane assembler?
             case ThEGuiHandler.ARCANE_ASSEMBLER_ID:
                 return new ContainerArcaneAssembler(player, world, x, y, z);

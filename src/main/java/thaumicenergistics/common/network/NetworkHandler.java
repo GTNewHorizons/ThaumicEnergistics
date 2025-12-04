@@ -10,7 +10,6 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.network.packet.client.Packet_C_ArcaneCraftingTerminal;
-import thaumicenergistics.common.network.packet.client.Packet_C_AspectSlot;
 import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaVibrationChamber;
 import thaumicenergistics.common.network.packet.client.Packet_C_ExportBusVoidButtonUpdate;
 import thaumicenergistics.common.network.packet.client.Packet_C_KnowledgeInscriber;
@@ -21,10 +20,8 @@ import thaumicenergistics.common.network.packet.client.ThEAreaPacket;
 import thaumicenergistics.common.network.packet.client.ThEClientPacket;
 import thaumicenergistics.common.network.packet.client.WrapperPacket_C;
 import thaumicenergistics.common.network.packet.server.Packet_S_ArcaneCraftingTerminal;
-import thaumicenergistics.common.network.packet.server.Packet_S_AspectSlot;
 import thaumicenergistics.common.network.packet.server.Packet_S_ConfirmCraftingJob;
 import thaumicenergistics.common.network.packet.server.Packet_S_DistillationEncoder;
-import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellWorkbench;
 import thaumicenergistics.common.network.packet.server.Packet_S_ExportBusVoidButtonUpdate;
 import thaumicenergistics.common.network.packet.server.Packet_S_KnowledgeInscriber;
 import thaumicenergistics.common.network.packet.server.Packet_S_NEIRecipe;
@@ -101,10 +98,6 @@ public class NetworkHandler {
         // Register channel server side handler
         NetworkHandler.channel.registerMessage(HandlerServer.class, WrapperPacket_S.class, 2, Side.SERVER);
 
-        // Aspect slot
-        registerPacket(Packet_C_AspectSlot.class);
-        registerPacket(Packet_S_AspectSlot.class);
-
         // Essentia import/export bus
         registerPacket(Packet_C_ExportBusVoidButtonUpdate.class);
         registerPacket(Packet_S_ExportBusVoidButtonUpdate.class);
@@ -113,9 +106,6 @@ public class NetworkHandler {
         registerPacket(Packet_C_ArcaneCraftingTerminal.class);
         registerPacket(Packet_S_ArcaneCraftingTerminal.class);
         registerPacket(Packet_C_UpdatePlayerArmor.class);
-
-        // Essentia cell workbench
-        registerPacket(Packet_S_EssentiaCellWorkbench.class);
 
         // Knowledge inscriber
         registerPacket(Packet_C_KnowledgeInscriber.class);
