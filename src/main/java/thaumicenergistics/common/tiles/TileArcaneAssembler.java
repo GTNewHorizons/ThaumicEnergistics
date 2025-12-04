@@ -854,11 +854,7 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
 
         // Is there a knowledge core?
         if (this.internalInventory.getHasStack(KCORE_SLOT_INDEX)) {
-            // Is there a pattern?
-            if (this.currentPattern != null) {
-                // Set the patterns core
-                this.currentPattern.setKnowledgeCore(this.internalInventory.getStackInSlot(KCORE_SLOT_INDEX));
-            }
+
         } else if (this.currentPattern != null) {
             // Clear the pattern
             this.isCrafting = false;
@@ -1088,7 +1084,7 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
         // Read the pattern
         if (data.hasKey(TileArcaneAssembler.NBTKEY_CRAFTING_PATTERN)) {
             this.currentPattern = new ArcaneCraftingPattern(
-                    null,
+
                     data.getCompoundTag(TileArcaneAssembler.NBTKEY_CRAFTING_PATTERN));
         }
     }
