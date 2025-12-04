@@ -20,9 +20,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import thaumicenergistics.Tags;
 import thaumicenergistics.api.IThEConfig;
 import thaumicenergistics.api.ThEApi;
-import thaumicenergistics.api.grid.IEssentiaGrid;
 import thaumicenergistics.common.entities.WirelessGolemHandler;
-import thaumicenergistics.common.grid.GridEssentiaCache;
 import thaumicenergistics.common.integration.IntegrationCore;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
 import thaumicenergistics.common.integration.tc.EssentiaTileContainerHelper;
@@ -129,9 +127,6 @@ public class ThaumicEnergistics {
 
         // Register integration
         IntegrationCore.init();
-
-        // Register the essentia grid cache
-        AEApi.instance().registries().gridCache().registerGridCache(IEssentiaGrid.class, GridEssentiaCache.class);
 
         // Register blacklist
         AEApi.instance().registries().itemDisplay().blacklistItemDisplay(ItemCraftingAspect.class);
