@@ -1,5 +1,6 @@
 package thaumicenergistics.common;
 
+import static thaumicenergistics.common.items.ItemEnum.WIRELESS_TERMINAL;
 import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STACK_TYPE;
 
 import net.minecraft.creativetab.CreativeTabs;
@@ -7,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import appeng.api.AEApi;
+import appeng.api.features.IWirelessTermHandler;
 import appeng.api.storage.data.AEStackTypeRegistry;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.common.Mod;
@@ -130,6 +132,9 @@ public class ThaumicEnergistics {
 
         // Register blacklist
         AEApi.instance().registries().itemDisplay().blacklistItemDisplay(ItemCraftingAspect.class);
+
+        AEApi.instance().registries().wireless()
+                .registerWirelessHandler((IWirelessTermHandler) WIRELESS_TERMINAL.getItem());
 
         // Register the wireless golem handler
         ThEApi.instance().interact().registerGolemHookHandler(WirelessGolemHandler.getInstance());
