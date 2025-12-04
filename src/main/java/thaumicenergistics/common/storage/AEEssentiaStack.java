@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
@@ -316,5 +317,18 @@ public class AEEssentiaStack extends AEStack<AEEssentiaStack> {
             // Disable blending
             GL11.glDisable(GL11.GL_BLEND);
         }
+    }
+
+    @Override
+    public void drawOnBlockFace(World world) {
+        GL11.glPushMatrix();
+
+        GL11.glTranslatef(0, -0.04F, 0);
+        GL11.glScalef(1.0f / 42.0f, 1.0f / 42.0f, 1.0f / 42.0f);
+        GL11.glTranslated(-8.0, -10.2, -10.6);
+
+        UtilsFX.drawTag(0, 0, this.aspect, 0, 0, 0);
+
+        GL11.glPopMatrix();
     }
 }

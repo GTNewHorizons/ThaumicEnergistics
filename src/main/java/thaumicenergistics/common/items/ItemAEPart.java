@@ -21,6 +21,7 @@ import appeng.api.parts.IPartItem;
 import appeng.items.parts.PartType;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import thaumicenergistics.client.textures.BlockTextureManager;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.parts.AEPartsEnum;
 import thaumicenergistics.common.utils.ThELog;
@@ -133,6 +134,12 @@ public class ItemAEPart extends Item implements IPartItem, IItemGroup {
         if (damage == AEPartsEnum.EssentiaLevelEmitter.ordinal()) {
             Item emitter = AEApi.instance().definitions().parts().levelEmitter().maybeItem().get();
             return emitter.getIconFromDamage(PartType.LevelEmitter.baseDamage);
+        }
+        if (damage == AEPartsEnum.EssentiaStorageMonitor.ordinal()) {
+            return BlockTextureManager.ARCANE_CRAFTING_TERMINAL.getTextures()[0];
+        }
+        if (damage == AEPartsEnum.EssentiaConversionMonitor.ordinal()) {
+            return BlockTextureManager.ARCANE_CRAFTING_TERMINAL.getTextures()[0];
         }
         return super.getIconFromDamage(damage);
     }

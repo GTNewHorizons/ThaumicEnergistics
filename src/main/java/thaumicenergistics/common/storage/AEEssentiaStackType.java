@@ -14,6 +14,8 @@ import appeng.api.storage.data.IAEStackType;
 import appeng.api.storage.data.IItemList;
 import cpw.mods.fml.common.Loader;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.ObjectIntImmutablePair;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
@@ -44,8 +46,8 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
     }
 
     @Override
-    public boolean isContainerItemForType(@NotNull ItemStack container) {
-        return container.getItem() instanceof IEssentiaContainerItem;
+    public boolean isContainerItemForType(@Nullable ItemStack container) {
+        return container != null && container.getItem() instanceof IEssentiaContainerItem;
     }
 
     @Override
@@ -74,5 +76,21 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
             }
         }
         return null;
+    }
+
+    @Override
+    public long drainStackFromContainer(@NotNull ItemStack container, @NotNull AEEssentiaStack stack) {
+        return 0;
+    }
+
+    @Override
+    public @Nullable ItemStack clearFilledContainer(@NotNull ItemStack container) {
+        return null;
+    }
+
+    @Override
+    public @NotNull ObjectIntPair<ItemStack> fillContainer(@NotNull ItemStack container,
+            @NotNull AEEssentiaStack stack) {
+        return new ObjectIntImmutablePair<>(null, 0);
     }
 }
