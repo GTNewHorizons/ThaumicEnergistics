@@ -42,4 +42,11 @@ public class ClientProxy extends CommonProxy {
             }
         }
     }
+
+    @Override
+    public void registerItems() {
+        super.registerItems();
+        // hide technical item from NEI
+        codechicken.nei.api.API.hideItem(ItemEnum.ARCANE_PATTERN.getStack());
+    }
 }
