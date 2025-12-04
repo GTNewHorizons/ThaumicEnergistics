@@ -17,13 +17,13 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.me.GridAccessException;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.ObjectIntMutablePair;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.common.container.ContainerEssentiaVibrationChamber;
 import thaumicenergistics.common.integration.IWailaSource;
 import thaumicenergistics.common.integration.tc.EssentiaTransportHelper;
 import thaumicenergistics.common.network.ThEBasePacket;
 import thaumicenergistics.common.registries.ThEStrings;
-import thaumicenergistics.common.storage.AspectStack;
 import thaumicenergistics.common.tiles.abstraction.TileEVCBase;
 
 /**
@@ -119,6 +119,8 @@ public class TileEssentiaVibrationChamber extends TileEVCBase implements IGridTi
      * @return
      */
     private int adjustProcessingValues() {
+        assert this.storedEssentia != null;
+
         int pTime = 0;
 
         // Has the burn time of coal been retrieved?
@@ -128,10 +130,10 @@ public class TileEssentiaVibrationChamber extends TileEVCBase implements IGridTi
         }
 
         // What kind of essentia is stored?
-        if (this.storedEssentia.getAspect() == Aspect.FIRE) {
+        if (this.storedEssentia.left() == Aspect.FIRE) {
             pTime = TileEssentiaVibrationChamber.coalBurnTime / 2;
-            this.powerProducedPerProcessingTick = TileEssentiaVibrationChamber.BASE_POWER_PER_TICK * 1.0D;
-        } else if (this.storedEssentia.getAspect() == Aspect.ENERGY) {
+            this.powerProducedPerProcessingTick = TileEssentiaVibrationChamber.BASE_POWER_PER_TICK;
+        } else if (this.storedEssentia.left() == Aspect.ENERGY) {
             pTime = (int) (TileEssentiaVibrationChamber.coalBurnTime / 1.6F);
             this.powerProducedPerProcessingTick = TileEssentiaVibrationChamber.BASE_POWER_PER_TICK * 1.6D;
         }
@@ -158,16 +160,19 @@ public class TileEssentiaVibrationChamber extends TileEVCBase implements IGridTi
      */
     private boolean consumeEssentia() {
         // Is there anything stored?
-        if (this.hasStoredEssentia()) {
+        if (this.storedEssentia != null) {
             // Get the processing time
             int pTime = this.adjustProcessingValues();
             if (pTime > 0) {
                 // Set the type
-                this.processingAspect = this.storedEssentia.getAspect();
+                this.processingAspect = this.storedEssentia.left();
                 this.processingChanged = true;
 
                 // Take one
-                this.storedEssentia.adjustStackSize(-1);
+                this.storedEssentia.right(this.storedEssentia.rightInt() - 1);
+                if (this.storedEssentia.rightInt() <= 0) {
+                    this.storedEssentia = null;
+                }
 
                 // Mark dirty
                 this.markDirty();
@@ -308,28 +313,30 @@ public class TileEssentiaVibrationChamber extends TileEVCBase implements IGridTi
     @Override
     protected int addEssentia(final Aspect aspect, final int amount, final Actionable mode) {
         // Validate essentia type
-        if ((this.hasStoredEssentia()) && (this.storedEssentia.getAspect() != aspect)) {
+        if (this.storedEssentia != null && (this.storedEssentia.left() != aspect)) {
             // Essentia type does not match
             return 0;
         }
 
         // Get how much is stored, and the aspect
-        int storedAmount = (this.storedEssentia == null ? 0 : (int) this.storedEssentia.getStackSize());
-        Aspect storedAspect = (this.storedEssentia == null ? null : this.storedEssentia.getAspect());
+        int storedAmount = this.storedEssentia == null ? 0 : this.storedEssentia.rightInt();
+        Aspect storedAspect = this.storedEssentia == null ? null : this.storedEssentia.left();
 
         // Calculate how much to be stored
         int addedAmount = Math.min(amount, TileEVCBase.MAX_ESSENTIA_STORED - storedAmount);
 
-        if ((addedAmount > 0) && (mode == Actionable.MODULATE)) {
+        if (addedAmount > 0 && mode == Actionable.MODULATE) {
             // Create the stack if needed
             if (storedAspect == null) {
-                this.storedEssentia = new AspectStack(aspect, 0);
+                this.storedEssentia = new ObjectIntMutablePair<>(aspect, addedAmount);
+                // this.storedEssentia = new AspectStack(aspect, 0);
             } else {
-                this.storedEssentia.setAspect(aspect);
+                this.storedEssentia.right(this.storedEssentia.rightInt() + addedAmount);
+                // this.storedEssentia.setAspect(aspect);
             }
 
             // Add to the amount
-            this.storedEssentia.adjustStackSize(addedAmount);
+            // this.storedEssentia.adjustStackSize(addedAmount);
 
             // Mark for update
             this.markForUpdate();
@@ -442,12 +449,12 @@ public class TileEssentiaVibrationChamber extends TileEVCBase implements IGridTi
     @Override
     public void addWailaInformation(final List<String> tooltip) {
         // Write stored
-        if (this.hasStoredEssentia()) {
+        if (this.storedEssentia != null) {
             tooltip.add(
                     String.format(
                             ThEStrings.GUi_VibrationChamber_Stored.getLocalized(),
-                            this.storedEssentia.getStackSize(),
-                            this.storedEssentia.getAspectName()));
+                            this.storedEssentia.rightInt(),
+                            this.storedEssentia.left().getName()));
         }
 
         // Write processing
@@ -491,16 +498,12 @@ public class TileEssentiaVibrationChamber extends TileEVCBase implements IGridTi
      */
     public boolean hasSaveDataForDismanle() {
         // Anything stored?
-        if ((this.storedEssentia != null) && !this.storedEssentia.isEmpty()) {
+        if (this.storedEssentia != null) {
             return true;
         }
 
         // Anything being processed?
-        if (this.processingTicksRemaining > 0) {
-            return true;
-        }
-
-        return false;
+        return this.processingTicksRemaining > 0;
     }
 
     /**
@@ -555,7 +558,7 @@ public class TileEssentiaVibrationChamber extends TileEVCBase implements IGridTi
         }
 
         // Is there anything stored?
-        if (this.hasStoredEssentia()) {
+        if (this.storedEssentia != null) {
             // Is the chamber idle?
             if (this.processingTicksRemaining == 0) {
                 // Can essentia be consumed?
@@ -565,7 +568,7 @@ public class TileEssentiaVibrationChamber extends TileEVCBase implements IGridTi
             }
 
             // Is the buffer not full?
-            if (this.storedEssentia.getStackSize() < TileEVCBase.MAX_ESSENTIA_STORED) {
+            if (this.storedEssentia == null || this.storedEssentia.rightInt() < TileEVCBase.MAX_ESSENTIA_STORED) {
                 // Replenish if possible
                 replenish = true;
             }
