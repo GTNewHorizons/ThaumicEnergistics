@@ -14,7 +14,6 @@ import thaumicenergistics.common.network.packet.client.Packet_C_AspectSlot;
 import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaVibrationChamber;
 import thaumicenergistics.common.network.packet.client.Packet_C_ExportBusVoidButtonUpdate;
 import thaumicenergistics.common.network.packet.client.Packet_C_KnowledgeInscriber;
-import thaumicenergistics.common.network.packet.client.Packet_C_Priority;
 import thaumicenergistics.common.network.packet.client.Packet_C_Sync;
 import thaumicenergistics.common.network.packet.client.Packet_C_UpdatePlayerArmor;
 import thaumicenergistics.common.network.packet.client.Packet_R_ParticleFX;
@@ -23,14 +22,12 @@ import thaumicenergistics.common.network.packet.client.ThEClientPacket;
 import thaumicenergistics.common.network.packet.client.WrapperPacket_C;
 import thaumicenergistics.common.network.packet.server.Packet_S_ArcaneCraftingTerminal;
 import thaumicenergistics.common.network.packet.server.Packet_S_AspectSlot;
-import thaumicenergistics.common.network.packet.server.Packet_S_ChangeGui;
 import thaumicenergistics.common.network.packet.server.Packet_S_ConfirmCraftingJob;
 import thaumicenergistics.common.network.packet.server.Packet_S_DistillationEncoder;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaCellWorkbench;
 import thaumicenergistics.common.network.packet.server.Packet_S_ExportBusVoidButtonUpdate;
 import thaumicenergistics.common.network.packet.server.Packet_S_KnowledgeInscriber;
 import thaumicenergistics.common.network.packet.server.Packet_S_NEIRecipe;
-import thaumicenergistics.common.network.packet.server.Packet_S_Priority;
 import thaumicenergistics.common.network.packet.server.Packet_S_WrenchFocus;
 import thaumicenergistics.common.network.packet.server.ThEServerPacket;
 import thaumicenergistics.common.network.packet.server.WrapperPacket_S;
@@ -116,13 +113,6 @@ public class NetworkHandler {
         registerPacket(Packet_C_ArcaneCraftingTerminal.class);
         registerPacket(Packet_S_ArcaneCraftingTerminal.class);
         registerPacket(Packet_C_UpdatePlayerArmor.class);
-
-        // Change GUI
-        registerPacket(Packet_S_ChangeGui.class);
-
-        // Priority GUI
-        registerPacket(Packet_C_Priority.class);
-        registerPacket(Packet_S_Priority.class);
 
         // Essentia cell workbench
         registerPacket(Packet_S_EssentiaCellWorkbench.class);

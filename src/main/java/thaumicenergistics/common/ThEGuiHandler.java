@@ -11,7 +11,6 @@ import appeng.container.ContainerOpenContext;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.container.implementations.ContainerCraftConfirm;
 import appeng.container.implementations.ContainerCraftingStatus;
-import appeng.helpers.IPriorityHost;
 import appeng.parts.AEBasePart;
 import cpw.mods.fml.common.network.IGuiHandler;
 import thaumicenergistics.api.grid.ICraftingIssuerHost;
@@ -25,14 +24,12 @@ import thaumicenergistics.client.gui.GuiDistillationPatternEncoder;
 import thaumicenergistics.client.gui.GuiEssentiaCellWorkbench;
 import thaumicenergistics.client.gui.GuiEssentiaVibrationChamber;
 import thaumicenergistics.client.gui.GuiKnowledgeInscriber;
-import thaumicenergistics.client.gui.GuiPriority;
 import thaumicenergistics.common.container.ContainerArcaneAssembler;
 import thaumicenergistics.common.container.ContainerDistillationPatternEncoder;
 import thaumicenergistics.common.container.ContainerEssentiaCellWorkbench;
 import thaumicenergistics.common.container.ContainerEssentiaVibrationChamber;
 import thaumicenergistics.common.container.ContainerKnowledgeInscriber;
 import thaumicenergistics.common.container.ContainerPartArcaneCraftingTerminal;
-import thaumicenergistics.common.container.ContainerPriority;
 import thaumicenergistics.common.parts.PartArcaneCraftingTerminal;
 import thaumicenergistics.common.parts.ThEPartBase;
 
@@ -54,11 +51,6 @@ public class ThEGuiHandler implements IGuiHandler {
      * Singular ID of the essentia cell gui
      */
     public static final int ESSENTIA_CELL_ID = ThEGuiHandler.ID_STEP_VALUE * 1;
-
-    /**
-     * Base ID of the priority gui. Add the ForgeDirection's side ordinal to this value.
-     */
-    public static final int PRIORITY_ID = ThEGuiHandler.ID_STEP_VALUE * 2;
 
     /**
      * ID of the essentia cell workbench
@@ -371,20 +363,6 @@ public class ThEGuiHandler implements IGuiHandler {
                 return null;
         }
 
-        // Is this the priority window?
-        if (ThEGuiHandler.isIDInRange(ID, ThEGuiHandler.PRIORITY_ID)) {
-            // Get the part
-            IPart part = ThEGuiHandler.getPartFromSidedID(ID, world, x, y, z);
-
-            // Ensure we got the part, and that it implements IPriortyHost
-            if ((part == null) || !(part instanceof IPriorityHost)) {
-                return null;
-            }
-
-            // Return the gui
-            return new GuiPriority((IPriorityHost) part, player);
-        }
-
         // No matching GUI element found
         return null;
     }
@@ -448,20 +426,6 @@ public class ThEGuiHandler implements IGuiHandler {
                     return new ContainerCraftingStatus(player.inventory, statusHost);
                 }
                 return null;
-        }
-
-        // Is this the priority window?
-        if (ThEGuiHandler.isIDInRange(ID, ThEGuiHandler.PRIORITY_ID)) {
-            // Get the part
-            IPart part = ThEGuiHandler.getPartFromSidedID(ID, world, x, y, z);
-
-            // Ensure we got the part, and that it implements IPriortyHost
-            if ((part == null) || !(part instanceof IPriorityHost)) {
-                return null;
-            }
-
-            // Return the container
-            return new ContainerPriority((IPriorityHost) part, player);
         }
 
         // No matching GUI element found

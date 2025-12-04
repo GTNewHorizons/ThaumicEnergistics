@@ -381,51 +381,6 @@ public final class EssentiaItemContainerHelper {
     }
 
     /**
-     * Gets an {@link AspectStack} representing the essentia and amount in the container.
-     *
-     * @param container
-     * @return AspectStack can read container, null otherwise.
-     */
-    public IAspectStack getAspectStackFromContainer(final ItemStack container) {
-        // Get the aspect of the essentia in the container
-        Aspect aspect = this.getAspectInContainer(container);
-
-        // Did we get an aspect?
-        if (aspect == null) {
-            return null;
-        }
-
-        // get the amount stored in the container
-        int stored = this.getContainerStoredAmount(container);
-
-        return new AspectStack(aspect, stored);
-    }
-
-    /**
-     * Gets the maximum amount the specified container can hold
-     *
-     * @param container
-     * @return
-     */
-    public int getContainerCapacity(final ItemStack container) {
-        // Is the container not null?
-        if (container != null) {
-            // Get the item from the stack
-            Item containerItem = container.getItem();
-
-            // Get the info about the container
-            IThEEssentiaContainerPermission info = this.getContainerInfo(containerItem, container.getItemDamage());
-
-            // Did we get any info?
-            if (info != null) {
-                return info.maximumCapacity();
-            }
-        }
-
-        return 0;
-    }
-
-    /**
      * Gets the information about the container as it was registered to the whitelist.
      *
      * @param item
