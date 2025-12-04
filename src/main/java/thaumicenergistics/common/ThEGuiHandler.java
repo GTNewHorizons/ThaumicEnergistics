@@ -8,18 +8,12 @@ import appeng.api.parts.IPart;
 import appeng.api.parts.IPartHost;
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
-import appeng.container.implementations.ContainerCraftAmount;
-import appeng.container.implementations.ContainerCraftConfirm;
-import appeng.container.implementations.ContainerCraftingStatus;
 import appeng.parts.AEBasePart;
 import cpw.mods.fml.common.network.IGuiHandler;
 import thaumicenergistics.api.grid.ICraftingIssuerHost;
 import thaumicenergistics.api.gui.ICraftingIssuerContainer;
 import thaumicenergistics.client.gui.GuiArcaneAssembler;
 import thaumicenergistics.client.gui.GuiArcaneCraftingTerminal;
-import thaumicenergistics.client.gui.GuiCraftAmountBridge;
-import thaumicenergistics.client.gui.GuiCraftConfirmBridge;
-import thaumicenergistics.client.gui.GuiCraftingStatusBridge;
 import thaumicenergistics.client.gui.GuiDistillationPatternEncoder;
 import thaumicenergistics.client.gui.GuiEssentiaVibrationChamber;
 import thaumicenergistics.client.gui.GuiKnowledgeInscriber;
@@ -51,16 +45,6 @@ public class ThEGuiHandler implements IGuiHandler {
     public static final int ESSENTIA_CELL_ID = ThEGuiHandler.ID_STEP_VALUE * 1;
 
     /**
-     * ID of the essentia cell workbench
-     */
-    public static final int CELL_WORKBENCH_ID = ThEGuiHandler.ID_STEP_VALUE * 3;
-
-    /**
-     * ID of the wireless terminal gui.
-     */
-    public static final int WIRELESS_TERMINAL_ID = ThEGuiHandler.ID_STEP_VALUE * 4;
-
-    /**
      * ID of the arcane assembler gui.
      */
     public static final int ARCANE_ASSEMBLER_ID = ThEGuiHandler.ID_STEP_VALUE * 5;
@@ -76,26 +60,9 @@ public class ThEGuiHandler implements IGuiHandler {
     public static final int ESSENTIA_VIBRATION_CHAMBER = ThEGuiHandler.ID_STEP_VALUE * 7;
 
     /**
-     * ID of the auto crafting amount bridge. When calling this make sure the current container implements
-     * ICraftingIssuerContainer, or extends AEBaseContainer with the target set to an ICraftingIssuerHost.
-     */
-    public static final int AUTO_CRAFTING_AMOUNT = ThEGuiHandler.ID_STEP_VALUE * 8;
-
-    /**
-     * ID of the auto crafting confirm bridge. When calling this make sure the current container extends AEBaseContainer
-     * with the target set to an ICraftingIssuerHost.
-     */
-    public static final int AUTO_CRAFTING_CONFIRM = ThEGuiHandler.ID_STEP_VALUE * 9;
-
-    /**
      * ID of the distillation encoder.
      */
     public static final int DISTILLATION_ENCODER = ThEGuiHandler.ID_STEP_VALUE * 10;
-
-    /**
-     * ID of the crafting status gui.
-     */
-    public static final int CRAFTING_STATUS = ThEGuiHandler.ID_STEP_VALUE * 11;
 
     /**
      * Extra data used for some GUI calls.
@@ -331,30 +298,6 @@ public class ThEGuiHandler implements IGuiHandler {
             // Distillation encoder?
             case ThEGuiHandler.DISTILLATION_ENCODER:
                 return new GuiDistillationPatternEncoder(player, world, x, y, z);
-
-            // AE2 Autocrafting Amount?
-            case ThEGuiHandler.AUTO_CRAFTING_AMOUNT:
-                ICraftingIssuerHost amountHost = ThEGuiHandler.getCraftingIssuerHost(player);
-                if (amountHost != null) {
-                    return new GuiCraftAmountBridge(player, amountHost);
-                }
-                return null;
-
-            // AE2 Autocrafting Confirm?
-            case ThEGuiHandler.AUTO_CRAFTING_CONFIRM:
-                ICraftingIssuerHost confirmHost = ThEGuiHandler.getCraftingIssuerHost(player);
-                if (confirmHost != null) {
-                    return new GuiCraftConfirmBridge(player, confirmHost);
-                }
-                return null;
-
-            // AE2 Crafting Status?
-            case ThEGuiHandler.CRAFTING_STATUS:
-                ICraftingIssuerHost statusHost = ThEGuiHandler.getCraftingIssuerHost(player);
-                if (statusHost != null) {
-                    return new GuiCraftingStatusBridge(player, statusHost);
-                }
-                return null;
         }
 
         // No matching GUI element found
@@ -392,30 +335,6 @@ public class ThEGuiHandler implements IGuiHandler {
             // Distillation encoder?
             case ThEGuiHandler.DISTILLATION_ENCODER:
                 return new ContainerDistillationPatternEncoder(player, world, x, y, z);
-
-            // AE2 Autocrafting Amount?
-            case ThEGuiHandler.AUTO_CRAFTING_AMOUNT:
-                ICraftingIssuerHost amountHost = ThEGuiHandler.getCraftingIssuerHost(player);
-                if (amountHost != null) {
-                    return new ContainerCraftAmount(player.inventory, amountHost);
-                }
-                return null;
-
-            // AE2 Autocrafting Confirm?
-            case ThEGuiHandler.AUTO_CRAFTING_CONFIRM:
-                ICraftingIssuerHost confirmHost = ThEGuiHandler.getCraftingIssuerHost(player);
-                if (confirmHost != null) {
-                    return new ContainerCraftConfirm(player.inventory, confirmHost);
-                }
-                return null;
-
-            // AE2 Crafting Status?
-            case ThEGuiHandler.CRAFTING_STATUS:
-                ICraftingIssuerHost statusHost = ThEGuiHandler.getCraftingIssuerHost(player);
-                if (statusHost != null) {
-                    return new ContainerCraftingStatus(player.inventory, statusHost);
-                }
-                return null;
         }
 
         // No matching GUI element found

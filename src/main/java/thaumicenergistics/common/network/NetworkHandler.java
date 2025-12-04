@@ -20,7 +20,6 @@ import thaumicenergistics.common.network.packet.client.ThEAreaPacket;
 import thaumicenergistics.common.network.packet.client.ThEClientPacket;
 import thaumicenergistics.common.network.packet.client.WrapperPacket_C;
 import thaumicenergistics.common.network.packet.server.Packet_S_ArcaneCraftingTerminal;
-import thaumicenergistics.common.network.packet.server.Packet_S_ConfirmCraftingJob;
 import thaumicenergistics.common.network.packet.server.Packet_S_DistillationEncoder;
 import thaumicenergistics.common.network.packet.server.Packet_S_ExportBusVoidButtonUpdate;
 import thaumicenergistics.common.network.packet.server.Packet_S_KnowledgeInscriber;
@@ -119,9 +118,6 @@ public class NetworkHandler {
 
         // Essentia Vibration Chamber
         registerPacket(Packet_C_EssentiaVibrationChamber.class);
-
-        // Confirm crafting
-        registerPacket(Packet_S_ConfirmCraftingJob.class);
 
         // Distillation encoder
         registerPacket(Packet_S_DistillationEncoder.class);

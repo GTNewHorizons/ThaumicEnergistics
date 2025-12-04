@@ -18,7 +18,6 @@ import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.client.textures.BlockTextureManager;
-import thaumicenergistics.common.ThEGuiHandler;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.tiles.TileEssentiaCellWorkbench;
 
@@ -69,9 +68,6 @@ public class BlockEssentiaCellWorkbench extends AbstractBlockAEWrenchable {
             }
             return true;
         }
-
-        // Launch the gui.
-        ThEGuiHandler.launchGui(ThEGuiHandler.CELL_WORKBENCH_ID, player, world, x, y, z);
 
         return true;
     }
