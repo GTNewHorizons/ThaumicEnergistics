@@ -13,14 +13,9 @@ import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.energy.IEnergyGrid;
 import appeng.api.networking.security.ISecurityGrid;
-import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.parts.PartItemStack;
-import appeng.api.storage.IMEMonitor;
-import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
-import thaumicenergistics.api.grid.IEssentiaGrid;
-import thaumicenergistics.api.grid.IMEEssentiaMonitor;
 import thaumicenergistics.common.parts.ThEPartBase;
 
 /**
@@ -64,24 +59,6 @@ public class AEPartGridBlock implements IGridBlock {
     }
 
     /**
-     * Returns the essentia monitor for the current grid.
-     *
-     * @return
-     */
-    public IMEEssentiaMonitor getEssentiaMonitor() {
-        // Get the grid.
-        IGrid grid = this.getGrid();
-
-        // Ensure there is a grid
-        if (grid == null) {
-            return null;
-        }
-
-        // Get the essentia monitor from the cache.
-        return (IMEEssentiaMonitor) grid.getCache(IEssentiaGrid.class);
-    }
-
-    /**
      * Return that we require a channel to function.
      */
     @Override
@@ -117,24 +94,6 @@ public class AEPartGridBlock implements IGridBlock {
     @Override
     public double getIdlePowerUsage() {
         return this.part.getIdlePowerUsage();
-    }
-
-    /**
-     * Gets the AE item monitor for the grid.
-     *
-     * @return Monitor if valid grid, null otherwise.
-     */
-    public IMEMonitor<IAEItemStack> getItemMonitor() {
-        // Get the storage grid
-        IStorageGrid storageGrid = this.getStorageGrid();
-
-        // Do we have a storage grid?
-        if (storageGrid == null) {
-            return null;
-        }
-
-        // Return the storage grid's item monitor.
-        return storageGrid.getItemInventory();
     }
 
     /**
@@ -177,24 +136,6 @@ public class AEPartGridBlock implements IGridBlock {
 
         // Get the security grid from the cache.
         return (ISecurityGrid) grid.getCache(ISecurityGrid.class);
-    }
-
-    /**
-     * Gets the storage grid.
-     *
-     * @return
-     */
-    public IStorageGrid getStorageGrid() {
-        // Get the grid.
-        IGrid grid = this.getGrid();
-
-        // Do we have a grid?
-        if (grid == null) {
-            return null;
-        }
-
-        // Get the storage grid from the cache.
-        return (IStorageGrid) grid.getCache(IStorageGrid.class);
     }
 
     @Override
