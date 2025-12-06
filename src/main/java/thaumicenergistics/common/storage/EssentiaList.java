@@ -1,5 +1,7 @@
 package thaumicenergistics.common.storage;
 
+import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STACK_TYPE;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -7,6 +9,7 @@ import java.util.Iterator;
 import javax.annotation.Nonnull;
 
 import appeng.api.config.FuzzyMode;
+import appeng.api.storage.data.IAEStackType;
 import appeng.api.storage.data.IItemList;
 import appeng.util.item.MeaningfulAEStackIterator;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -142,8 +145,7 @@ public class EssentiaList implements IItemList<AEEssentiaStack> {
     }
 
     @Override
-    public byte getStackType() {
-        // TODO
-        return 10;
+    public IAEStackType<AEEssentiaStack> getStackType() {
+        return ESSENTIA_STACK_TYPE;
     }
 }
