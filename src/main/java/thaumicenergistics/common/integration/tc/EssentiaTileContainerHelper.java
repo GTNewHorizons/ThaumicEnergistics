@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-
 import org.jetbrains.annotations.Nullable;
 
 import appeng.api.config.Actionable;
@@ -25,7 +22,6 @@ import thaumcraft.common.tiles.TileJarFillableVoid;
 import thaumcraft.common.tiles.TileTubeBuffer;
 import thaumicenergistics.api.IThETransportPermissions;
 import thaumicenergistics.api.ThEApi;
-import thaumicenergistics.common.fluids.GaseousEssentia;
 import thaumicenergistics.common.storage.AEEssentiaStack;
 import thaumicenergistics.common.tiles.TileEssentiaVibrationChamber;
 import thaumicenergistics.common.tiles.abstraction.TileEVCBase;
@@ -47,52 +43,6 @@ public final class EssentiaTileContainerHelper {
      * Cache the permission class
      */
     public final IThETransportPermissions perms = ThEApi.instance().transportPermissions();
-
-    /**
-     * Extracts essentia from a container based on the specified fluid stack type and amount.
-     *
-     * @param container
-     * @param request
-     * @param mode
-     * @return
-     */
-    public FluidStack extractFromContainer(final IAspectContainer container, final FluidStack request,
-            final Actionable mode) {
-        // Ensure there is a request
-        if ((request == null) || (request.getFluid() == null) || (request.amount == 0)) {
-            // No request
-            return null;
-        }
-
-        // Get the fluid
-        Fluid fluid = request.getFluid();
-
-        // Ensure it is a gas
-        if (!(fluid instanceof GaseousEssentia)) {
-            // Not a gas
-            return null;
-        }
-
-        // Get the gas's aspect
-        Aspect gasAspect = ((GaseousEssentia) fluid).getAspect();
-
-        // Get the amount to extract
-        long amountToDrain_EU = EssentiaConversionHelper.INSTANCE.convertFluidAmountToEssentiaAmount(request.amount);
-
-        // Extract
-        long extractedAmount_EU = this.extractFromContainer(container, (int) amountToDrain_EU, gasAspect, mode);
-
-        // Was any extracted?
-        if (extractedAmount_EU <= 0) {
-            // None extracted
-            return null;
-        }
-
-        // Return the extracted amount
-        return new FluidStack(
-                fluid,
-                (int) EssentiaConversionHelper.INSTANCE.convertEssentiaAmountToFluidAmount(extractedAmount_EU));
-    }
 
     /**
      * Extracts the specified aspect and amount from the container.

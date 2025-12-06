@@ -45,12 +45,6 @@ public final class IntegrationCore {
         if (Loader.isModLoaded("ComputerCraft")) {
             ModuleCC.init();
         }
-        if (Loader.isModLoaded("extracells")) {
-            ModuleEC2.init();
-        }
-        if (Loader.isModLoaded("ae2fc")) {
-            ModuleAe2fc.init();
-        }
         // Send a message to Thaumic Tinkerer to blacklist the essentia provider from its CC support
         FMLInterModComms.sendMessage("ThaumicTinkerer", "AddCCBlacklist", TileEssentiaProvider.class.getName());
 
