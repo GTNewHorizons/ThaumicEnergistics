@@ -23,7 +23,8 @@ public enum ItemEnum {
     FOCUS_AEWRENCH("focus.aewrench", new ItemFocusAEWrench()),
     CRAFTING_ASPECT("crafting.aspect", new ItemCraftingAspect()),
     GOLEM_WIFI_BACKPACK("golem.wifi.backpack", new ItemGolemWirelessBackpack()),
-    CELL_MICROSCOPE("cell.microscope", new ItemCellMicroscope());
+    CELL_MICROSCOPE("cell.microscope", new ItemCellMicroscope()),
+    ARCANE_PATTERN("arcane.pattern", new ItemArcaneCraftingPattern());
 
     /**
      * Cache of the enum values

@@ -87,7 +87,7 @@ public class HandlerKnowledgeCore {
                 try {
                     // Load the pattern
                     ArcaneCraftingPattern pattern = new ArcaneCraftingPattern(
-                            this.kCore,
+
                             plist.getCompoundTagAt(index));
 
                     // Is the pattern valid?
