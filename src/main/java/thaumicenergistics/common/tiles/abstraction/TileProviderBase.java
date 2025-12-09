@@ -13,7 +13,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.google.common.collect.ImmutableSet;
 
-import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.implementations.tiles.IColorableTile;
 import appeng.api.networking.GridFlags;
@@ -28,10 +27,12 @@ import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEMonitor;
-import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
+import appeng.core.AELog;
 import appeng.core.localization.WailaText;
+import appeng.helpers.MultiCraftingTracker;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
@@ -43,13 +44,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.common.integration.IWailaSource;
-import thaumicenergistics.common.items.ItemCraftingAspect;
 import thaumicenergistics.common.registries.EnumCache;
 import thaumicenergistics.common.storage.AEEssentiaStack;
+import thaumicenergistics.common.tiles.TileAdvancedInfusionProvider;
 import thaumicenergistics.common.tiles.TileEssentiaProvider;
 import thaumicenergistics.common.tiles.TileInfusionProvider;
 import thaumicenergistics.common.utils.EffectiveSide;
-import thaumicenergistics.implementaion.ThEMultiCraftingTracker;
 
 /**
  * Base class of {@link TileEssentiaProvider} and {@link TileInfusionProvider} and {@link TileAdvancedInfusionProvider}.
@@ -69,7 +69,7 @@ public abstract class TileProviderBase extends AENetworkTile
     /**
      * Network source representing the provider.
      */
-    private MachineSource asMachineSource;
+    private final MachineSource asMachineSource;
 
     /**
      * ForgeDirection ordinal of our attachment side.
@@ -91,17 +91,16 @@ public abstract class TileProviderBase extends AENetworkTile
      */
     protected boolean isColorForced = false;
 
-    protected ThEMultiCraftingTracker craftingTracker = new ThEMultiCraftingTracker(this, 1);
+    protected MultiCraftingTracker craftingTracker;
 
     public TileProviderBase() {
         // Create the source
         this.asMachineSource = new MachineSource(this);
+        this.craftingTracker = new MultiCraftingTracker(this, 1);
     }
 
     /**
-     * Returns an array with the AE colors of any neighbor tiles. Index is side.
-     *
-     * @return
+     * @return an array with the AE colors of any neighbor tiles. Index is side.
      */
     private AEColor[] getNeighborCableColors() {
         AEColor[] sideColors = new AEColor[6];
@@ -127,12 +126,7 @@ public abstract class TileProviderBase extends AENetworkTile
     }
 
     /**
-     * Returns how much was extracted from the network.
-     *
-     * @param wantedAspect
-     * @param wantedAmount
-     * @param mustMatch
-     * @return
+     * @return how much was extracted from the network.
      */
     protected int extractEssentiaFromNetwork(final Aspect wantedAspect, final int wantedAmount,
             final boolean mustMatch) {
@@ -176,10 +170,11 @@ public abstract class TileProviderBase extends AENetworkTile
     }
 
     /**
-     * Gets the essentia monitor from the network. Returns true if a monitor was retrieved.
-     *
-     * @return
+     * Gets the essentia monitor from the network.
+     * 
+     * @return true if a monitor was retrieved.
      */
+    @SuppressWarnings({ "unchecked" })
     protected boolean getEssentiaMonitor() {
         IGridNode node = this.getProxy().getNode();
 
@@ -208,15 +203,11 @@ public abstract class TileProviderBase extends AENetworkTile
 
     /**
      * Called when the power goes on or off.
-     *
-     * @param isPowered
      */
     protected void onPowerChange(final boolean isPowered) {}
 
     /**
      * Sets the color of the provider. This does not set the isColorForced flag to true.
-     *
-     * @param gridColor
      */
     protected void setProviderColor(final AEColor gridColor) {
         // Set our color to match
@@ -338,10 +329,7 @@ public abstract class TileProviderBase extends AENetworkTile
     }
 
     /**
-     * Returns how much of the specified aspect is in the network.
-     *
-     * @param searchAspect
-     * @return
+     * @return how much of the specified aspect is in the network.
      */
     public long getAspectAmountInNetwork(final Aspect searchAspect) {
         // Ensure there is a monitor
@@ -374,9 +362,7 @@ public abstract class TileProviderBase extends AENetworkTile
     }
 
     /**
-     * Gets the machine source for the provider.
-     *
-     * @return
+     * @return the machine source for the provider.
      */
     public MachineSource getMachineSource() {
         return this.asMachineSource;
@@ -496,8 +482,6 @@ public abstract class TileProviderBase extends AENetworkTile
 
     /**
      * Sets the owner of this tile.
-     *
-     * @param player
      */
     public void setOwner(final EntityPlayer player) {
         this.getProxy().setOwner(player);
@@ -505,8 +489,6 @@ public abstract class TileProviderBase extends AENetworkTile
 
     /**
      * Configures the provider based on the specified attachment side.
-     *
-     * @param attachmentSide
      */
     public void setupProvider(final int attachmentSide) {
         // Ignored on client side
@@ -525,7 +507,6 @@ public abstract class TileProviderBase extends AENetworkTile
     /**
      * When network Essentia is not enough, let provider can auto order some. With default amount 32.
      * 
-     * @param aspect
      * @return orderIsSuccessful
      */
     public boolean orderSomeEssentia(final Aspect aspect) {
@@ -537,26 +518,29 @@ public abstract class TileProviderBase extends AENetworkTile
      * 
      * @return orderIsSuccessful
      */
+    @SuppressWarnings({ "unchecked" })
     public boolean orderSomeEssentia(final Aspect aspect, final int amount) {
         try {
             ICraftingGrid craftingGrid = this.getProxy().getCrafting();
             IGrid grid = this.getProxy().getGrid();
-            IAEItemStack itemStack = AEApi.instance().storage()
-                    .createItemStack(ItemCraftingAspect.createStackForAspect(aspect, 1));
 
-            IMEMonitor<IAEItemStack> items = grid.<IStorageGrid>getCache(IStorageGrid.class).getItemInventory();
+            AEEssentiaStack stack = new AEEssentiaStack(aspect);
 
-            IAEItemStack existing = items.getAvailableItem(itemStack, IterationCounter.fetchNewId());
+            IMEMonitor<AEEssentiaStack> monitor = (IMEMonitor<AEEssentiaStack>) grid
+                    .<IStorageGrid>getCache(IStorageGrid.class).getMEMonitor(ESSENTIA_STACK_TYPE);
+            if (monitor == null) return false;
+
+            AEEssentiaStack existing = monitor.getAvailableItem(stack, IterationCounter.fetchNewId());
 
             if (existing == null || !existing.isCraftable()) return false;
 
-            if (!craftingGrid.isRequesting(itemStack)) {
+            if (!craftingGrid.isRequesting(stack)) {
                 int index = this.craftingTracker.getFirstEmptySlot();
                 if (index >= 0) {
                     return this.craftingTracker.handleCrafting(
                             index,
                             amount,
-                            itemStack,
+                            stack,
                             this.getWorldObj(),
                             grid,
                             craftingGrid,
@@ -564,7 +548,7 @@ public abstract class TileProviderBase extends AENetworkTile
                 }
             }
         } catch (Exception e) {
-            // do nothing
+            AELog.warn(e);
         }
 
         return false;
@@ -576,7 +560,7 @@ public abstract class TileProviderBase extends AENetworkTile
     }
 
     @Override
-    public IAEItemStack injectCraftedItems(ICraftingLink link, IAEItemStack items, Actionable mode) {
+    public IAEStack<?> injectCraftedItems(ICraftingLink link, IAEStack<?> items, Actionable mode) {
         return items;
     }
 
