@@ -3,29 +3,41 @@ package thaumicenergistics.common.container;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.ICrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
 import appeng.api.AEApi;
+import appeng.api.storage.StorageName;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
+import appeng.container.AEBaseContainer;
+import appeng.container.interfaces.IVirtualSlotHolder;
 import appeng.container.slot.SlotFake;
+import appeng.container.slot.SlotFakeTypeOnly;
+import appeng.container.slot.SlotRestrictedInput;
+import appeng.core.sync.network.NetworkHandler;
+import appeng.core.sync.packets.PacketVirtualSlot;
+import appeng.helpers.PatternHelper;
+import appeng.helpers.UltimatePatternHelper;
+import appeng.items.misc.ItemEncodedPattern;
+import appeng.items.misc.ItemEncodedUltimatePattern;
+import appeng.tile.inventory.IAEStackInventory;
+import appeng.util.item.AEItemStack;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.lib.research.ScanManager;
-import thaumicenergistics.api.storage.IInventoryUpdateReceiver;
-import thaumicenergistics.common.container.slot.SlotRestrictive;
-import thaumicenergistics.common.inventory.HandlerDistillationPattern;
-import thaumicenergistics.common.inventory.TheInternalInventory;
-import thaumicenergistics.common.items.ItemCraftingAspect;
-import thaumicenergistics.common.items.ItemEnum;
+import thaumicenergistics.common.network.packet.client.Packet_C_DistillationEncoder;
+import thaumicenergistics.common.storage.AEEssentiaStack;
 import thaumicenergistics.common.tiles.TileDistillationPatternEncoder;
-import thaumicenergistics.common.utils.EffectiveSide;
 
 /**
  * {@link TileDistillationPatternEncoder} container.
@@ -33,24 +45,12 @@ import thaumicenergistics.common.utils.EffectiveSide;
  * @author Nividica
  *
  */
-public class ContainerDistillationPatternEncoder extends ContainerWithPlayerInventory {
-
-    /**
-     * Y position for the player and hotbar inventory.
-     */
-    private static final int PLAYER_INV_POSITION_Y = 152,
-            HOTBAR_INV_POSITION_Y = ContainerDistillationPatternEncoder.PLAYER_INV_POSITION_Y + 58;
+public class ContainerDistillationPatternEncoder extends AEBaseContainer implements IVirtualSlotHolder {
 
     /**
      * Position of the source item slot
      */
     public static final int SLOT_SOURCE_ITEM_POS_X = 15, SLOT_SOURCE_ITEM_POS_Y = 69;
-
-    /**
-     * Starting position of the source aspect slots
-     */
-    private static final int SLOT_SOURCE_ASPECTS_POS_X = 62, SLOT_SOURCE_ASPECTS_POS_Y = 42,
-            SLOT_SOURCE_ASPECTS_COUNT = 16;
 
     /**
      * Position of the blank patterns.
@@ -67,84 +67,24 @@ public class ContainerDistillationPatternEncoder extends ContainerWithPlayerInve
      */
     private final TileDistillationPatternEncoder encoder;
 
-    /**
-     * Blank patterns slot.
-     */
-    private final SlotRestrictive slotPatternsBlank;
-
-    /**
-     * Encoded pattern slot.
-     */
-    private final SlotRestrictive slotPatternEncoded;
-
-    /**
-     * Pattern helper
-     */
-    private final HandlerDistillationPattern patternHelper;
-
-    /**
-     * Stores the aspects for the source item.
-     */
-    private final TheInternalInventory internalInventory;
+    public final SlotFake slotSourceItem;
+    private final SlotRestrictedInput slotPatternsBlank;
+    private final SlotRestrictedInput slotPatternEncoded;
 
     /**
      * Cached versions of the source and pattern.
      */
     private ItemStack cachedSource, cachedPattern;
 
-    /**
-     * Slot holding the source item.
-     */
-    public final SlotFake slotSourceItem;
-
-    /**
-     * Slots holding the source item's aspects.
-     */
-    public final SlotFake[] slotSourceAspects = new SlotFake[ContainerDistillationPatternEncoder.SLOT_SOURCE_ASPECTS_COUNT];
-
-    /**
-     * Gui to send updates to when slots change.
-     */
-    public IInventoryUpdateReceiver slotUpdateReceiver;
-
-    /**
-     * Constructor.
-     *
-     * @param player
-     * @param world
-     * @param x
-     * @param y
-     * @param z
-     */
     public ContainerDistillationPatternEncoder(final EntityPlayer player, final World world, final int x, final int y,
             final int z) {
-        // Call super
-        super(player);
+        super(player.inventory, world.getTileEntity(x, y, z));
 
         // Get the encoder
-        this.encoder = (TileDistillationPatternEncoder) world.getTileEntity(x, y, z);
-
-        // Create the internal inventory
-        this.internalInventory = new TheInternalInventory("dpeAspects", 17, 64) {
-
-            @Override
-            public boolean isItemValidForSlot(final int slotIndex, final ItemStack itemStack) {
-                return ((itemStack == null) || (itemStack.getItem() instanceof ItemCraftingAspect));
-            }
-        };
-
-        // Add the source aspect slots
-        for (int index = 0; index < ContainerDistillationPatternEncoder.SLOT_SOURCE_ASPECTS_COUNT; index++) {
-            // Calculate Y and X
-            int posY = ContainerDistillationPatternEncoder.SLOT_SOURCE_ASPECTS_POS_Y + ((index / 4) * 18);
-            int posX = ContainerDistillationPatternEncoder.SLOT_SOURCE_ASPECTS_POS_X + (index & 0x3) * 18;
-            // Create the slot and add it
-            this.slotSourceAspects[index] = new SlotFake(this.internalInventory, index, posX, posY);
-            this.addSlotToContainer(this.slotSourceAspects[index]);
-        }
+        this.encoder = (TileDistillationPatternEncoder) this.getTileEntity();
 
         // Add the source item slot
-        this.slotSourceItem = new SlotFake(
+        this.slotSourceItem = new SlotFakeTypeOnly(
                 this.encoder,
                 TileDistillationPatternEncoder.SLOT_SOURCE_ITEM,
                 ContainerDistillationPatternEncoder.SLOT_SOURCE_ITEM_POS_X,
@@ -152,88 +92,76 @@ public class ContainerDistillationPatternEncoder extends ContainerWithPlayerInve
         this.addSlotToContainer(this.slotSourceItem);
 
         // Add blank pattern slot
-        this.slotPatternsBlank = new SlotRestrictive(
+        this.slotPatternsBlank = new SlotRestrictedInput(
+                SlotRestrictedInput.PlacableItemType.BLANK_PATTERN,
                 this.encoder,
                 TileDistillationPatternEncoder.SLOT_BLANK_PATTERNS,
                 ContainerDistillationPatternEncoder.SLOT_PATTERNS_BLANK_POS_X,
-                ContainerDistillationPatternEncoder.SLOT_PATTERNS_BLANK_POS_Y);
+                ContainerDistillationPatternEncoder.SLOT_PATTERNS_BLANK_POS_Y,
+                this.getInventoryPlayer());
         this.addSlotToContainer(this.slotPatternsBlank);
 
         // Add encoded pattern slot
-        this.slotPatternEncoded = new SlotRestrictive(
+        this.slotPatternEncoded = new SlotRestrictedInput(
+                SlotRestrictedInput.PlacableItemType.ENCODED_PATTERN,
                 this.encoder,
                 TileDistillationPatternEncoder.SLOT_ENCODED_PATTERN,
                 ContainerDistillationPatternEncoder.SLOT_PATTERN_ENCODED_POS_X,
-                ContainerDistillationPatternEncoder.SLOT_PATTERN_ENCODED_POS_Y);
+                ContainerDistillationPatternEncoder.SLOT_PATTERN_ENCODED_POS_Y,
+                this.getInventoryPlayer());
         this.addSlotToContainer(this.slotPatternEncoded);
 
         // Bind to the players inventory
-        this.bindPlayerInventory(
-                player.inventory,
-                ContainerDistillationPatternEncoder.PLAYER_INV_POSITION_Y,
-                ContainerDistillationPatternEncoder.HOTBAR_INV_POSITION_Y);
+        this.bindPlayerInventory(player.inventory, 0, 152);
 
-        // Create the helper
-        this.patternHelper = new HandlerDistillationPattern();
+        this.cachedSource = this.slotSourceItem.getStack();
+        this.cachedPattern = this.slotPatternEncoded.getStack();
+    }
+
+    @Override
+    public void addCraftingToCrafters(ICrafting p_75132_1_) {
+        super.addCraftingToCrafters(p_75132_1_);
+        if (!this.encoder.getWorldObj().isRemote && this.cachedSource != null) {
+            int hash = ScanManager.generateItemHash(this.cachedSource.getItem(), this.cachedSource.getItemDamage());
+
+            // Get the list of scanned objects
+            List<String> list = Thaumcraft.proxy.getScannedObjects()
+                    .get(this.getInventoryPlayer().player.getCommandSenderName());
+
+            // Has the player scanned the item?
+            boolean playerScanned = list != null && (list.contains("@" + hash) || list.contains("#" + hash));
+
+            if (!playerScanned) {
+                Packet_C_DistillationEncoder.sendUnknownAspect(this.getInventoryPlayer().player);
+            }
+        }
+    }
+
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        if (!this.getTileEntity().getWorldObj().isRemote) {
+            if (this.slotPatternEncoded.getStack() != this.cachedPattern) {
+                // Load the pattern
+                this.loadPattern();
+            }
+            if (!ItemStack.areItemStacksEqual(this.cachedSource, this.slotSourceItem.getStack())) {
+                // Scan the source item
+                this.scanSourceItem();
+            }
+        }
     }
 
     /**
      * Clears all aspect slots.
      */
     private void clearAspectSlots() {
-        for (int index = 0; index < this.slotSourceAspects.length; ++index) {
-            this.slotSourceAspects[index].clearStack();
+        for (int i = 0; i < this.encoder.aspectsInventory.getSizeInventory(); i++) {
+            this.encoder.aspectsInventory.putAEStackInSlot(0, null);
         }
-    }
-
-    /**
-     * Returns true if the transfer was handled. Assumes that clickedslot has an itemstack.
-     *
-     * @param clickedSlot
-     * @return
-     */
-    private boolean handleSlotTransfer(@Nonnull final Slot clickedSlot) {
-        // Get the stack
-        ItemStack slotStack = clickedSlot.getStack();
-
-        // Is the slot in the player inventory?
-        if (clickedSlot.inventory == this.player.inventory) {
-            // Will the blank pattern slot take this?
-            if (this.slotPatternsBlank.isItemValid(slotStack)) {
-                return this.mergeItemStack(
-                        slotStack,
-                        this.slotPatternsBlank.slotNumber,
-                        this.slotPatternsBlank.slotNumber + 1,
-                        false);
-            }
-
-            // Will the encoded pattern take this?
-            if (this.slotPatternEncoded.isItemValid(slotStack)) {
-                return this.mergeItemStack(
-                        slotStack,
-                        this.slotPatternEncoded.slotNumber,
-                        this.slotPatternEncoded.slotNumber + 1,
-                        false);
-            }
-            // Set the source slot
-            ItemStack copy = slotStack.copy();
-            copy.stackSize = 1;
-            this.slotSourceItem.putStack(copy);
-            return true;
+        if (!this.encoder.getWorldObj().isRemote) {
+            this.syncAspectSlots();
         }
-
-        // Pattern slot?
-        if (((this.slotPatternsBlank == clickedSlot) || (this.slotPatternEncoded == clickedSlot))) {
-            // Merge with the hotbar?
-            if (!this.mergeSlotWithHotbarInventory(slotStack)) {
-                // Merge with the player inventory
-                return this.mergeSlotWithPlayerInventory(slotStack);
-            }
-            // Merged with hotbar
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -242,47 +170,80 @@ public class ContainerDistillationPatternEncoder extends ContainerWithPlayerInve
     private void loadPattern() {
         // Read the pattern
         this.cachedPattern = this.slotPatternEncoded.getStack();
-        this.patternHelper.readPattern(this.cachedPattern);
-        // Is the pattern valid?
-        if (this.patternHelper.isValid()) {
-            // Set the source item
-            this.slotSourceItem.putStack(this.patternHelper.getInput());
-            this.cachedSource = this.patternHelper.getInput();
-            // Clear aspect slots
-            this.clearAspectSlots();
-            ItemStack[] output = this.patternHelper.getOutput();
-            for (int index = 0; index < output.length; index++) {
-                this.slotSourceAspects[index].putStack(output[index]);
+
+        if (cachedPattern == null || !(cachedPattern.getItem() instanceof ItemEncodedUltimatePattern)
+                || !cachedPattern.hasTagCompound()) {
+            return;
+        }
+
+        NBTTagCompound encodedValue = this.cachedPattern.getTagCompound();
+        final IAEStack<?>[] inItems;
+        final IAEStack<?>[] outItems;
+
+        if (this.cachedPattern.getItem() instanceof ItemEncodedPattern) {
+            inItems = PatternHelper.loadIAEItemStackFromNBT(encodedValue.getTagList("in", 10), true, null);
+            outItems = PatternHelper.loadIAEItemStackFromNBT(encodedValue.getTagList("out", 10), true, null);
+        } else {
+            inItems = UltimatePatternHelper.loadIAEStackFromNBT(encodedValue.getTagList("in", 10), true, null);
+            outItems = UltimatePatternHelper.loadIAEStackFromNBT(encodedValue.getTagList("out", 10), true, null);
+        }
+
+        if (inItems == null || inItems.length == 0) {
+            return;
+        }
+
+        IAEItemStack input = null;
+        for (IAEStack<?> stack : inItems) {
+            if (stack == null) continue;
+            if (stack instanceof IAEItemStack ais) {
+                if (input != null) return;
+                input = ais;
+            } else {
+                return;
             }
         }
+
+        for (IAEStack<?> stack : outItems) {
+            if (stack == null) continue;
+            if (!(stack instanceof AEEssentiaStack)) {
+                return;
+            }
+        }
+
+        if (input == null) return;
+
+        this.slotSourceItem.putStack(input.getItemStack());
+        this.cachedSource = input.getItemStack();
+
+        for (int index = 0; index < outItems.length; index++) {
+            this.encoder.aspectsInventory.putAEStackInSlot(index, outItems[index]);
+        }
+
+        this.syncAspectSlots();
+        Packet_C_DistillationEncoder.sendChangeSrcItem(this.getInventoryPlayer().player);
     }
 
     /**
      * Called when the source item has changed.
-     *
-     * @param setSelectedAspect
      */
-    public void scanSourceItem(final boolean setSelectedAspect) {
-
+    public void scanSourceItem() {
         this.cachedSource = this.slotSourceItem.getStack();
 
         // Clear aspect slots
         this.clearAspectSlots();
 
-        // Null?
         if (this.cachedSource == null) {
-            // Done
+            Packet_C_DistillationEncoder.sendChangeSrcItem(this.getInventoryPlayer().player);
             return;
         }
 
         // Get the aspects
         AspectList itemAspects = ThaumcraftApiHelper.getObjectAspects(this.cachedSource);
         itemAspects = ThaumcraftApiHelper.getBonusObjectTags(this.cachedSource, itemAspects);
-        Aspect[] sortedAspects = null;
 
         // Does the item have any aspects?
-        if ((itemAspects == null) || (itemAspects.size() == 0)) {
-            // Done
+        if (itemAspects == null || itemAspects.size() == 0) {
+            Packet_C_DistillationEncoder.sendChangeSrcItem(this.getInventoryPlayer().player);
             return;
         }
 
@@ -290,91 +251,32 @@ public class ContainerDistillationPatternEncoder extends ContainerWithPlayerInve
         int hash = ScanManager.generateItemHash(this.cachedSource.getItem(), this.cachedSource.getItemDamage());
 
         // Get the list of scanned objects
-        List<String> list = Thaumcraft.proxy.getScannedObjects().get(this.player.getCommandSenderName());
-
-        // Assume all slot will have an aspect
-        int numOfAspects = this.slotSourceAspects.length;
+        List<String> list = Thaumcraft.proxy.getScannedObjects()
+                .get(this.getInventoryPlayer().player.getCommandSenderName());
 
         // Has the player scanned the item?
         boolean playerScanned = ((list != null) && ((list.contains("@" + hash)) || (list.contains("#" + hash))));
         if (playerScanned) {
             // Get sorted
-            sortedAspects = itemAspects.getAspectsSortedAmount();
+            Aspect[] sortedAspects = itemAspects.getAspectsSortedAmount();
 
             // Set number to display
-            numOfAspects = Math.min(numOfAspects, sortedAspects.length);
-        }
-
-        // Add each aspect
-        Aspect aspect;
-        for (int i = 0; i < numOfAspects; ++i) {
-            // Create an itemstack
-            ItemStack aspectItem = ItemEnum.CRAFTING_ASPECT.getStack();
-
-            if (sortedAspects != null) {
-                // Get the aspect
-                aspect = sortedAspects[i];
-
-                // Set the aspect
-                ItemCraftingAspect.setAspect(aspectItem, aspect);
-
-                // Set the size
-                aspectItem.stackSize = itemAspects.getAmount(aspect);
-            }
-
-            // Put into slot
-            this.slotSourceAspects[i].putStack(aspectItem);
-        }
-    }
-
-    @Override
-    protected boolean detectAndSendChangesMP(@Nonnull final EntityPlayerMP playerMP) {
-        // Does the pattern slot need to be sync'd?
-        if (this.slotPatternEncoded.getStack() != this.cachedPattern) {
-            // Load the pattern
-            this.loadPattern();
-            return true;
-        }
-
-        // Does the source item need to be sync'd?
-        // First for insert new block in the source item slot
-        // Second is for check the cached and current one is same
-        else if (this.cachedSource == null || (this.cachedSource != null && this.slotSourceItem.getStack() != null
-                && !this.slotSourceItem.getStack().isItemEqual(this.cachedSource))) {
-                    // Scan the source item
-                    this.scanSourceItem(true);
-                    return true;
+            for (int i = 0; i < this.encoder.aspectsInventory.getSizeInventory(); i++) {
+                if (i < sortedAspects.length) {
+                    this.encoder.aspectsInventory.putAEStackInSlot(i, new AEEssentiaStack(sortedAspects[i]));
+                } else {
+                    this.encoder.aspectsInventory.putAEStackInSlot(i, null);
                 }
-
-        return false;
-    }
-
-    /**
-     * Set's the selected aspect stack.
-     *
-     * @param aspectStack
-     */
-    protected void selectSlot(final ItemStack aspectStack, final int index) {
-
-        // Is there anything to put?
-        if (aspectStack == null) {
-            return;
+            }
+        } else {
+            for (int i = 0; i < this.encoder.aspectsInventory.getSizeInventory(); i++) {
+                this.encoder.aspectsInventory.putAEStackInSlot(i, null);
+            }
         }
 
-        // Does the stack have an aspect?
-        Aspect aspect = ItemCraftingAspect.getAspect(aspectStack);
-        if (aspect == null) {
-            return;
-        }
+        this.syncAspectSlots();
 
-        // Has the player discovered this aspect?
-        if (!ItemCraftingAspect.canPlayerSeeAspect(this.player, aspect)) {
-            return;
-        }
-
-        // Remove the selected aspect.
-        this.slotSourceAspects[index].clearStack();
-
+        Packet_C_DistillationEncoder.sendChangeSrcItem(this.getInventoryPlayer().player);
     }
 
     @Override
@@ -386,170 +288,80 @@ public class ContainerDistillationPatternEncoder extends ContainerWithPlayerInve
     }
 
     /**
-     * Returns the player for this container.
-     *
-     * @return
-     */
-    public EntityPlayer getPlayer() {
-        return this.player;
-    }
-
-    /**
      * Called when a pattern is to be encoded.
      */
-    public void onEncodePattern() {
-        ItemStack pattern = null;
-        boolean takeBlank = false;
-
-        // No item in source item slot
-        if (this.slotSourceItem.getDisplayStack() == null) {
+    public void encodePattern(EntityPlayer player) {
+        if (!this.slotSourceItem.getHasStack()) {
             return;
         }
 
-        // Is there anything in the encoded pattern slot?
-        if (this.slotPatternEncoded.getHasStack()) {
-            // Set the pattern to it
-            pattern = this.slotPatternEncoded.getStack();
-        }
-        // Is there a blank pattern to draw from?
-        else if (this.slotPatternsBlank.getHasStack()) {
-            // Create a new encoded pattern
-            pattern = AEApi.instance().definitions().items().encodedPattern().maybeStack(1).orNull();
-            if (pattern == null) {
-                // Patterns are disabled?
-                // How did you even get here?!
-                return;
-            }
-            takeBlank = true;
-        } else {
-            // Nothing to save to
+        if (!this.slotPatternEncoded.getHasStack() && !this.slotPatternsBlank.getHasStack()) {
             return;
         }
 
-        // Set the pattern items
-        ArrayList<ItemStack> outputStack = new ArrayList<>();
-        for (int index = 0; index < ContainerDistillationPatternEncoder.SLOT_SOURCE_ASPECTS_COUNT; index++) {
-            if (ItemCraftingAspect.getAspect(this.slotSourceAspects[index].getDisplayStack()) != null) {
-                outputStack.add(this.slotSourceAspects[index].getDisplayStack());
+        ArrayList<AEEssentiaStack> outputStacks = new ArrayList<>();
+        for (int i = 0; i < this.encoder.aspectsInventory.getSizeInventory(); i++) {
+            AEEssentiaStack stack = (AEEssentiaStack) this.encoder.aspectsInventory.getAEStackInSlot(i);
+            if (stack != null) {
+                outputStacks.add(stack);
             }
         }
 
-        // Check if no aspect in output
-        if (outputStack.size() == 0) {
+        if (outputStacks.isEmpty()) {
             return;
         }
 
-        this.patternHelper
-                .setPatternItems(this.slotSourceItem.getDisplayStack(), outputStack.toArray(new ItemStack[0]));
+        final NBTTagCompound encodedValue = new NBTTagCompound();
+        final NBTTagList tagIn = new NBTTagList();
+        final NBTTagList tagOut = new NBTTagList();
 
-        // Encode!
-        this.patternHelper.encodePattern(pattern);
+        tagIn.appendTag(AEItemStack.create(this.slotSourceItem.getStack()).toNBTGeneric());
+        for (final IAEStack<?> i : outputStacks) {
+            tagOut.appendTag(i != null ? i.toNBTGeneric() : new NBTTagCompound());
+        }
 
-        // Set the pattern slot
-        this.slotPatternEncoded.putStack(pattern);
+        encodedValue.setTag("in", tagIn);
+        encodedValue.setTag("out", tagOut);
+        encodedValue.setString("author", player.getCommandSenderName());
 
-        if (takeBlank) {
-            // Decrement the blank patterns
+        ItemStack pattern = AEApi.instance().definitions().items().encodedUltimatePattern().maybeStack(1).orNull();
+        assert pattern != null;
+
+        pattern.setTagCompound(encodedValue);
+
+        if (!this.slotPatternEncoded.getHasStack()) {
             this.slotPatternsBlank.decrStackSize(1);
         }
+
+        // Set the pattern slot
+        this.cachedPattern = pattern;
+        this.slotPatternEncoded.putStack(pattern);
+    }
+
+    public IAEStackInventory getAspectsInventory() {
+        return this.encoder.aspectsInventory;
     }
 
     @Override
-    public void putStackInSlot(final int slotNumber, final ItemStack stack) {
-        // Call super
-        super.putStackInSlot(slotNumber, stack);
-
-        // Source item changed?
-        if ((this.slotUpdateReceiver != null) && (this.slotSourceItem.slotNumber == slotNumber)) {
-            this.slotUpdateReceiver.onInventoryChanged(this.slotSourceItem.inventory);
+    public void receiveSlotStacks(StorageName invName, Int2ObjectMap<IAEStack<?>> slotStacks) {
+        for (var entry : slotStacks.int2ObjectEntrySet()) {
+            this.encoder.aspectsInventory.putAEStackInSlot(entry.getIntKey(), entry.getValue());
         }
+        this.syncAspectSlots();
     }
 
-    @Override
-    public ItemStack slotClick(final int slotNumber, final int buttonPressed, final int flag,
-            final EntityPlayer player) {
-
-        // If true detect will be called, and null returned.
-        boolean handled = false;
-
-        // Source item slot?
-        if (this.slotSourceItem.slotNumber == slotNumber) {
-            // Get the item the player is dragging
-            ItemStack heldItem = player.inventory.getItemStack();
-
-            // Set the source slot
-            if (heldItem != null) {
-                ItemStack copy = heldItem.copy();
-                copy.stackSize = 1;
-                this.slotSourceItem.putStack(copy);
-            } else {
-                this.slotSourceItem.putStack(null);
-            }
-
-            handled = true;
+    private void syncAspectSlots() {
+        final Int2ObjectMap<IAEStack<?>> slotStacks = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < this.encoder.aspectsInventory.getSizeInventory(); i++) {
+            slotStacks.put(i, this.encoder.aspectsInventory.getAEStackInSlot(i));
         }
 
-        // One of the source aspect slots?
-        if (!handled) {
-            for (int index = 0; index < this.slotSourceAspects.length; ++index) {
-                if (this.slotSourceAspects[index].slotNumber == slotNumber) {
-                    if (this.slotSourceAspects[index].getHasStack()) {
-                        // Place it into the selected
-                        this.selectSlot(this.slotSourceAspects[index].getStack(), index);
-                    }
-
-                    // Done
-                    handled = true;
-                    break;
-                }
+        for (Object crafter : this.crafters) {
+            if (crafter instanceof EntityPlayerMP playerMP) {
+                NetworkHandler.instance.sendTo(
+                        new PacketVirtualSlot(this.encoder.aspectsInventory.getStorageName(), slotStacks),
+                        playerMP);
             }
         }
-
-        // Was the click handled?
-        if (handled) {
-            // Detect any changes
-            this.detectAndSendChanges();
-
-            // Done
-            return null;
-        }
-
-        // Call super
-        return super.slotClick(slotNumber, buttonPressed, flag, player);
     }
-
-    @Override
-    public ItemStack transferStackInSlot(final EntityPlayer player, final int slotNumber) {
-        if (EffectiveSide.isClientSide()) {
-            // Ignored client side
-            return null;
-        }
-
-        // Get the slot
-        Slot clickedSlot = this.getSlotOrNull(slotNumber);
-
-        // Slot empty?
-        if ((clickedSlot == null) || !clickedSlot.getHasStack()) {
-            // Done
-            return null;
-        }
-
-        // Was this handled?
-        if (this.handleSlotTransfer(clickedSlot)) {
-            // Was the itemstack in the slot drained?
-            if (clickedSlot.getHasStack() && (clickedSlot.getStack().stackSize <= 0)) {
-                // Set to null
-                clickedSlot.putStack(null);
-            } else {
-                // Let the slot know it has changed.
-                clickedSlot.onSlotChanged();
-            }
-
-            // Update
-            this.detectAndSendChanges();
-        }
-
-        return null;
-    }
-
 }

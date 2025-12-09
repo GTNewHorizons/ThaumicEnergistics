@@ -10,6 +10,7 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.network.packet.client.Packet_C_ArcaneCraftingTerminal;
+import thaumicenergistics.common.network.packet.client.Packet_C_DistillationEncoder;
 import thaumicenergistics.common.network.packet.client.Packet_C_EssentiaVibrationChamber;
 import thaumicenergistics.common.network.packet.client.Packet_C_ExportBusVoidButtonUpdate;
 import thaumicenergistics.common.network.packet.client.Packet_C_KnowledgeInscriber;
@@ -120,6 +121,7 @@ public class NetworkHandler {
         registerPacket(Packet_C_EssentiaVibrationChamber.class);
 
         // Distillation encoder
+        registerPacket(Packet_C_DistillationEncoder.class);
         registerPacket(Packet_S_DistillationEncoder.class);
 
         // Sync packet

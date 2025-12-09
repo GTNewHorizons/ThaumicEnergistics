@@ -311,7 +311,7 @@ public class ThEGuiHandler implements IGuiHandler {
         ForgeDirection side = ForgeDirection.getOrientation(ID);
 
         // Do we have a world and side?
-        if ((world != null) && (side != ForgeDirection.UNKNOWN)) {
+        if (world != null && side != ForgeDirection.UNKNOWN) {
             // This is an AE part, get its gui
             return ThEGuiHandler.getPartGuiElement(side, player, world, x, y, z, true);
         }
@@ -333,8 +333,22 @@ public class ThEGuiHandler implements IGuiHandler {
                 return new ContainerEssentiaVibrationChamber(player, world, x, y, z);
 
             // Distillation encoder?
-            case ThEGuiHandler.DISTILLATION_ENCODER:
-                return new ContainerDistillationPatternEncoder(player, world, x, y, z);
+            case ThEGuiHandler.DISTILLATION_ENCODER: {
+                ContainerDistillationPatternEncoder container = new ContainerDistillationPatternEncoder(
+                        player,
+                        world,
+                        x,
+                        y,
+                        z);
+                ContainerOpenContext ctx = new ContainerOpenContext(world.getTileEntity(x, y, z));
+                ctx.setWorld(world);
+                ctx.setX(x);
+                ctx.setY(y);
+                ctx.setZ(z);
+                ctx.setSide(side);
+                container.setOpenContext(ctx);
+                return container;
+            }
         }
 
         // No matching GUI element found
