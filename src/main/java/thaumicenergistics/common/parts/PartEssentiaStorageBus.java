@@ -126,7 +126,7 @@ public class PartEssentiaStorageBus extends PartStorageBus {
 
         // Color overlay
         helper.setBounds(2.0F, 2.0F, 15.0F, 14.0F, 14.0F, 16.0F);
-        helper.setInvColor(ThEPartBase.INVENTORY_OVERLAY_COLOR);
+        helper.setInvColor(AEColor.Black.blackVariant);
         ts.setBrightness(0xF000F0);
         helper.renderInventoryFace(
                 BlockTextureManager.ESSENTIA_STORAGE_BUS.getTextures()[1],
@@ -189,7 +189,7 @@ public class PartEssentiaStorageBus extends PartStorageBus {
         tessellator.setColorOpaque_I(this.getHost().getColor().blackVariant);
 
         if (this.isActive()) {
-            tessellator.setBrightness(ThEPartBase.ACTIVE_FACE_BRIGHTNESS);
+            tessellator.setBrightness(0xD000D0);
         }
 
         // Mid

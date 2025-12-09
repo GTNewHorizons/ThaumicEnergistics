@@ -362,7 +362,7 @@ public class PartEssentiaExportBus extends PartBaseExportBus<AEEssentiaStack> im
         helper.renderInventoryBox(renderer);
 
         // Face overlay
-        helper.setInvColor(ThEPartBase.INVENTORY_OVERLAY_COLOR);
+        helper.setInvColor(AEColor.Black.blackVariant);
         ts.setBrightness(0xF000F0);
         IIcon faceOverlayTexture = BlockTextureManager.ESSENTIA_EXPORT_BUS.getTextures()[1];
         helper.renderInventoryFace(faceOverlayTexture, ForgeDirection.UP, renderer);
@@ -466,7 +466,7 @@ public class PartEssentiaExportBus extends PartBaseExportBus<AEEssentiaStack> im
         ts.setColorOpaque_I(this.getHost().getColor().blackVariant);
 
         if (this.isActive()) {
-            Tessellator.instance.setBrightness(ThEPartBase.ACTIVE_FACE_BRIGHTNESS);
+            Tessellator.instance.setBrightness(0xD000D0);
         }
 
         IIcon faceOverlayTexture = BlockTextureManager.ESSENTIA_EXPORT_BUS.getTextures()[1];

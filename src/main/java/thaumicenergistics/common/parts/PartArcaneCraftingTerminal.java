@@ -337,7 +337,7 @@ public class PartArcaneCraftingTerminal extends AbstractPartTerminal implements 
         helper.renderInventoryBox(renderer);
 
         helper.setBounds(2.0F, 2.0F, 15.0F, 14.0F, 14.0F, 16.0F);
-        ts.setColorOpaque_I(ThEPartBase.INVENTORY_OVERLAY_COLOR);
+        ts.setColorOpaque_I(AEColor.Black.blackVariant);
         helper.renderInventoryFace(
                 BlockTextureManager.ARCANE_CRAFTING_TERMINAL.getTextures()[2],
                 ForgeDirection.SOUTH,
@@ -423,7 +423,7 @@ public class PartArcaneCraftingTerminal extends AbstractPartTerminal implements 
 
         if (this.isActive()) {
             // Set brightness
-            tessellator.setBrightness(ThEPartBase.ACTIVE_FACE_BRIGHTNESS);
+            tessellator.setBrightness(0xD000D0);
 
             // Draw corners
             helper.setBounds(2.0F, 2.0F, 15.0F, 14.0F, 14.0F, 16.0F);

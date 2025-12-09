@@ -263,7 +263,7 @@ public class PartEssentiaImportBus extends PartBaseImportBus<AEEssentiaStack> {
 
         // Face overlay
         helper.setBounds(4.0F, 4.0F, 15.0F, 12.0F, 12.0F, 16.0F);
-        helper.setInvColor(ThEPartBase.INVENTORY_OVERLAY_COLOR);
+        helper.setInvColor(AEColor.Black.blackVariant);
         ts.setBrightness(15728880);
         helper.renderInventoryFace(
                 BlockTextureManager.ESSENTIA_IMPORT_BUS.getTextures()[1],
@@ -332,11 +332,11 @@ public class PartEssentiaImportBus extends PartBaseImportBus<AEEssentiaStack> {
         if (this.getHost().getColor() != AEColor.Transparent) {
             ts.setColorOpaque_I(this.getHost().getColor().blackVariant);
         } else {
-            ts.setColorOpaque_I(ThEPartBase.INVENTORY_OVERLAY_COLOR);
+            ts.setColorOpaque_I(AEColor.Black.blackVariant);
         }
 
         if (this.isActive()) {
-            Tessellator.instance.setBrightness(ThEPartBase.ACTIVE_FACE_BRIGHTNESS);
+            Tessellator.instance.setBrightness(0xD000D0);
         }
 
         // Face overlay
