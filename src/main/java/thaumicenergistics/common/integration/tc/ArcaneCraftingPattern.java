@@ -55,10 +55,6 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
      */
     protected IAEItemStack[] ingredientsAE = null;
     protected IAEItemStack[] ingredientsAECondensed = null;
-    /**
-     * List of all output items, results + containers
-     */
-    protected IAEItemStack[] allResults = null;
 
     /**
      * True if the recipe is valid.
@@ -67,7 +63,6 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
 
     /**
      *
-     * @param knowledgeCore
      * @param aspects
      * @param craftingResult
      * @param craftingIngredients
@@ -100,7 +95,6 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
 
     /**
      *
-     * @param knowledgeCore
      * @param data
      */
     public ArcaneCraftingPattern(final NBTTagCompound data) {
@@ -211,47 +205,6 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
         }
     }
 
-    /**
-     * Sets up all results, including container items.
-     */
-    private void setupAEResults() {
-        // Ensure the ingredient list is made
-        if (this.ingredientsAE == null) {
-            this.setupAEIngredientList();
-        }
-
-        ArrayList<IAEItemStack> results = new ArrayList<IAEItemStack>();
-
-        // Add any container items
-        for (IAEItemStack stack : this.ingredientsAE) {
-            if (stack == null) {
-                continue;
-            }
-
-            // Container?
-            if (stack.getItem().hasContainerItem(stack.getItemStack())) {
-                results.add(
-                        AEApi.instance().storage()
-                                .createItemStack(stack.getItem().getContainerItem(stack.getItemStack())));
-            }
-
-            // Multiplier?
-            else if (stack.getStackSize() > 1) {
-                results.add(stack.copy().setStackSize(stack.getStackSize() - 1));
-            }
-            // Primordial Pearl?
-            else if ((stack.getItem() instanceof ItemEldritchObject) && (stack.getItemDamage() == 3)) {
-                results.add(stack);
-            }
-        }
-
-        // Add result
-        results.add(this.result);
-
-        // Set the outputs
-        this.allResults = results.toArray(new IAEItemStack[results.size()]);
-    }
-
     protected void setPatternValidity(final boolean valid) {
         // Set
         this.isValid = valid;
@@ -275,36 +228,36 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
         return true;
     }
 
-    /**
-     * This includes container items.
-     *
-     * @return
-     */
-    public IAEItemStack[] getAllResults() {
-        if (this.allResults == null) {
-            this.setupAEResults();
-        }
-        return this.allResults;
-    }
-
-    public void updateInventory(InventoryCrafting table) {
-        if (this.ingredientsAE == null) this.ingredientsAE = new AEItemStack[ArcaneCraftingPattern.GRID_SIZE];
-        boolean inventoryUnchanged = true;
+    public ItemStack[] getAllOutputs(InventoryCrafting table) {
+        ArrayList<ItemStack> results = new ArrayList<>();
         for (int i = 0; i < 9; ++i) {
             ItemStack s = table.getStackInSlot(i);
+
             if (s == null) {
-                if (ingredientsAE[i] == null) continue;
-                inventoryUnchanged = false;
-                ingredientsAE[i] = null;
-            } else {
-                AEItemStack aestack = (AEItemStack) AEApi.instance().storage().createItemStack(s);
-                if (ingredientsAE[i] == null || ingredientsAE[i].hashCode() != aestack.hashCode()) {
-                    ingredientsAE[i] = aestack;
-                    inventoryUnchanged = false;
-                }
+                continue;
+            }
+
+            // Container?
+            if (s.getItem().hasContainerItem(s)) {
+                results.add(s.getItem().getContainerItem(s));
+            }
+
+            // Multiplier?
+            else if (s.stackSize > 1) {
+                ItemStack copy = s.copy();
+                copy.stackSize--;
+                results.add(copy);
+            }
+            // Primordial Pearl?
+            else if ((s.getItem() instanceof ItemEldritchObject) && (s.getItemDamage() == 3)) {
+                results.add(s);
             }
         }
-        if (!inventoryUnchanged) setupAEResults();
+
+        // Add result
+        results.add(this.result.getItemStack());
+
+        return results.toArray(new ItemStack[results.size()]);
     }
 
     /**
@@ -412,8 +365,8 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
             // Null detected
             return false;
         }
-
-        return ArcaneCraftingPattern.canSubstitueFor(ing, input);
+        boolean sub = ArcaneCraftingPattern.canSubstitueFor(ing, input);
+        return sub;
     }
 
     public void readFromNBT(final NBTTagCompound data) {
