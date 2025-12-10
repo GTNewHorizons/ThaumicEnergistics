@@ -193,10 +193,6 @@ public class PartArcaneCraftingTerminal extends AbstractPartTerminal implements 
         return super.onPartActivate(player, pos);
     }
 
-    private boolean isSlotInRange(final int slotIndex) {
-        return ((slotIndex >= 0) && (slotIndex < OLD_MY_INVENTORY_SIZE));
-    }
-
     @Override
     public void writeToNBT(NBTTagCompound data) {
         super.writeToNBT(data);
@@ -222,16 +218,15 @@ public class PartArcaneCraftingTerminal extends AbstractPartTerminal implements 
                 // Get the compound tag
                 NBTTagCompound nbtCompound = nbtTagList.getCompoundTagAt(listIndex);
 
-                // Get the slot list
                 int slotIndex = nbtCompound.getByte(OLD_SLOT_NBT_KEY);
 
                 // Is it in range?
-                if (this.isSlotInRange(slotIndex)) {
-                    // Load the stack
+                if (slotIndex >= 0 && slotIndex < OLD_MY_INVENTORY_SIZE) {
                     ItemStack slotStack = ItemStack.loadItemStackFromNBT(nbtCompound);
 
-                    // Is the slot the wand slot?
-                    if (slotIndex == OLD_WAND_SLOT_INDEX) {
+                    if (slotIndex < 9) {
+                        this.craftingGridInventory.setInventorySlotContents(slotIndex, slotStack);
+                    } else if (slotIndex == OLD_WAND_SLOT_INDEX) {
                         // Validate the wand
                         if (!ThEUtils.isItemValidWand(slotStack, false)) {
                             // Invalid wand data

@@ -3,6 +3,8 @@ package thaumicenergistics.common.tiles;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import appeng.tile.TileEvent;
+import appeng.tile.events.TileEventType;
 import appeng.tile.misc.TileCellWorkbench;
 import thaumicenergistics.common.items.ItemEssentiaCell;
 
@@ -14,19 +16,14 @@ import thaumicenergistics.common.items.ItemEssentiaCell;
  */
 public class TileEssentiaCellWorkbench extends TileCellWorkbench {
 
-    /**
-     * NBT Keys
-     */
-    private static String NBT_KEY_CELL = "EssentiaCell";
+    private static final String OLD_NBT_KEY_CELL = "EssentiaCell";
 
-    @Override
-    public void readFromNBT_TileCellWorkbench(NBTTagCompound data) {
-        super.readFromNBT_TileCellWorkbench(data);
-
-        if (data.hasKey(TileEssentiaCellWorkbench.NBT_KEY_CELL)) {
-            this.getInventoryByName("cell").setInventorySlotContents(
-                    0,
-                    ItemStack.loadItemStackFromNBT(data.getCompoundTag(TileEssentiaCellWorkbench.NBT_KEY_CELL)));
+    @TileEvent(TileEventType.WORLD_NBT_READ)
+    public void readFromOldNBT_TileEssentiaCellWorkbench(NBTTagCompound data) {
+        if (data.hasKey(TileEssentiaCellWorkbench.OLD_NBT_KEY_CELL)) {
+            ItemStack stack = ItemStack
+                    .loadItemStackFromNBT(data.getCompoundTag(TileEssentiaCellWorkbench.OLD_NBT_KEY_CELL));
+            this.getInventoryByName("cell").setInventorySlotContents(0, stack);
         }
     }
 }
