@@ -8,7 +8,6 @@ import appeng.api.movable.IMovableRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import thaumcraft.common.config.ConfigItems;
 import thaumicenergistics.common.blocks.BlockEnum;
-import thaumicenergistics.common.fluids.GaseousEssentia;
 import thaumicenergistics.common.items.ItemEnum;
 import thaumicenergistics.common.items.ItemMaterial;
 import thaumicenergistics.common.registries.FeatureRegistry;
@@ -36,13 +35,6 @@ public class CommonProxy {
      */
     public void registerFeatures() {
         FeatureRegistry.instance().registerFeatures();
-    }
-
-    /**
-     * Registers fluids with the game.
-     */
-    public void registerFluids() {
-        GaseousEssentia.registerGases();
     }
 
     /**

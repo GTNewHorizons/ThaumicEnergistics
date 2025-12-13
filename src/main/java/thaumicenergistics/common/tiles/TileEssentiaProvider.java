@@ -17,6 +17,7 @@ import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.api.tiles.IEssentiaTransportWithSimulate;
 import thaumicenergistics.common.integration.IEssentiaProviderWatcher;
 import thaumicenergistics.common.integration.tc.EssentiaTransportHelper;
+import thaumicenergistics.common.storage.AEEssentiaStack;
 import thaumicenergistics.common.tiles.abstraction.TileProviderBase;
 
 /**
@@ -105,7 +106,9 @@ public class TileEssentiaProvider extends TileProviderBase implements IEssentiaT
         // Ensure we have a monitor
         if (this.getEssentiaMonitor()) {
             // Inject essentia
-            rejectedAmount = this.monitor.injectEssentia(aspect, amount, mode, this.getMachineSource(), true);
+            AEEssentiaStack leftover = this.monitor
+                    .injectItems(new AEEssentiaStack(aspect, amount), mode, this.getMachineSource());
+            rejectedAmount = leftover != null ? leftover.getStackSize() : 0;
         }
 
         // Calculate the accepted amount

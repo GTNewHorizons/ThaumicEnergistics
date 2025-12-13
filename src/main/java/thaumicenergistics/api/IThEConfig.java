@@ -9,13 +9,6 @@ package thaumicenergistics.api;
 public interface IThEConfig {
 
     /**
-     * If true essentia gas will be blacklisted from ExtraCells or AE2FC.
-     *
-     * @return
-     */
-    boolean blacklistEssentiaFluidInExtraCells();
-
-    /**
      * Controls the conversion ratio of essentia/fluid. <BR>
      * 1 essentia unit is converted to this many mb's of fluid.
      */

@@ -39,7 +39,6 @@ import thaumcraft.common.tiles.TileMagicWorkbench;
 import thaumicenergistics.common.container.ContainerInternalCrafting;
 import thaumicenergistics.common.container.ContainerPartArcaneCraftingTerminal;
 import thaumicenergistics.common.integration.tc.ArcaneRecipeHelper;
-import thaumicenergistics.common.parts.PartArcaneCraftingTerminal;
 
 public class Packet_S_NEIRecipe extends ThEServerPacket {
 
@@ -85,9 +84,8 @@ public class Packet_S_NEIRecipe extends ThEServerPacket {
         final EntityPlayerMP pmp = (EntityPlayerMP) player;
         final Container con = pmp.openContainer;
 
-        if (con instanceof ContainerPartArcaneCraftingTerminal) {
+        if (con instanceof ContainerPartArcaneCraftingTerminal act) {
 
-            ContainerPartArcaneCraftingTerminal act = (ContainerPartArcaneCraftingTerminal) con;
             InventoryCrafting testInv = new InventoryCrafting(new ContainerInternalCrafting(), 3, 3);
             for (int x = 0; x < 9; x++) {
                 if (this.recipe[x] != null && this.recipe[x].length > 0) {
@@ -98,7 +96,7 @@ public class Packet_S_NEIRecipe extends ThEServerPacket {
             IArcaneRecipe arcaneRecipe = r == null
                     ? ArcaneRecipeHelper.INSTANCE.findMatchingArcaneResult(testInv, 0, 9, this.player)
                     : null;
-            IGrid grid = act.getHostGrid();
+            IGrid grid = act.terminal.getGrid();
             if (grid == null) return;
             final IStorageGrid inv = grid.getCache(IStorageGrid.class);
             final IEnergyGrid energy = grid.getCache(IEnergyGrid.class);
@@ -113,7 +111,7 @@ public class Packet_S_NEIRecipe extends ThEServerPacket {
                 final IMEMonitor<IAEItemStack> storage = inv.getItemInventory();
                 final IItemList<IAEItemStack> all = storage.getStorageList();
                 final IPartitionList<IAEItemStack> filter = ItemViewCell.createFilter(act.getViewCells());
-                final IInventory craftMatrix = (PartArcaneCraftingTerminal) act.getCraftingHost();
+                final IInventory craftMatrix = act.terminal.craftingGridInventory;
                 final IInventory playerInventory = player.inventory;
                 BaseActionSource as = new PlayerSource(player, act.terminal);
                 for (int x = 0; x < 9; x++) {

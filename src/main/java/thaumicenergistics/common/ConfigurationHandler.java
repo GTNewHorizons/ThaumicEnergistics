@@ -19,8 +19,7 @@ class ConfigurationHandler implements IThEConfig {
     /**
      * Names of the categories.
      */
-    private static final String CATEGORY_CRAFTING = "crafting", CATEGORY_CLIENT = "client",
-            CATEGORY_INTEGRATION = "integration";
+    private static final String CATEGORY_CRAFTING = "crafting", CATEGORY_CLIENT = "client";
 
     /**
      * Default values.
@@ -32,8 +31,7 @@ class ConfigurationHandler implements IThEConfig {
             DFT_CRAFT_ESSENTIA_PROVIDER = true, DFT_CRAFT_ESSENTIA_VIBRATION_CHAMBER = true,
             DFT_CRAFT_GOLEM_BACKPACK = true, DFT_CRAFT_INFUSION_PROVIDER = true, DFT_CRAFT_IO_BUSES = true,
             DFT_CRAFT_VIS_RELAY_INTERFACE = true, DFT_CRAFT_WIRELESS_ESSENTIA_TERM = true, DFT_DISABLE_GEARBOX = false,
-            DFT_ENABLE_QUARTZ_DUPE = true, DFT_ENABLE_WRENCH_FOCUS = true, DFT_EXTRACELLS_BLIST = true,
-            DFT_FORCE_TC_FACADES = true;
+            DFT_ENABLE_QUARTZ_DUPE = true, DFT_ENABLE_WRENCH_FOCUS = true, DFT_FORCE_TC_FACADES = true;
 
     /**
      * Mod configuration
@@ -55,7 +53,7 @@ class ConfigurationHandler implements IThEConfig {
             craft_IO_Buses = DFT_CRAFT_IO_BUSES, craft_Vis_Relay_Interface = DFT_CRAFT_VIS_RELAY_INTERFACE,
             craft_Wireless_Essentia_Term = DFT_CRAFT_WIRELESS_ESSENTIA_TERM, disable_Gearbox = DFT_DISABLE_GEARBOX,
             enable_Quartz_Dupe = DFT_ENABLE_QUARTZ_DUPE, enable_Wrench_Focus = DFT_ENABLE_WRENCH_FOCUS,
-            extracells_Blist = DFT_EXTRACELLS_BLIST, force_TC_Facades = DFT_FORCE_TC_FACADES;
+            force_TC_Facades = DFT_FORCE_TC_FACADES;
 
     private ConfigurationHandler(final Configuration config) {
         this.configSettings = config;
@@ -182,23 +180,11 @@ class ConfigurationHandler implements IThEConfig {
                 DFT_DISABLE_GEARBOX,
                 "The iron and thaumium gearboxes will be rendered as a standard block.");
 
-        // Integration =====================================================
-        this.extracells_Blist = this.configSettings.getBoolean(
-                "ExtraCells Blacklist",
-                CATEGORY_INTEGRATION,
-                DFT_EXTRACELLS_BLIST,
-                "Prevents extra cells/ae2fc from interacting with essentia gas");
-
         // Has the config file changed?
         if (this.configSettings.hasChanged()) {
             // Save it
             this.configSettings.save();
         }
-    }
-
-    @Override
-    public boolean blacklistEssentiaFluidInExtraCells() {
-        return this.extracells_Blist;
     }
 
     @Override
