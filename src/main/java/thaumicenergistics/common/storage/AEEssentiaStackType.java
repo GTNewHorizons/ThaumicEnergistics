@@ -16,8 +16,6 @@ import appeng.api.storage.data.IAEStackType;
 import appeng.api.storage.data.IItemList;
 import cpw.mods.fml.common.Loader;
 import io.netty.buffer.ByteBuf;
-import it.unimi.dsi.fastutil.objects.ObjectIntImmutablePair;
-import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 import it.unimi.dsi.fastutil.objects.ObjectLongImmutablePair;
 import it.unimi.dsi.fastutil.objects.ObjectLongPair;
 import thaumcraft.api.aspects.Aspect;
@@ -57,7 +55,8 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
 
     @Override
     public boolean isContainerItemForType(@Nullable ItemStack container) {
-        return container != null && container.getItem() instanceof IEssentiaContainerItem;
+        if (container == null) return false;
+        return container.getItem() instanceof IEssentiaContainerItem || container.getItem() instanceof BlockJarItem;
     }
 
     @Override
@@ -67,7 +66,7 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
             if (list != null) {
                 Aspect aspect = list.getAspects()[0];
                 if (aspect != null) {
-                    return new AEEssentiaStack(aspect);
+                    return new AEEssentiaStack(aspect, list.getAmount(aspect));
                 }
             }
         }
@@ -86,6 +85,11 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
             }
         }
         return null;
+    }
+
+    @Override
+    public long getContainerItemCapacity(@NotNull ItemStack itemStack, @NotNull AEEssentiaStack aeEssentiaStack) {
+        return EssentiaItemContainerHelper.INSTANCE.getContainerInfo(itemStack).maximumCapacity();
     }
 
     @Override
@@ -170,20 +174,45 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
 
     @Override
     public @Nullable ItemStack clearFilledContainer(@NotNull ItemStack container) {
+        Item containerItem = container.getItem();
+        if (containerItem instanceof ItemEssence) {
+            // Create an empty phial for the output
+            return EssentiaItemContainerHelper.INSTANCE.createEmptyPhial();
+        } else if (containerItem instanceof ItemJarFilled) {
+            // Was the jar labeled?
+            if (EssentiaItemContainerHelper.INSTANCE.doesJarHaveLabel(container)) {
+                // Create an empty labeled jar
+                return EssentiaItemContainerHelper.INSTANCE.createFilledJar(
+                        EssentiaItemContainerHelper.INSTANCE.getJarLabelAspect(container),
+                        0,
+                        container.getItemDamage(),
+                        true);
+            } else {
+                // Create an empty jar for the output
+                return EssentiaItemContainerHelper.INSTANCE.createEmptyJar(container.getItemDamage());
+            }
+        }
+
+        if (containerItem instanceof IEssentiaContainerItem essentiaContainerItem) {
+            ItemStack empty = container.copy();
+            essentiaContainerItem.setAspects(empty, new AspectList());
+            return empty;
+        }
+
         return null;
     }
 
     @Override
-    public @NotNull ObjectIntPair<ItemStack> fillContainer(@NotNull ItemStack container,
+    public @NotNull ObjectLongPair<ItemStack> fillContainer(@NotNull ItemStack container,
             @NotNull AEEssentiaStack stack) {
         if (EssentiaItemContainerHelper.INSTANCE.getItemType(container)
                 != EssentiaItemContainerHelper.AspectItemType.EssentiaContainer) {
-            return new ObjectIntImmutablePair<>(null, 0);
+            return new ObjectLongImmutablePair<>(null, 0);
         }
 
         Item containerItem = container.getItem();
         if (containerItem == null) {
-            return new ObjectIntImmutablePair<>(null, 0);
+            return new ObjectLongImmutablePair<>(null, 0);
         }
 
         if (containerItem instanceof ItemJarFilled) {
@@ -192,7 +221,7 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
                 // with?
                 if (stack.getAspect() != EssentiaItemContainerHelper.INSTANCE.getJarLabelAspect(container)) {
                     // Aspect does not match the jar's label
-                    return new ObjectIntImmutablePair<>(null, 0);
+                    return new ObjectLongImmutablePair<>(null, 0);
                 }
             }
         }
@@ -201,26 +230,26 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
             // Ensure the container accepts this essentia
             if (!restricted.acceptsAspect(stack.getAspect())) {
                 // Not acceptable
-                return new ObjectIntImmutablePair<>(null, 0);
+                return new ObjectLongImmutablePair<>(null, 0);
             }
         }
 
         IThEEssentiaContainerPermission info = EssentiaItemContainerHelper.INSTANCE
                 .getContainerInfo(containerItem, container.getItemDamage());
         if (info == null) {
-            return new ObjectIntImmutablePair<>(null, 0);
+            return new ObjectLongImmutablePair<>(null, 0);
         }
 
         int containerAmountStored = EssentiaItemContainerHelper.INSTANCE.getContainerStoredAmount(container);
         int remainaingStorage = info.maximumCapacity() - containerAmountStored;
         if (remainaingStorage <= 0) {
-            return new ObjectIntImmutablePair<>(null, 0);
+            return new ObjectLongImmutablePair<>(null, 0);
         }
 
         int amountToFill = (int) Math.min(stack.getStackSize(), Integer.MAX_VALUE);
         if (!info.canHoldPartialAmount()) {
             if (amountToFill < info.maximumCapacity()) {
-                return new ObjectIntImmutablePair<>(null, 0);
+                return new ObjectLongImmutablePair<>(null, 0);
             } else if (amountToFill > info.maximumCapacity()) {
                 amountToFill = info.maximumCapacity();
             }
@@ -256,7 +285,7 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
                 // Does the stored aspect match the aspect to inject?
                 if (stack.getAspect() != aspectList.getAspects()[0]) {
                     // Don't mix aspects
-                    return new ObjectIntImmutablePair<>(null, 0);
+                    return new ObjectLongImmutablePair<>(null, 0);
                 }
             }
 
@@ -271,6 +300,6 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
                     .setAspects(resultStack, aspectList);
         }
 
-        return new ObjectIntImmutablePair<>(resultStack, amountToFill);
+        return new ObjectLongImmutablePair<>(resultStack, amountToFill);
     }
 }
