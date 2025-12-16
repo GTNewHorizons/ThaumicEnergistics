@@ -58,6 +58,7 @@ import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.api.grid.IDigiVisSource;
 import thaumicenergistics.client.gui.ThEGuiHelper;
 import thaumicenergistics.common.blocks.BlockArcaneAssembler;
+import thaumicenergistics.common.blocks.BlockEnum;
 import thaumicenergistics.common.integration.IWailaSource;
 import thaumicenergistics.common.integration.tc.ArcaneCraftingPattern;
 import thaumicenergistics.common.integration.tc.DigiVisSourceData;
@@ -180,6 +181,11 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
      * The pattern currently being crafted.
      */
     private ArcaneCraftingPattern currentPattern = null;
+
+    /**
+     * The items to be returned when crafting finishes.
+     */
+    private ItemStack[] currentResult;
 
     /**
      * Handles interaction with the knowledge core.
@@ -344,7 +350,7 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
 
                 // Simulate placing the items
                 boolean rejected = false;
-                for (ItemStack output : this.result) {
+                for (ItemStack output : this.currentResult) {
                     IAEItemStack rejectedResult = storageGrid.getItemInventory().injectItems(
                             AEApi.instance().storage().createItemStack(output),
                             Actionable.SIMULATE,
@@ -358,7 +364,7 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
                 // Were all items accepted?
                 if (!rejected) {
                     // Inject into the network
-                    for (ItemStack output : this.result) {
+                    for (ItemStack output : this.currentResult) {
                         storageGrid.getItemInventory().injectItems(
                                 AEApi.instance().storage().createItemStack(output),
                                 Actionable.MODULATE,
@@ -372,7 +378,7 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
 
                     // Mark for network update
                     this.markForDelayedUpdate();
-                    this.result = null;
+                    this.currentResult = null;
                 }
             } catch (GridAccessException ignored) {}
         } else {
@@ -1025,8 +1031,6 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
         }
     }
 
-    private ItemStack[] result;
-
     @Override
     public boolean pushPattern(final ICraftingPatternDetails patternDetails, final InventoryCrafting table) {
         if ((!this.isCrafting) && (patternDetails instanceof ArcaneCraftingPattern)) {
@@ -1038,7 +1042,7 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
 
             // Set the pattern that is being crafted
             this.currentPattern = (ArcaneCraftingPattern) patternDetails;
-            this.result = currentPattern.getAllOutputs(table);
+            this.currentResult = currentPattern.getAllOutputs(table);
 
             // Set the target item
             this.internalInventory
@@ -1105,7 +1109,7 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
                 NBTTagCompound tag = resultList.getCompoundTagAt(i);
                 resultArray.add(ItemStack.loadItemStackFromNBT(tag));
             }
-            if (!resultArray.isEmpty()) this.result = resultArray.toArray(new ItemStack[0]);
+            if (!resultArray.isEmpty()) this.currentResult = resultArray.toArray(new ItemStack[0]);
 
         }
 
@@ -1155,10 +1159,10 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
                     this.currentPattern.writeToNBT(new NBTTagCompound()));
         }
         // Write the cached result
-        if (this.result != null) {
+        if (this.currentResult != null) {
             NBTTagList resultList = new NBTTagList();
             data.setTag(TileArcaneAssembler.NBTKEY_RESULT, resultList);
-            for (ItemStack item : result) {
+            for (ItemStack item : currentResult) {
                 if (item != null) resultList.appendTag(item.writeToNBT(new NBTTagCompound()));
 
             }
@@ -1176,5 +1180,13 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
         if (this.storedVis.size() > 0) {
             this.storedVis.writeToNBT(data, TileArcaneAssembler.NBTKEY_STORED_VIS);
         }
+    }
+
+    private ItemStack crafterIcon;
+
+    @Override
+    public ItemStack getCrafterIcon() {
+        if (this.crafterIcon == null) this.crafterIcon = new ItemStack(BlockEnum.ARCANE_ASSEMBLER.getBlock());
+        return this.crafterIcon;
     }
 }
