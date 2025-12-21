@@ -2,7 +2,7 @@ package thaumicenergistics.common.integration.tc;
 
 import java.util.ArrayList;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
@@ -13,11 +13,13 @@ import net.minecraftforge.oredict.OreDictionary;
 import appeng.api.AEApi;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.helpers.PatternHelper;
 import appeng.util.item.AEItemStack;
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.items.ItemEldritchObject;
+import thaumicenergistics.common.items.ItemArcaneCraftingPattern;
 
 public class ArcaneCraftingPattern implements ICraftingPatternDetails {
 
@@ -30,6 +32,7 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
     /**
      * Aspects required.
      */
+    @Nonnull
     protected AspectList aspects;
 
     /**
@@ -43,11 +46,6 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
     protected IAEItemStack result;
 
     /**
-     * The knowledge core this pattern belongs to.
-     */
-    protected ItemStack knowledgeCoreHost;
-
-    /**
      * Cached array of required aspects
      */
     protected Aspect[] cachedAspects;
@@ -56,11 +54,7 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
      * Ingredients as AE itemstacks.
      */
     protected IAEItemStack[] ingredientsAE = null;
-
-    /**
-     * List of all output items, results + containers
-     */
-    protected IAEItemStack[] allResults = null;
+    protected IAEItemStack[] ingredientsAECondensed = null;
 
     /**
      * True if the recipe is valid.
@@ -69,15 +63,12 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
 
     /**
      *
-     * @param knowledgeCore
      * @param aspects
      * @param craftingResult
      * @param craftingIngredients
      */
-    public ArcaneCraftingPattern(final ItemStack knowledgeCore, final AspectList aspects,
-            final ItemStack craftingResult, final Object[] craftingIngredients) {
-        // Set the core
-        this.knowledgeCoreHost = knowledgeCore;
+    public ArcaneCraftingPattern(final AspectList aspects, final ItemStack craftingResult,
+            final Object[] craftingIngredients) {
 
         // Set the aspects
         this.aspects = aspects.copy();
@@ -104,12 +95,9 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
 
     /**
      *
-     * @param knowledgeCore
      * @param data
      */
-    public ArcaneCraftingPattern(@Nullable final ItemStack knowledgeCore, final NBTTagCompound data) {
-        // Set the host
-        this.knowledgeCoreHost = knowledgeCore;
+    public ArcaneCraftingPattern(final NBTTagCompound data) {
 
         // Create the aspect list
         this.aspects = new AspectList();
@@ -217,47 +205,6 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
         }
     }
 
-    /**
-     * Sets up all results, including container items.
-     */
-    private void setupAEResults() {
-        // Ensure the ingredient list is made
-        if (this.ingredientsAE == null) {
-            this.setupAEIngredientList();
-        }
-
-        ArrayList<IAEItemStack> results = new ArrayList<IAEItemStack>();
-
-        // Add any container items
-        for (IAEItemStack stack : this.ingredientsAE) {
-            if (stack == null) {
-                continue;
-            }
-
-            // Container?
-            if (stack.getItem().hasContainerItem(stack.getItemStack())) {
-                results.add(
-                        AEApi.instance().storage()
-                                .createItemStack(stack.getItem().getContainerItem(stack.getItemStack())));
-            }
-
-            // Multiplier?
-            else if (stack.getStackSize() > 1) {
-                results.add(stack.copy().setStackSize(stack.getStackSize() - 1));
-            }
-            // Primordial Pearl?
-            else if ((stack.getItem() instanceof ItemEldritchObject) && (stack.getItemDamage() == 3)) {
-                results.add(stack);
-            }
-        }
-
-        // Add result
-        results.add(this.result);
-
-        // Set the outputs
-        this.allResults = results.toArray(new IAEItemStack[results.size()]);
-    }
-
     protected void setPatternValidity(final boolean valid) {
         // Set
         this.isValid = valid;
@@ -281,36 +228,36 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
         return true;
     }
 
-    /**
-     * This includes container items.
-     *
-     * @return
-     */
-    public IAEItemStack[] getAllResults() {
-        if (this.allResults == null) {
-            this.setupAEResults();
-        }
-        return this.allResults;
-    }
-
-    public void updateInventory(InventoryCrafting table) {
-        if (this.ingredientsAE == null) this.ingredientsAE = new AEItemStack[ArcaneCraftingPattern.GRID_SIZE];
-        boolean inventoryUnchanged = true;
+    public ItemStack[] getAllOutputs(InventoryCrafting table) {
+        ArrayList<ItemStack> results = new ArrayList<>();
         for (int i = 0; i < 9; ++i) {
             ItemStack s = table.getStackInSlot(i);
+
             if (s == null) {
-                if (ingredientsAE[i] == null) continue;
-                inventoryUnchanged = false;
-                ingredientsAE[i] = null;
-            } else {
-                AEItemStack aestack = (AEItemStack) AEApi.instance().storage().createItemStack(s);
-                if (ingredientsAE[i] == null || ingredientsAE[i].hashCode() != aestack.hashCode()) {
-                    ingredientsAE[i] = aestack;
-                    inventoryUnchanged = false;
-                }
+                continue;
+            }
+
+            // Container?
+            if (s.getItem().hasContainerItem(s)) {
+                results.add(s.getItem().getContainerItem(s));
+            }
+
+            // Multiplier?
+            else if (s.stackSize > 1) {
+                ItemStack copy = s.copy();
+                copy.stackSize--;
+                results.add(copy);
+            }
+            // Primordial Pearl?
+            else if ((s.getItem() instanceof ItemEldritchObject) && (s.getItemDamage() == 3)) {
+                results.add(s);
             }
         }
-        if (!inventoryUnchanged) setupAEResults();
+
+        // Add result
+        results.add(this.result.getItemStack());
+
+        return results.toArray(new ItemStack[results.size()]);
     }
 
     /**
@@ -337,22 +284,11 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
 
     @Override
     public IAEItemStack[] getCondensedInputs() {
-        // Create a temp array
-        ArrayList<IAEItemStack> cond = new ArrayList<IAEItemStack>();
 
-        if (this.ingredientsAE == null) {
-            this.setupAEIngredientList();
+        if (this.ingredientsAECondensed == null) {
+            ingredientsAECondensed = PatternHelper.convertToCondensedList(getInputs());
         }
-
-        // Add non-null ingredients
-        for (int index = 0; index < this.ingredientsAE.length; index++) {
-            if (this.ingredientsAE[index] != null) {
-                cond.add(this.ingredientsAE[index]);
-            }
-        }
-
-        // Return the ingredients
-        return cond.toArray(new IAEItemStack[cond.size()]);
+        return ingredientsAECondensed;
     }
 
     @Override
@@ -387,7 +323,7 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
 
     @Override
     public ItemStack getPattern() {
-        return this.knowledgeCoreHost;
+        return ItemArcaneCraftingPattern.getItemFromPattern(this);
     }
 
     @Override
@@ -429,8 +365,8 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
             // Null detected
             return false;
         }
-
-        return ArcaneCraftingPattern.canSubstitueFor(ing, input);
+        boolean sub = ArcaneCraftingPattern.canSubstitueFor(ing, input);
+        return sub;
     }
 
     public void readFromNBT(final NBTTagCompound data) {
@@ -600,15 +536,6 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
         }
     }
 
-    /**
-     * Sets the knowledge core.
-     *
-     * @param knowledgeCore
-     */
-    public void setKnowledgeCore(final ItemStack knowledgeCore) {
-        this.knowledgeCoreHost = knowledgeCore;
-    }
-
     @Override
     public void setPriority(final int priority) {
         // Ignored.
@@ -681,5 +608,35 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
         data.setTag(ArcaneCraftingPattern.NBTKEY_RESULT, outData);
 
         return data;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (super.equals(obj)) {
+            return true;
+        } ;
+        if (!(obj instanceof ArcaneCraftingPattern other)) {
+            return false;
+        }
+        if (!(obj.hashCode() == this.hashCode())) {
+            return false;
+        }
+        if (!(tag.equals(other.tag))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private int hash;
+    private NBTTagCompound tag;
+
+    @Override
+    public int hashCode() {
+        if (tag == null) {
+            hash = writeToNBT(tag = new NBTTagCompound()).hashCode();
+        }
+        return hash;
     }
 }

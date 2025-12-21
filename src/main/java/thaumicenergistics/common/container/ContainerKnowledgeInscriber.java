@@ -490,7 +490,7 @@ public class ContainerKnowledgeInscriber extends ContainerWithPlayerInventory {
 
             // Create the pattern
             ArcaneCraftingPattern pattern = new ArcaneCraftingPattern(
-                    this.kCoreSlot.getStack(),
+
                     recipeAspects,
                     this.resultSlot.getStack(),
                     inputs);
