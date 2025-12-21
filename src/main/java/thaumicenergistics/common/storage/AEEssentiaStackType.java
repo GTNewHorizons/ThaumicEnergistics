@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import com.djgiannuzz.thaumcraftneiplugin.items.ItemAspect;
 
@@ -51,6 +52,12 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
     @Override
     public IItemList<AEEssentiaStack> createList() {
         return new EssentiaList();
+    }
+
+    @Override
+    @Range(from = 1L, to = Integer.MAX_VALUE)
+    public int getAmountPerUnit() {
+        return 1;
     }
 
     @Override

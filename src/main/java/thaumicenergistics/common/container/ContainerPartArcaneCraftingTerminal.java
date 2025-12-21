@@ -468,7 +468,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
     }
 
     @Override
-    public PrimaryGui getPrimaryGui() {
+    public PrimaryGui createPrimaryGui() {
         return new ThEPrimaryGui(this.terminal);
     }
 
