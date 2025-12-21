@@ -5,15 +5,25 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import com.google.common.base.Optional;
 
+import appeng.api.AEApi;
 import appeng.api.config.PowerMultiplier;
+import appeng.api.config.Settings;
+import appeng.api.config.SortDir;
+import appeng.api.config.SortOrder;
+import appeng.api.config.TypeFilter;
+import appeng.api.config.ViewItems;
+import appeng.api.features.IWirelessTermHandler;
+import appeng.api.util.IConfigManager;
+import appeng.core.sync.GuiBridge;
 import appeng.items.tools.powered.powersink.AEBasePoweredItem;
+import appeng.util.ConfigManager;
+import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import thaumicenergistics.api.IThEWirelessEssentiaTerminal;
-import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.registries.ThEStrings;
 
@@ -25,7 +35,7 @@ import thaumicenergistics.common.registries.ThEStrings;
  * @author Nividica
  *
  */
-public class ItemWirelessEssentiaTerminal extends AEBasePoweredItem implements IThEWirelessEssentiaTerminal {
+public class ItemWirelessEssentiaTerminal extends AEBasePoweredItem implements IWirelessTermHandler {
 
     /**
      * NBT keys
@@ -46,28 +56,7 @@ public class ItemWirelessEssentiaTerminal extends AEBasePoweredItem implements I
      * Creates the wireless terminal item.
      */
     public ItemWirelessEssentiaTerminal() {
-        super(POWER_STORAGE, Optional.<String>absent());
-    }
-
-    /**
-     * Gets or creates the NBT compound tag for the terminal.
-     *
-     * @param wirelessTerminal
-     * @return
-     */
-    private NBTTagCompound getOrCreateCompoundTag(final ItemStack wirelessTerminal) {
-        NBTTagCompound dataTag;
-
-        // Ensure the terminal has a tag
-        if (!wirelessTerminal.hasTagCompound()) {
-            // Create a new tag.
-            wirelessTerminal.setTagCompound((dataTag = new NBTTagCompound()));
-        } else {
-            // Get the tag
-            dataTag = wirelessTerminal.getTagCompound();
-        }
-
-        return dataTag;
+        super(POWER_STORAGE, Optional.absent());
     }
 
     /**
@@ -105,33 +94,19 @@ public class ItemWirelessEssentiaTerminal extends AEBasePoweredItem implements I
         return ThEStrings.Item_WirelessEssentiaTerminal.getUnlocalized();
     }
 
-    /**
-     * Gets the data tag used to save the terminal settings a power level.
-     */
-    @Override
-    public NBTTagCompound getWETerminalTag(final ItemStack wirelessTerminal) {
-        return this.getOrCreateCompoundTag(wirelessTerminal);
-    }
-
     @SideOnly(Side.CLIENT)
     @Override
     public boolean isFull3D() {
         return false;
     }
 
-    /**
-     * Opens the wireless terminal.
-     *
-     * @param itemStack
-     * @param world
-     * @param entityPlayer
-     * @return
-     */
     @Override
     public ItemStack onItemRightClick(final ItemStack itemStack, final World world, final EntityPlayer player) {
-        // Open the gui
-        ThEApi.instance().interact().openWirelessTerminalGui(player);
-
+        if (ForgeEventFactory.onItemUseStart(player, itemStack, 1) > 0) {
+            if (AEApi.instance().registries().wireless().performCheck(itemStack, player)) {
+                Platform.openGUI(player, null, null, GuiBridge.GUI_ME);
+            }
+        }
         return itemStack;
     }
 
@@ -143,13 +118,21 @@ public class ItemWirelessEssentiaTerminal extends AEBasePoweredItem implements I
         this.itemIcon = iconRegister.registerIcon(ThaumicEnergistics.MOD_ID + ":wireless.essentia.terminal");
     }
 
-    /**
-     * Sets the encryption, or source, key for the specified terminal.
-     *
-     * @param wirelessTerminal
-     * @param sourceKey
-     * @param name             Ignored.
-     */
+    private NBTTagCompound getOrCreateCompoundTag(final ItemStack wirelessTerminal) {
+        NBTTagCompound dataTag;
+
+        // Ensure the terminal has a tag
+        if (!wirelessTerminal.hasTagCompound()) {
+            // Create a new tag.
+            wirelessTerminal.setTagCompound((dataTag = new NBTTagCompound()));
+        } else {
+            // Get the tag
+            dataTag = wirelessTerminal.getTagCompound();
+        }
+
+        return dataTag;
+    }
+
     @Override
     public void setEncryptionKey(final ItemStack wirelessTerminal, final String sourceKey, final String name) {
         // Set the key
@@ -157,14 +140,49 @@ public class ItemWirelessEssentiaTerminal extends AEBasePoweredItem implements I
                 .setString(ItemWirelessEssentiaTerminal.NBT_AE_SOURCE_KEY, sourceKey);
     }
 
-    /**
-     * Always show the durability bar.
-     *
-     * @param wirelessTerminal
-     * @return
-     */
     @Override
     public boolean showDurabilityBar(final ItemStack wirelessTerminal) {
         return true;
+    }
+
+    @Override
+    public boolean canHandle(ItemStack is) {
+        return is != null && is.getItem() instanceof ItemWirelessEssentiaTerminal;
+    }
+
+    @Override
+    public boolean usePower(EntityPlayer player, double amount, ItemStack is) {
+        return this.extractAEPower(is, amount) >= amount - 0.5;
+    }
+
+    @Override
+    public boolean hasPower(EntityPlayer player, double amount, ItemStack is) {
+        return this.getAECurrentPower(is) >= amount;
+    }
+
+    @Override
+    public boolean hasInfinityPower(ItemStack is) {
+        return false;
+    }
+
+    @Override
+    public boolean hasInfinityRange(ItemStack is) {
+        return false;
+    }
+
+    @Override
+    public IConfigManager getConfigManager(ItemStack is) {
+        final ConfigManager out = new ConfigManager((manager, settingName, newValue) -> {
+            final NBTTagCompound data = Platform.openNbtData(is);
+            manager.writeToNBT(data);
+        });
+
+        out.registerSetting(Settings.SORT_BY, SortOrder.NAME);
+        out.registerSetting(Settings.VIEW_MODE, ViewItems.ALL);
+        out.registerSetting(Settings.SORT_DIRECTION, SortDir.ASCENDING);
+        out.registerSetting(Settings.TYPE_FILTER, TypeFilter.ALL);
+
+        out.readFromNBT((NBTTagCompound) Platform.openNbtData(is).copy());
+        return out;
     }
 }

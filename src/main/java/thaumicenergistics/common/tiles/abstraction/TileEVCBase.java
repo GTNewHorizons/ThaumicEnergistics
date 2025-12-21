@@ -8,22 +8,25 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import org.jetbrains.annotations.Nullable;
+
 import appeng.api.config.Actionable;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.ObjectIntMutablePair;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectSource;
 import thaumicenergistics.api.ThEApi;
-import thaumicenergistics.api.storage.IAspectStack;
 import thaumicenergistics.api.tiles.IEssentiaTransportWithSimulate;
-import thaumicenergistics.common.storage.AspectStack;
 import thaumicenergistics.common.utils.EffectiveSide;
 
 /**
@@ -52,16 +55,14 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
     /**
      * Stored Essentia
      */
-    protected IAspectStack storedEssentia = null;
+    @Nullable
+    protected ObjectIntPair<Aspect> storedEssentia = null;
 
     /**
-     * Returns true if the EVC accepts the specified aspect.
-     *
-     * @param aspect
-     * @return
+     * @return true if the EVC accepts the specified aspect.
      */
     public static boolean acceptsAspect(final Aspect aspect) {
-        return ((aspect == Aspect.FIRE) || (aspect == Aspect.ENERGY));
+        return aspect == Aspect.FIRE || aspect == Aspect.ENERGY;
     }
 
     /**
@@ -78,15 +79,6 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
     protected ItemStack getItemFromTile(final Object obj) {
         // Return the itemstack that visually represents this tile
         return ThEApi.instance().blocks().EssentiaVibrationChamber.getStack();
-    }
-
-    /**
-     * Returns true if there is any stored essentia.
-     *
-     * @return
-     */
-    protected boolean hasStoredEssentia() {
-        return (this.storedEssentia != null) && (!this.storedEssentia.isEmpty());
     }
 
     protected abstract void NBTRead(NBTTagCompound data);
@@ -131,8 +123,8 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
         int storedAmount = 0;
 
         // Is the aspect stored?
-        if ((this.hasStoredEssentia()) && (this.storedEssentia.getAspect() == aspect)) {
-            storedAmount = (int) this.storedEssentia.getStackSize();
+        if (this.storedEssentia != null && this.storedEssentia.left() == aspect) {
+            storedAmount = this.storedEssentia.rightInt();
         }
 
         return storedAmount;
@@ -141,9 +133,9 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
     @Override
     public boolean doesContainerAccept(final Aspect aspect) {
         // Is there stored essentia?
-        if (this.hasStoredEssentia()) {
+        if (this.storedEssentia != null) {
             // Match to stored essentia
-            return aspect == this.storedEssentia.getAspect();
+            return aspect == this.storedEssentia.left();
         }
 
         // Nothing is stored, accepts ignis or potentia
@@ -154,22 +146,22 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
     @Override
     public boolean doesContainerContain(final AspectList aspectList) {
         // Is there not stored essentia?
-        if (!this.hasStoredEssentia()) {
+        if (this.storedEssentia == null) {
             return false;
         }
 
-        return aspectList.aspects.containsKey(this.storedEssentia.getAspect());
+        return aspectList.aspects.containsKey(this.storedEssentia.left());
     }
 
     @Override
     public boolean doesContainerContainAmount(final Aspect aspect, final int amount) {
         // Does the stored essentia match the aspect?
-        if ((this.storedEssentia == null) || (this.storedEssentia.getAspect() != aspect)) {
+        if (this.storedEssentia == null || this.storedEssentia.left() != aspect) {
             // Does not match
             return false;
         }
 
-        return (this.storedEssentia.getStackSize() >= amount);
+        return this.storedEssentia.rightInt() >= amount;
     }
 
     @Override
@@ -178,9 +170,9 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
         AspectList aspectList = new AspectList();
 
         // Is there stored essentia?
-        if (this.hasStoredEssentia()) {
+        if (this.storedEssentia != null) {
             // Add the essentia aspect and amount
-            aspectList.add(this.storedEssentia.getAspect(), (int) this.storedEssentia.getStackSize());
+            aspectList.add(this.storedEssentia.left(), this.storedEssentia.rightInt());
         }
 
         return aspectList;
@@ -193,12 +185,12 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
 
     @Override
     public int getEssentiaAmount(final ForgeDirection side) {
-        return (this.hasStoredEssentia() ? (int) this.storedEssentia.getStackSize() : 0);
+        return (this.storedEssentia != null ? this.storedEssentia.rightInt() : 0);
     }
 
     @Override
     public Aspect getEssentiaType(final ForgeDirection side) {
-        return (this.hasStoredEssentia() ? this.storedEssentia.getAspect() : null);
+        return (this.storedEssentia != null ? this.storedEssentia.left() : null);
     }
 
     @Override
@@ -219,7 +211,7 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
         // Suction is based on how full the chamber is, as it fills up suction drops
 
         // Get how much is stored
-        float stored = (this.storedEssentia == null ? 0.0f : this.storedEssentia.getStackSize());
+        float stored = (this.storedEssentia == null ? 0.0f : this.storedEssentia.rightInt());
         if (stored == MAX_ESSENTIA_STORED) {
             return 0;
         }
@@ -231,9 +223,9 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
     @Override
     public Aspect getSuctionType(final ForgeDirection side) {
         // Is there anything stored?
-        if (this.hasStoredEssentia()) {
+        if (this.storedEssentia != null) {
             // Suction type must match what is stored
-            return this.storedEssentia.getAspect();
+            return this.storedEssentia.left();
         }
 
         // Rotate into Potentia?
@@ -251,12 +243,23 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
         return (side != this.getForward());
     }
 
+    private static final String NBTKEY_ASPECT_TAG = "AspectTag", NBTKEY_ASPECT_AMOUNT = "Amount";
+
     @TileEvent(TileEventType.WORLD_NBT_READ)
     public final void onNBTLoad(final NBTTagCompound data) {
-        // Is there essentia stored?
+        // // Is there essentia stored?
+        // if (data.hasKey(TileEVCBase.NBTKEY_STORED)) {
+        // // Load the stack
+        // this.storedEssentia = AspectStack.loadAspectStackFromNBT(data.getCompoundTag(TileEVCBase.NBTKEY_STORED));
+        // }
+
         if (data.hasKey(TileEVCBase.NBTKEY_STORED)) {
-            // Load the stack
-            this.storedEssentia = AspectStack.loadAspectStackFromNBT(data.getCompoundTag(TileEVCBase.NBTKEY_STORED));
+            NBTTagCompound storedTag = data.getCompoundTag(TileEVCBase.NBTKEY_STORED);
+            Aspect aspect = Aspect.aspects.get(storedTag.getString(NBTKEY_ASPECT_TAG));
+            int amount = (int) storedTag.getLong(NBTKEY_ASPECT_AMOUNT);
+            if (aspect != null && amount > 0) {
+                this.storedEssentia = new ObjectIntMutablePair<>(aspect, amount);
+            }
         }
 
         // Call sub
@@ -266,10 +269,13 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
     @TileEvent(TileEventType.WORLD_NBT_WRITE)
     public final void onNBTSave(final NBTTagCompound data) {
         // Save storage
-        if (this.hasStoredEssentia()) {
+        if (this.storedEssentia != null) {
             // Save stack
             NBTTagCompound stack = new NBTTagCompound();
-            this.storedEssentia.writeToNBT(stack);
+            // this.storedEssentia.writeToNBT(stack);
+
+            stack.setString(NBTKEY_ASPECT_TAG, this.storedEssentia.left().getTag());
+            stack.setLong(NBTKEY_ASPECT_AMOUNT, this.storedEssentia.rightInt());
 
             // Write into data
             data.setTag(TileEVCBase.NBTKEY_STORED, stack);
@@ -284,13 +290,13 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
     public final boolean onNetworkRead(final ByteBuf stream) {
         // Anything stored?
         if (stream.readBoolean()) {
-            // Is the local copy null?
             if (this.storedEssentia == null) {
-                // Create the stack from the stream
-                this.storedEssentia = AspectStack.loadAspectStackFromStream(stream);
+                this.storedEssentia = new ObjectIntMutablePair<>(
+                        Aspect.aspects.get(ByteBufUtils.readUTF8String(stream)),
+                        stream.readInt());
             } else {
-                // Update the stack from the stream
-                this.storedEssentia.readFromStream(stream);
+                this.storedEssentia.left(Aspect.aspects.get(ByteBufUtils.readUTF8String(stream)));
+                this.storedEssentia.right(stream.readInt());
             }
         } else {
             // Null out the stack
@@ -312,7 +318,8 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
         stream.writeBoolean(hasStored);
         if (hasStored) {
             // Write the stack
-            this.storedEssentia.writeToStream(stream);
+            ByteBufUtils.writeUTF8String(stream, this.storedEssentia.left().getTag());
+            stream.writeInt(this.storedEssentia.rightInt());
         }
 
         // Call sub

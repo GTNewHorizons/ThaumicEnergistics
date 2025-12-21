@@ -1,6 +1,6 @@
 package thaumicenergistics.common.network.packet.server;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.Minecraft;
 
 import io.netty.buffer.ByteBuf;
 import thaumicenergistics.common.container.ContainerDistillationPatternEncoder;
@@ -18,12 +18,12 @@ public class Packet_S_DistillationEncoder extends ThEServerPacket {
     private static final byte MODE_ENCODE = 1;
     private static final byte MODE_RESETASPECT = 2;
 
-    public static void sendEncodePattern(final EntityPlayer player) {
+    public static void sendEncodePattern() {
         // Create a new packet
         Packet_S_DistillationEncoder packet = new Packet_S_DistillationEncoder();
 
         // Set the player
-        packet.player = player;
+        packet.player = Minecraft.getMinecraft().thePlayer;
 
         // Set the mode
         packet.mode = MODE_ENCODE;
@@ -32,12 +32,12 @@ public class Packet_S_DistillationEncoder extends ThEServerPacket {
         NetworkHandler.sendPacketToServer(packet);
     }
 
-    public static void sendResetAspect(final EntityPlayer player) {
+    public static void sendResetAspect() {
         // Create a new packet
         Packet_S_DistillationEncoder packet = new Packet_S_DistillationEncoder();
 
         // Set the player
-        packet.player = player;
+        packet.player = Minecraft.getMinecraft().thePlayer;
 
         // Set the mode
         packet.mode = MODE_RESETASPECT;
@@ -57,15 +57,15 @@ public class Packet_S_DistillationEncoder extends ThEServerPacket {
         // Sanity check
         if (this.mode == MODE_ENCODE) {
             // Get the players open container
-            if (this.player.openContainer instanceof ContainerDistillationPatternEncoder) {
+            if (this.player.openContainer instanceof ContainerDistillationPatternEncoder container) {
                 // Send the encode
-                ((ContainerDistillationPatternEncoder) this.player.openContainer).onEncodePattern();
+                container.encodePattern(this.player);
             }
         } else if (this.mode == MODE_RESETASPECT) {
             // Get the players open container
-            if (this.player.openContainer instanceof ContainerDistillationPatternEncoder) {
+            if (this.player.openContainer instanceof ContainerDistillationPatternEncoder container) {
                 // Send the reset
-                ((ContainerDistillationPatternEncoder) this.player.openContainer).scanSourceItem(true);
+                container.scanSourceItem();
             }
         }
 
