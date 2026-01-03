@@ -95,7 +95,6 @@ public enum ThEStrings {
     TooltipButton_SwapArmor_Title("tooltip.button.swap.armor.title", false),
     TooltipButton_Reset_Aspect("tooltip.button.reset.aspect", false),
     TooltipButton_Reset_Aspect_Description("tooltip.button.reset.aspect.description", false),
-
     TooltipButton_EssentiaCellDumpAll("tooltip.essentia.cell.dump.all", false),
     TooltipButton_EssentiaCellDumpAll_Title("tooltip.essentia.cell.dump.all.title", false),
 
