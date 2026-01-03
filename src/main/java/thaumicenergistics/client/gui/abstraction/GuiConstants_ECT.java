@@ -27,6 +27,12 @@ public abstract class GuiConstants_ECT extends ThEScrollbarGui {
             BUTTON_VIEW_MODE_POS_Y = GuiConstants_ECT.BUTTON_SORT_MODE_POS_Y + 20;
 
     /**
+     * Dump All button position.
+     */
+    protected static final int BUTTON_DUMP_ALL_POS_X = -18,
+            BUTTON_DUMP_ALL_POS_Y = GuiConstants_ECT.BUTTON_VIEW_MODE_POS_Y + 20;
+
+    /**
      * Size of the gui.
      */
     protected static final int GUI_WIDTH = 195, GUI_HEIGHT = 204;

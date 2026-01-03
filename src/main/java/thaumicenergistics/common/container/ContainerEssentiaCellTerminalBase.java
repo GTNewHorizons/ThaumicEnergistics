@@ -865,7 +865,43 @@ public abstract class ContainerEssentiaCellTerminalBase extends ContainerWithPla
     }
 
     /**
-     * Called when the the selected aspect has changed.
+     * Called by the gui via "Dump All" button
+     *
+     * @param player
+     */
+    public void onDumpAll(@Nonnull final EntityPlayer player) {
+        for (int i = 0; i < player.inventory.mainInventory.length; i++) {
+            ItemStack sourceStack = player.inventory.mainInventory[i];
+            if (sourceStack == null) continue;
+
+            final ItemStack takeFrom = sourceStack.copy();
+
+            // Get the action source
+            final BaseActionSource actionSource = this.getActionSource();
+
+            // Simulate the transfer
+            ItemStack resultStack = this.transferEssentia(takeFrom, null, actionSource, Actionable.SIMULATE);
+
+            // Was any work performed?
+            if ((resultStack == null) || (resultStack == takeFrom)) {
+                // Nothing to do. Looking for next item.
+                continue;
+            }
+
+            // Perform the work
+            this.transferEssentia(takeFrom, null, actionSource, Actionable.MODULATE);
+
+            // Remove the filled jar from player inventory
+            player.inventory.mainInventory[i] = null;
+
+            // Give resulting jar instead
+            player.inventory.addItemStackToInventory(resultStack);
+        }
+        this.detectAndSendChanges();
+    }
+
+    /**
+     * Called when the selected aspect has changed.
      *
      * @param selectedAspect
      */

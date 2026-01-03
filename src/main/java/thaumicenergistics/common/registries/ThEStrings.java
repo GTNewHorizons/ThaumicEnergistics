@@ -96,6 +96,9 @@ public enum ThEStrings {
     TooltipButton_Reset_Aspect("tooltip.button.reset.aspect", false),
     TooltipButton_Reset_Aspect_Description("tooltip.button.reset.aspect.description", false),
 
+    TooltipButton_EssentiaCellDumpAll("tooltip.essentia.cell.dump.all", false),
+    TooltipButton_EssentiaCellDumpAll_Title("tooltip.essentia.cell.dump.all.title", false),
+
     // GUI
     Gui_TitleArcaneCraftingTerminal("gui.arcane.crafting.terminal.title", false),
     Gui_TitleEssentiaCell("gui.essentia.cell.title", false),

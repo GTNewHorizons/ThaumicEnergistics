@@ -28,6 +28,7 @@ import thaumicenergistics.api.gui.IAspectSelectorGui;
 import thaumicenergistics.api.storage.IAspectStack;
 import thaumicenergistics.client.gui.abstraction.GuiConstants_ECT;
 import thaumicenergistics.client.gui.buttons.GuiButtonCraftingStatus;
+import thaumicenergistics.client.gui.buttons.GuiButtonDumpAll;
 import thaumicenergistics.client.gui.buttons.GuiButtonSortingMode;
 import thaumicenergistics.client.gui.buttons.GuiButtonViewType;
 import thaumicenergistics.client.gui.widget.ThEWidget;
@@ -124,6 +125,11 @@ public class GuiEssentiaCellTerminal extends GuiConstants_ECT implements IAspect
      * Button to change what aspects (regular | crafting) are shown.
      */
     protected GuiButtonViewType buttonViewMode;
+
+    /**
+     * Transfers all jars from player inventory into network.
+     */
+    protected GuiButtonDumpAll buttonDumpAll;
 
     /**
      * The cached amount of the selected stack.
@@ -630,6 +636,8 @@ public class GuiEssentiaCellTerminal extends GuiConstants_ECT implements IAspect
             Packet_S_EssentiaCellTerminal.sendChangeView(this.player, (mouseButton == ThEGuiHelper.MOUSE_BUTTON_RIGHT));
         } else if (button == this.btnCraftingStatus) {
             Packet_S_EssentiaCellTerminal.sendOpenCraftingStatus(this.player);
+        } else if (button == this.buttonDumpAll) {
+            Packet_S_EssentiaCellTerminal.sendDumpAllRequest(this.player);
         }
     }
 
@@ -768,6 +776,15 @@ public class GuiEssentiaCellTerminal extends GuiConstants_ECT implements IAspect
                 GuiConstants_ECT.MODE_BUTTON_SIZE,
                 GuiConstants_ECT.MODE_BUTTON_SIZE);
         this.buttonList.add(this.buttonViewMode);
+
+        // Add dump all button
+        this.buttonDumpAll = new GuiButtonDumpAll(
+                2,
+                this.guiLeft + GuiConstants_ECT.BUTTON_DUMP_ALL_POS_X,
+                this.guiTop + GuiConstants_ECT.BUTTON_DUMP_ALL_POS_Y,
+                GuiConstants_ECT.MODE_BUTTON_SIZE,
+                GuiConstants_ECT.MODE_BUTTON_SIZE);
+        this.buttonList.add(this.buttonDumpAll);
 
         if ((this.baseContainer instanceof ContainerEssentiaTerminal)
                 || (this.baseContainer instanceof ContainerWirelessEssentiaTerminal)) {

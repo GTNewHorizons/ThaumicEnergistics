@@ -12,7 +12,8 @@ import thaumicenergistics.common.ThaumicEnergistics;
  */
 public enum ThEStateIconsEnum implements IStateIconTexture {
 
-    SWAP(0, 0);
+    SWAP(0, 0),
+    DUMP_ALL(0, 16);
 
     /**
      * Location of the AE states texture
