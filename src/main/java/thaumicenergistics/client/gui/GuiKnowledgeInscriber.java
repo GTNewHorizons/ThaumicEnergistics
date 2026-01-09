@@ -117,7 +117,7 @@ public class GuiKnowledgeInscriber extends ThEBaseGui {
         this.ySize = GuiKnowledgeInscriber.GUI_HEIGHT;
 
         // Set title
-        this.title = ThEStrings.Block_KnowledgeInscriber.getLocalized();
+        this.title = ThEStrings.Gui_TitleKnowledgeInscriber.getLocalized();
 
         // Setup the particles
         this.particles = new GuiParticleAnimator[ContainerKnowledgeInscriber.CRAFTING_COLS

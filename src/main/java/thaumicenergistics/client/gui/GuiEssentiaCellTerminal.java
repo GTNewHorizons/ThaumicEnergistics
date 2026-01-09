@@ -242,7 +242,7 @@ public class GuiEssentiaCellTerminal extends GuiConstants_ECT implements IAspect
         return new GuiEssentiaCellTerminal(
                 player,
                 new ContainerEssentiaTerminal(terminal, player),
-                ThEStrings.Part_EssentiaTerminal.getLocalized());
+                ThEStrings.Gui_TitleEssentiaTerminal.getLocalized());
     }
 
     /**
@@ -286,7 +286,7 @@ public class GuiEssentiaCellTerminal extends GuiConstants_ECT implements IAspect
         return new GuiEssentiaCellTerminal(
                 player,
                 new ContainerWirelessEssentiaTerminal(player, handler),
-                ThEStrings.Part_EssentiaTerminal.getLocalized());
+                ThEStrings.Gui_TitleEssentiaTerminal.getLocalized());
     }
 
     /**

@@ -8,7 +8,6 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import appeng.core.localization.GuiText;
 import appeng.helpers.IPriorityHost;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -21,6 +20,7 @@ import thaumicenergistics.common.container.ContainerPriority;
 import thaumicenergistics.common.network.packet.server.Packet_S_ChangeGui;
 import thaumicenergistics.common.network.packet.server.Packet_S_Priority;
 import thaumicenergistics.common.parts.ThEPartBase;
+import thaumicenergistics.common.registries.ThEStrings;
 
 /**
  * Gui for the priority window
@@ -223,7 +223,7 @@ public class GuiPriority extends ThEBaseGui {
         this.ySize = GuiPriority.GUI_HEIGHT;
 
         // Set the title
-        this.title = GuiText.Priority.getLocal();
+        this.title = ThEStrings.Gui_TitlePriority.getLocalized();
     }
 
     @Override
