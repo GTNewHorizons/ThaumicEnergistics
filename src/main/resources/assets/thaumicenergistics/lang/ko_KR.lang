@@ -49,10 +49,19 @@ thaumicenergistics.tooltip.button.void.note=Only applies to void jars
 #GUI
 thaumicenergistics.gui.arcane.crafting.terminal.title=아케인 조합 단말기
 thaumicenergistics.gui.essentia.cell.title=에센시아 셀
+thaumicenergistics.gui.essentia.cell.workbench.title=에센시아 셀 워크벤치
+thaumicenergistics.gui.arcane.assembler.title=Arcane Assembler
+thaumicenergistics.gui.knowledge.inscriber.title=Knowledge Inscriber
+thaumicenergistics.gui.distillation.encoder.title=Distillation Pattern Encoder
+thaumicenergistics.gui.essentia.ImportBus.title=에센시아 입력 버스
+thaumicenergistics.gui.essentia.ExportBus.title=에센시아 출력 버스
+thaumicenergistics.gui.essentia.levelemitter.title=에센시아 레벨 방출기
+thaumicenergistics.gui.essentia.StorageBus.title=에센시아 저장 버스
+thaumicenergistics.gui.essentia.terminal.title=에센시아 단말기
+
 thaumicenergistics.gui.selected.amount=양
 thaumicenergistics.gui.selected.aspect=위상
 thaumicenergistics.gui.digivis.source.name=디지센시아 소스
-thaumicenergistics.gui.essentia.cell.workbench.title.name=에센시아 셀 워크벤치
 
 #Research Tab
 tc.research_category.thaumicenergistics=[TE] 사우믹 에너지스틱즈

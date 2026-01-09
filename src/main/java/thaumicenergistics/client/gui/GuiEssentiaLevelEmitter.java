@@ -22,8 +22,8 @@ import thaumicenergistics.client.textures.GuiTextureManager;
 import thaumicenergistics.common.container.ContainerPartEssentiaLevelEmitter;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaEmitter;
-import thaumicenergistics.common.parts.AEPartsEnum;
 import thaumicenergistics.common.parts.PartEssentiaLevelEmitter;
+import thaumicenergistics.common.registries.ThEStrings;
 
 /**
  * {@link PartEssentiaLevelEmitter} GUI
@@ -236,7 +236,7 @@ public class GuiEssentiaLevelEmitter extends ThEBaseGui implements IAspectSlotGu
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
         // Draw the title
         this.fontRendererObj.drawString(
-                AEPartsEnum.EssentiaLevelEmitter.getLocalizedName(),
+                ThEStrings.Gui_TitleEssentiaLevelEmitter.getLocalized(),
                 GuiEssentiaLevelEmitter.TITLE_POS_X,
                 GuiEssentiaLevelEmitter.TITLE_POS_Y,
                 0);

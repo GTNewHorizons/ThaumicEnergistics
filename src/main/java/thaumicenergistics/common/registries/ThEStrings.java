@@ -99,11 +99,19 @@ public enum ThEStrings {
     // GUI
     Gui_TitleArcaneCraftingTerminal("gui.arcane.crafting.terminal.title", false),
     Gui_TitleEssentiaCell("gui.essentia.cell.title", false),
+    Gui_TitleEssentiaCellWorkbench("gui.essentia.cell.workbench.title", false),
+    Gui_TitleArcaneAssembler("gui.arcane.assembler.title", false),
+    Gui_TitleKnowledgeInscriber("gui.knowledge.inscriber.title", false),
+    Gui_TitleDistillationPatternEncoder("gui.distillation.encoder.title", false),
+    Gui_TitleEssentiaImportBus("gui.essentia.ImportBus.title", false),
+    Gui_TitleEssentiaExportBus("gui.essentia.ExportBus.title", false),
+    Gui_TitleEssentiaLevelEmitter("gui.essentia.levelemitter.title", false),
+    Gui_TitleEssentiaStorageBus("gui.essentia.StorageBus.title", false),
+    Gui_TitleEssentiaTerminal("gui.essentia.terminal.title", false),
+
     Gui_SelectedAmount("gui.selected.amount", false),
     Gui_SelectedAspect("gui.selected.aspect", false),
     Gui_DigiVisSource("gui.digivis.source", true),
-    Gui_TitleEssentiaCellWorkbench("gui.essentia.cell.workbench.title", false),
-    Gui_TitleArcaneAssembler("gui.arcane.assembler.title", false),
     GUi_VibrationChamber_Stored("gui.vibration.chamber.stored", false),
     GUi_VibrationChamber_Processing("gui.vibration.chamber.processing", false);
 
