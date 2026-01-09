@@ -101,6 +101,7 @@ thaumicenergistics.gui.essentia.ExportBus.title=Шина экспорта эсс
 thaumicenergistics.gui.essentia.levelemitter.title=Излучатель уровня эссенции
 thaumicenergistics.gui.essentia.StorageBus.title=Шина хранения эссенции
 thaumicenergistics.gui.essentia.terminal.title=Терминал эссенции
+thaumicenergistics.gui.priority.title=Приоритет
 
 thaumicenergistics.gui.selected.amount=Количество
 thaumicenergistics.gui.selected.aspect=Аспект

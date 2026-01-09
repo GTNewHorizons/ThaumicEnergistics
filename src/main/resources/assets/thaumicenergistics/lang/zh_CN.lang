@@ -96,6 +96,7 @@ thaumicenergistics.gui.essentia.ExportBus.title=源质输出总线
 thaumicenergistics.gui.essentia.levelemitter.title=源质发信器
 thaumicenergistics.gui.essentia.StorageBus.title=源质存储总线
 thaumicenergistics.gui.essentia.terminal.title=源质终端
+thaumicenergistics.gui.priority.title=优先级
 
 thaumicenergistics.gui.selected.amount=数量
 thaumicenergistics.gui.selected.aspect=要素

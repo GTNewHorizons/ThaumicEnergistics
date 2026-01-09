@@ -108,6 +108,7 @@ public enum ThEStrings {
     Gui_TitleEssentiaLevelEmitter("gui.essentia.levelemitter.title", false),
     Gui_TitleEssentiaStorageBus("gui.essentia.StorageBus.title", false),
     Gui_TitleEssentiaTerminal("gui.essentia.terminal.title", false),
+    Gui_TitlePriority("gui.priority.title", false),
 
     Gui_SelectedAmount("gui.selected.amount", false),
     Gui_SelectedAspect("gui.selected.aspect", false),
