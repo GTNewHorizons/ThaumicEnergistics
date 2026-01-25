@@ -1,7 +1,6 @@
 package thaumicenergistics.client.gui;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -13,6 +12,7 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
+import appeng.api.storage.data.IAEStackType;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import cpw.mods.fml.relauncher.Side;
@@ -328,15 +328,11 @@ public class GuiDistillationPatternEncoder extends AEBaseGui {
                     62 + 18 * (i % 4),
                     42 + 18 * (i / 4),
                     this.deContainer.getAspectsInventory(),
-                    i);
+                    i,
+                    GuiDistillationPatternEncoder::acceptType);
             this.aspectSlots[i] = slot;
             this.registerVirtualSlots(slot);
         }
-    }
-
-    @Override
-    protected void handlePhantomSlotInteraction(VirtualMEPhantomSlot slot, int mouseButton) {
-        slot.handleMouseClicked(Collections.EMPTY_LIST, isCtrlKeyDown(), mouseButton);
     }
 
     public void setChangedSrcItem() {
@@ -346,5 +342,9 @@ public class GuiDistillationPatternEncoder extends AEBaseGui {
 
     public void setUnknownAspect() {
         this.unknownAspect = true;
+    }
+
+    private static boolean acceptType(VirtualMEPhantomSlot slot, IAEStackType<?> type, int mouseButton) {
+        return true;
     }
 }
