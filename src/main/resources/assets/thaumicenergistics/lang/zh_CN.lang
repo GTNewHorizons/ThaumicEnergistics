@@ -84,15 +84,14 @@ thaumicenergistics.tooltip.advanced.infusion.provider.normal=普通供应器
 thaumicenergistics.tooltip.advanced.infusion.provider.advanced=进阶供应器
 thaumicenergistics.tooltip.advanced.infusion.provider.totalbind=已绑定 %d 个矩阵
 
-
 #GUI
-thaumicenergistics.gui.arcane.crafting.terminal.title=奥术终端
-thaumicenergistics.gui.essentia.cell.title=源质元件
+thaumicenergistics.gui.arcane.assembler.title=奥术装配室
+thaumicenergistics.gui.knowledge.inscriber.title=知识记录仪
+thaumicenergistics.gui.distillation.encoder.title=蒸馏编码台
+
 thaumicenergistics.gui.selected.amount=数量
 thaumicenergistics.gui.selected.aspect=要素
 thaumicenergistics.gui.digivis.source.name=数位魔力源
-thaumicenergistics.gui.essentia.cell.workbench.title=源质元件工作台
-thaumicenergistics.gui.arcane.assembler.title=奥术装配室
 thaumicenergistics.gui.vibration.chamber.stored=存储：%d %s
 thaumicenergistics.gui.vibration.chamber.processing=正在处理：%s
 

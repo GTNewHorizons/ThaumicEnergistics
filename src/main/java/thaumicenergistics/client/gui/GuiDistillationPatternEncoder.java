@@ -118,7 +118,7 @@ public class GuiDistillationPatternEncoder extends AEBaseGui {
         super(new ContainerDistillationPatternEncoder(player, world, x, y, z));
 
         // Set the title
-        this.title = ThEStrings.Block_DistillationEncoder.getLocalized();
+        this.title = ThEStrings.Gui_TitleDistillationPatternEncoder.getLocalized();
 
         // Set the GUI size
         this.xSize = GuiDistillationPatternEncoder.GUI_WIDTH;

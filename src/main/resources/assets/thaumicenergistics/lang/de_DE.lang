@@ -40,8 +40,10 @@ thaumicenergistics.tooltip.button.void.allowed=Essentia verwerfen, wenn das Glas
 thaumicenergistics.tooltip.button.void.note=Nur bei Leeren-Gläsern möglich.
 
 #GUI
-thaumicenergistics.gui.arcane.crafting.terminal.title=Arkane Konsole
-thaumicenergistics.gui.essentia.cell.title=Essentia-Zelle
+thaumicenergistics.gui.arcane.assembler.title=Arcane Assembler
+thaumicenergistics.gui.knowledge.inscriber.title=Knowledge Inscriber
+thaumicenergistics.gui.distillation.encoder.title=Distillation Pattern Encoder
+
 thaumicenergistics.gui.selected.amount=Menge
 thaumicenergistics.gui.selected.aspect=Aspekt
 

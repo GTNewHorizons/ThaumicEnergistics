@@ -12,9 +12,6 @@ import thaumicenergistics.common.ThaumicEnergistics;
  */
 public enum ThEStrings {
 
-    // Fluids
-    Fluid_GaseousEssentia("fluid.gaseous", false),
-
     // Blocks
     Block_EssentiaProvider("block.essentia.provider", true),
     Block_InfusionProvider("block.infusion.provider", true),
@@ -97,13 +94,11 @@ public enum ThEStrings {
     TooltipButton_Reset_Aspect_Description("tooltip.button.reset.aspect.description", false),
 
     // GUI
-    Gui_TitleArcaneCraftingTerminal("gui.arcane.crafting.terminal.title", false),
-    Gui_TitleEssentiaCell("gui.essentia.cell.title", false),
-    Gui_SelectedAmount("gui.selected.amount", false),
-    Gui_SelectedAspect("gui.selected.aspect", false),
-    Gui_DigiVisSource("gui.digivis.source", true),
-    Gui_TitleEssentiaCellWorkbench("gui.essentia.cell.workbench.title", false),
     Gui_TitleArcaneAssembler("gui.arcane.assembler.title", false),
+    Gui_TitleKnowledgeInscriber("gui.knowledge.inscriber.title", false),
+    Gui_TitleDistillationPatternEncoder("gui.distillation.encoder.title", false),
+
+    Gui_DigiVisSource("gui.digivis.source", true),
     GUi_VibrationChamber_Stored("gui.vibration.chamber.stored", false),
     GUi_VibrationChamber_Processing("gui.vibration.chamber.processing", false);
 
