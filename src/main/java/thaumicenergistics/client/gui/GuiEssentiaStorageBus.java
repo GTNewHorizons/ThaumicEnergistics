@@ -27,8 +27,8 @@ import thaumicenergistics.common.container.ContainerPartEssentiaStorageBus;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
 import thaumicenergistics.common.network.packet.server.Packet_S_ChangeGui;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaStorageBus;
-import thaumicenergistics.common.parts.AEPartsEnum;
 import thaumicenergistics.common.parts.PartEssentiaStorageBus;
+import thaumicenergistics.common.registries.ThEStrings;
 
 /**
  * {@link PartEssentiaStorageBus} GUI
@@ -133,7 +133,7 @@ public class GuiEssentiaStorageBus extends ThEBaseGui implements IAspectSlotGui 
     /**
      * Title of the gui
      */
-    private final String guiTitle = AEPartsEnum.EssentiaStorageBus.getLocalizedName();
+    private final String guiTitle = ThEStrings.Gui_TitleEssentiaStorageBus.getLocalized();
 
     /**
      * Is the storage buss allowed to void excess essentia?

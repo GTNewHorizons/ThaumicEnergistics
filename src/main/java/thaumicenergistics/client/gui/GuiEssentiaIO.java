@@ -24,10 +24,10 @@ import thaumicenergistics.client.textures.GuiTextureManager;
 import thaumicenergistics.common.container.ContainerPartEssentiaIOBus;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
 import thaumicenergistics.common.network.packet.server.Packet_S_EssentiaIOBus;
-import thaumicenergistics.common.parts.AEPartsEnum;
 import thaumicenergistics.common.parts.PartEssentiaExportBus;
 import thaumicenergistics.common.parts.PartEssentiaImportBus;
 import thaumicenergistics.common.parts.ThEPartEssentiaIOBus_Base;
+import thaumicenergistics.common.registries.ThEStrings;
 
 /**
  * {@link PartEssentiaExportBus} and {@link PartEssentiaImportBus} GUI
@@ -204,10 +204,10 @@ public class GuiEssentiaIO extends ThEBaseGui implements WidgetAspectSlot.IConfi
         // Set the title
         if (partBus instanceof PartEssentiaImportBus) {
             // Import
-            this.guiTitle = AEPartsEnum.EssentiaImportBus.getLocalizedName();
+            this.guiTitle = ThEStrings.Gui_TitleEssentiaImportBus.getLocalized();
         } else if (partBus instanceof PartEssentiaExportBus) {
             // Export
-            this.guiTitle = AEPartsEnum.EssentiaExportBus.getLocalizedName();
+            this.guiTitle = ThEStrings.Gui_TitleEssentiaExportBus.getLocalized();
         } else {
             this.guiTitle = "";
         }
