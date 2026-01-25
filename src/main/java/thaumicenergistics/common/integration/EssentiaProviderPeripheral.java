@@ -1,8 +1,9 @@
 package thaumicenergistics.common.integration;
 
+import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STACK_TYPE;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -15,6 +16,12 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
 
 import appeng.api.networking.IGrid;
+import appeng.api.networking.security.BaseActionSource;
+import appeng.api.networking.storage.IBaseMonitor;
+import appeng.api.networking.storage.IStorageGrid;
+import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.IMEMonitorHandlerReceiver;
+import appeng.api.storage.data.IItemList;
 import appeng.me.GridAccessException;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.ILuaObject;
@@ -22,10 +29,7 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import thaumcraft.api.aspects.Aspect;
-import thaumicenergistics.api.grid.IEssentiaGrid;
-import thaumicenergistics.api.grid.IMEEssentiaMonitor;
-import thaumicenergistics.api.grid.IMEEssentiaMonitorReceiver;
-import thaumicenergistics.api.storage.IAspectStack;
+import thaumicenergistics.common.storage.AEEssentiaStack;
 import thaumicenergistics.common.tiles.TileEssentiaProvider;
 
 /**
@@ -231,7 +235,7 @@ public class EssentiaProviderPeripheral implements IPeripheral, IEssentiaProvide
         }
     }
 
-    private class EssentiaWatcher implements IMEEssentiaMonitorReceiver {
+    private class EssentiaWatcher implements IMEMonitorHandlerReceiver<AEEssentiaStack> {
 
         /**
          * Computers that are listening for specific updates. The Boolean value specifies if the computer is watching
@@ -313,7 +317,7 @@ public class EssentiaProviderPeripheral implements IPeripheral, IEssentiaProvide
                 // Attached to monitor?
                 if (!this.isReceving) {
                     // Get the monitor
-                    IMEEssentiaMonitor monitor = EssentiaProviderPeripheral.this.getProviderMonitor();
+                    IMEMonitor<AEEssentiaStack> monitor = EssentiaProviderPeripheral.this.getProviderMonitor();
                     if (monitor != null) {
                         // Register
                         try {
@@ -358,7 +362,8 @@ public class EssentiaProviderPeripheral implements IPeripheral, IEssentiaProvide
         }
 
         @Override
-        public void postChange(final IMEEssentiaMonitor fromMonitor, final Iterable<IAspectStack> changes) {
+        public void postChange(IBaseMonitor<AEEssentiaStack> monitor, Iterable<AEEssentiaStack> changes,
+                BaseActionSource actionSource) {
             // Ensure the provider is there and active
             TileEssentiaProvider provider = EssentiaProviderPeripheral.this.getProvider();
             if (provider == null) {
@@ -378,11 +383,11 @@ public class EssentiaProviderPeripheral implements IPeripheral, IEssentiaProvide
                 Object[] ccChange = null;
 
                 // For each change
-                for (IAspectStack change : changes) {
+                for (AEEssentiaStack change : changes) {
                     // Are there computers watching for any change?
                     if (this.anyWatchers.size() > 0) {
                         // Create the argument
-                        ccChange = new Object[] { change.getAspectName(), change.getStackSize() };
+                        ccChange = new Object[] { change.getAspect().getName(), change.getStackSize() };
 
                         for (IComputerAccess computer : this.anyWatchers) {
                             try {
@@ -401,7 +406,7 @@ public class EssentiaProviderPeripheral implements IPeripheral, IEssentiaProvide
                     // Are there computers watching for this specific change?
                     if ((specificWatchers = this.aspectWatchers.get(change.getAspect())) != null) {
                         // Create the argument
-                        ccChange = new Object[] { change.getAspectName(), change.getStackSize() };
+                        ccChange = new Object[] { change.getAspect().getName(), change.getStackSize() };
 
                         // Update those watchers
                         for (IComputerAccess computer : specificWatchers) {
@@ -427,6 +432,9 @@ public class EssentiaProviderPeripheral implements IPeripheral, IEssentiaProvide
                 }
             }
         }
+
+        @Override
+        public void onListUpdate() {}
 
         /**
          * Removes a computer from the watch list.
@@ -554,16 +562,16 @@ public class EssentiaProviderPeripheral implements IPeripheral, IEssentiaProvide
     private Object[] ccGetAspects() throws LuaException, InterruptedException {
 
         // Attempt to get the monitor
-        IMEEssentiaMonitor monitor;
+        IMEMonitor<AEEssentiaStack> monitor;
         if ((monitor = this.getProviderMonitor()) == null) {
             return null;
         }
 
         // Get the list of aspects in the network
-        Collection<IAspectStack> essentiaList = monitor.getEssentiaList();
+        IItemList<AEEssentiaStack> essentiaList = monitor.getStorageList();
 
         // Is there any essentia stored?
-        if (essentiaList.size() == 0) {
+        if (essentiaList.isEmpty()) {
             // No essentia stored
             return null;
         }
@@ -572,9 +580,9 @@ public class EssentiaProviderPeripheral implements IPeripheral, IEssentiaProvide
         Object[] ccList = new Object[essentiaList.size() * 2];
 
         int index = 0;
-        for (IAspectStack stack : essentiaList) {
+        for (AEEssentiaStack stack : essentiaList) {
             // Set the name
-            ccList[index] = stack.getAspectName();
+            ccList[index] = stack.getAspect().getName();
 
             // Set the amount
             ccList[index + 1] = stack.getStackSize();
@@ -738,12 +746,8 @@ public class EssentiaProviderPeripheral implements IPeripheral, IEssentiaProvide
 
     /**
      * Gets the essentia monitor from the provider.
-     *
-     * @return
-     * @throws LuaException
-     * @throws InterruptedException
      */
-    IMEEssentiaMonitor getProviderMonitor() throws LuaException, InterruptedException {
+    IMEMonitor<AEEssentiaStack> getProviderMonitor() {
         // Get the provider
         TileEssentiaProvider provider = this.getProvider();
 
@@ -755,7 +759,8 @@ public class EssentiaProviderPeripheral implements IPeripheral, IEssentiaProvide
 
         // Attempt to get the essentia monitor
         try {
-            return (IMEEssentiaMonitor) provider.getActionableNode().getGrid().getCache(IEssentiaGrid.class);
+            IStorageGrid storageGrid = provider.getActionableNode().getGrid().getCache(IStorageGrid.class);
+            return (IMEMonitor<AEEssentiaStack>) storageGrid.getMEMonitor(ESSENTIA_STACK_TYPE);
         } catch (NullPointerException npe) {
             // Could not get the monitor
             return null;

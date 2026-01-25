@@ -10,8 +10,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.ForgeEventFactory;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -25,7 +29,8 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartRenderHelper;
-import appeng.api.parts.PartItemStack;
+import appeng.api.util.AEColor;
+import appeng.parts.AEBasePart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
@@ -38,12 +43,12 @@ import thaumicenergistics.common.integration.tc.DigiVisSourceData;
 import thaumicenergistics.common.integration.tc.VisProviderProxy;
 
 /**
- * Iterfaces with a {@link TileVisRelay}.
+ * Interfaces with a {@link TileVisRelay}.
  *
  * @author Nividica
  *
  */
-public class PartVisInterface extends ThEPartBase implements IGridTickable, IDigiVisSource {
+public class PartVisInterface extends AEBasePart implements IGridTickable, IDigiVisSource {
 
     /**
      * NBT key for the unique ID
@@ -73,7 +78,7 @@ public class PartVisInterface extends ThEPartBase implements IGridTickable, IDig
     /**
      * Unique ID for this interface
      */
-    private long UID = 0;
+    private long UID;
 
     /**
      * The aspect color we are currently draining
@@ -98,296 +103,16 @@ public class PartVisInterface extends ThEPartBase implements IGridTickable, IDig
     /**
      * If this end is a provider, this stores the source.
      */
-    private DigiVisSourceData visP2PSourceInfo = new DigiVisSourceData();
+    private final DigiVisSourceData visP2PSourceInfo = new DigiVisSourceData();
 
     /**
      * If this end is a provider, this interacts with the vis network.
      */
     private VisProviderProxy visProviderSubTile = null;
 
-    /**
-     * Creates the interface.
-     */
-    public PartVisInterface() {
-        super(AEPartsEnum.VisInterface);
-
+    public PartVisInterface(final ItemStack is) {
+        super(is);
         this.UID = System.currentTimeMillis() ^ this.hashCode();
-    }
-
-    public PartVisInterface(AEPartsEnum part) {
-        super(part);
-
-        this.UID = System.currentTimeMillis() ^ this.hashCode();
-    }
-
-    /**
-     * Requests that the interface drain vis from the relay
-     *
-     * @param digiVisAspect
-     * @param amount
-     * @return
-     */
-    protected int consumeVisFromVisNetwork(final Aspect digiVisAspect, final int amount) {
-        // Get the relay
-        TileVisRelay visRelay = this.getRelay();
-
-        // Ensure there is a relay
-        if (visRelay == null) {
-            return 0;
-        }
-
-        // Get the power grid
-        IEnergyGrid eGrid = this.getGridBlock().getEnergyGrid();
-
-        // Ensure we got the grid
-        if (eGrid == null) {
-            return 0;
-        }
-
-        // Simulate a power drain
-        double drainedPower = eGrid
-                .extractAEPower(PartVisInterface.POWER_PER_REQUESTED_VIS, Actionable.SIMULATE, PowerMultiplier.CONFIG);
-
-        // Ensure we got the power we need
-        if (drainedPower < PartVisInterface.POWER_PER_REQUESTED_VIS) {
-            return 0;
-        }
-
-        // Ask it for vis
-        int amountReceived = visRelay.consumeVis(digiVisAspect, amount);
-
-        // Did we get any vis?
-        if (amountReceived > 0) {
-            // Drain the power
-            eGrid.extractAEPower(PartVisInterface.POWER_PER_REQUESTED_VIS, Actionable.MODULATE, PowerMultiplier.CONFIG);
-        }
-
-        // Return the amount we received
-        return amountReceived;
-    }
-
-    /**
-     * Verifies that a p2p source is valid
-     *
-     * @return
-     */
-    private boolean isP2PSourceValid() {
-        // Is there anything even linked to?
-        if (!this.visP2PSourceInfo.hasSourceData()) {
-            return false;
-        }
-
-        // Get the source
-        IDigiVisSource p2pSource = this.visP2PSourceInfo.tryGetSource(this.getGrid());
-
-        // There must be source data
-        if (p2pSource == null) {
-            return false;
-        }
-
-        // Source must be a vis interface
-        if (!(p2pSource instanceof PartVisInterface)) {
-            return false;
-        }
-
-        // Can't link to self
-        if (this.equals(p2pSource)) {
-            return false;
-        }
-
-        // Source must not be a provider
-        if (((PartVisInterface) p2pSource).isVisProvider()) {
-            return false;
-        }
-
-        // Source seems valid
-        return true;
-    }
-
-    /**
-     * Sets the color we are draining.
-     *
-     * @param color
-     */
-    private void setDrainColor(final int color) {
-
-        // Are we setting the color?
-        if (color != 0) {
-            // Does it match what we already have?
-            if (color == this.visDrainingColor) {
-                // Set the update time
-                this.lastColorUpdate = System.currentTimeMillis();
-
-                return;
-            }
-
-            // Has the alloted time passed for a change?
-            if ((System.currentTimeMillis() - this.lastColorUpdate) <= (PartVisInterface.TIME_TO_CLEAR / 2)) {
-                return;
-            }
-
-            // Set the update time
-            this.lastColorUpdate = System.currentTimeMillis();
-        }
-
-        // Set the color
-        this.visDrainingColor = color;
-
-        // Update
-        this.markForUpdate();
-    }
-
-    private void setIsVisProvider(final boolean isProviding) {
-
-        // Is the interface to be a provider?
-        if (!isProviding) {
-            // Clear the source info
-            this.visP2PSourceInfo.clearData();
-
-            // Null the subtile
-            if (this.visProviderSubTile != null) {
-                this.visProviderSubTile.invalidate();
-                this.visProviderSubTile = null;
-            }
-        }
-
-        this.isProvider = isProviding;
-    }
-
-    /**
-     * How far to extend the cable.
-     */
-    @Override
-    public int cableConnectionRenderTo() {
-        return 2;
-    }
-
-    /**
-     * Drains vis from either the vis relay network, or from the p2p source.
-     *
-     * @param digiVisAspect
-     * @param amount
-     * @return
-     */
-    @Override
-    public int consumeVis(final Aspect digiVisAspect, final int amount) {
-        // Ensure the interface is active
-        if (!this.isActive()) {
-            return 0;
-        }
-
-        int amountReceived = 0;
-
-        // Is the interface a provider?
-        if (this.isProvider) {
-            if (this.isP2PSourceValid()) {
-                // Get the p2p source
-                IDigiVisSource source = this.visP2PSourceInfo.tryGetSource(this.getGrid());
-
-                // Ask the source for vis
-                amountReceived = source.consumeVis(digiVisAspect, amount);
-            }
-        } else {
-            amountReceived = this.consumeVisFromVisNetwork(digiVisAspect, amount);
-        }
-
-        // Was any vis received?
-        if (amountReceived > 0) {
-            // Set the color
-            this.setDrainColor(digiVisAspect.getColor());
-        }
-
-        return amountReceived;
-    }
-
-    /**
-     * Hit boxes.
-     */
-    @Override
-    public void getBoxes(final IPartCollisionHelper helper) {
-        // Face
-        helper.addBox(6.0F, 6.0F, 15.0F, 10.0F, 10.0F, 16.0F);
-
-        // Mid
-        helper.addBox(4.0D, 4.0D, 14.0D, 12.0D, 12.0D, 15.0D);
-
-        // Back
-        helper.addBox(5.0D, 5.0D, 13.0D, 11.0D, 11.0D, 14.0D);
-    }
-
-    @Override
-    public IIcon getBreakingTexture() {
-        return BlockTextureManager.VIS_RELAY_INTERFACE.getTextures()[0];
-    }
-
-    /**
-     * Gets the grid the interface is attached to
-     *
-     * @return
-     */
-    @Override
-    public IGrid getGrid() {
-        // Ensure the interface has a gridblock
-        if (this.getGridBlock() == null) {
-            return null;
-        }
-
-        // Return the grid
-        return this.getGridBlock().getGrid();
-    }
-
-    /**
-     * No idle power usage.
-     */
-    @Override
-    public double getIdlePowerUsage() {
-        return 0;
-    }
-
-    /**
-     * Produces a small amount of light.
-     */
-    @Override
-    public int getLightLevel() {
-        return 8;
-    }
-
-    /**
-     * Gets the relay the interface is facing. If any.
-     *
-     * @return
-     */
-    public TileVisRelay getRelay() {
-        // Get the cached relay
-        TileVisRelay tVR = this.cachedRelay.get();
-
-        // Is there a cached relay?
-        if (tVR != null) {
-            // Ensure it is still there
-            if (tVR == this.getHostTile().getWorldObj().getTileEntity(tVR.xCoord, tVR.yCoord, tVR.zCoord)) {
-                return tVR;
-            }
-        }
-
-        // Get the tile we are facing
-        TileEntity facingTile = this.getFacingTile();
-
-        // Is it a relay?
-        if (facingTile instanceof TileVisRelay) {
-            // Get the relay
-            tVR = (TileVisRelay) facingTile;
-
-            // Is it facing the same direction as we are?
-            if (tVR.orientation == this.getSide().ordinal()) {
-                // Set the cache
-                this.cachedRelay = new WeakReference<TileVisRelay>(tVR);
-
-                // Return it
-                return tVR;
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -396,233 +121,6 @@ public class PartVisInterface extends ThEPartBase implements IGridTickable, IDig
     @Override
     public TickingRequest getTickingRequest(final IGridNode node) {
         return new TickingRequest(30, 30, false, false);
-    }
-
-    /**
-     * Gets the unique ID for this interface
-     *
-     * @return
-     */
-    @Override
-    public long getUID() {
-        return this.UID;
-    }
-
-    /**
-     * Is the interface on and active?
-     *
-     * @return
-     */
-    @Override
-    public boolean isActive() {
-        return super.isActive();
-    }
-
-    public Boolean isVisProvider() {
-        return this.isProvider;
-    }
-
-    /**
-     * Player right-clicked the interface.
-     */
-    @Override
-    public boolean onActivate(final EntityPlayer player, final Vec3 position) {
-        // Get what the player is holding
-        ItemStack playerHolding = player.inventory.getCurrentItem();
-
-        // Are they holding a memory card?
-        if ((playerHolding != null) && (playerHolding.getItem() instanceof IMemoryCard)) {
-            // Get the memory card
-            IMemoryCard memoryCard = (IMemoryCard) playerHolding.getItem();
-
-            // Get the stored name
-            String settingsName = memoryCard.getSettingsName(playerHolding);
-
-            // Does it contain the data about a vis source?
-            if (settingsName.equals(DigiVisSourceData.SOURCE_UNLOC_NAME)) {
-                // Get the data
-                NBTTagCompound data = memoryCard.getData(playerHolding);
-
-                // Load the info
-                this.visP2PSourceInfo.readFromNBT(data);
-
-                // Ensure there is valid data
-                if (this.visP2PSourceInfo.hasSourceData()) {
-                    // Can the link be established?
-                    if (!this.isP2PSourceValid()) {
-                        // Unable to link
-                        memoryCard.notifyUser(player, MemoryCardMessages.INVALID_MACHINE);
-
-                        // Clear the source data
-                        this.visP2PSourceInfo.clearData();
-                    } else {
-                        // Mark that we are now a provider
-                        this.setIsVisProvider(true);
-
-                        // Inform the user
-                        memoryCard.notifyUser(player, MemoryCardMessages.SETTINGS_LOADED);
-                    }
-                }
-
-                // Mark for a save
-                this.markForSave();
-            }
-            // Is the memory card empty?
-            else if (settingsName.equals("gui.appliedenergistics2.Blank") && this.isProvider) {
-                // Mark that we are not a provider
-                this.setIsVisProvider(false);
-
-                // Inform the user
-                memoryCard.notifyUser(player, MemoryCardMessages.SETTINGS_CLEARED);
-
-                // Mark for save
-                this.markForSave();
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Player shift-right-clicked the interface.
-     */
-    @Override
-    public boolean onShiftActivate(final EntityPlayer player, final Vec3 position) {
-        // Get what the player is holding
-        ItemStack playerHolding = player.inventory.getCurrentItem();
-
-        // Are they holding a memory card?
-        if ((playerHolding != null) && (playerHolding.getItem() instanceof IMemoryCard)) {
-            // Get the memory card
-            IMemoryCard memoryCard = (IMemoryCard) playerHolding.getItem();
-
-            // Create the info data
-            DigiVisSourceData data = new DigiVisSourceData(this);
-
-            // Write into the memory card
-            memoryCard.setMemoryCardContents(playerHolding, DigiVisSourceData.SOURCE_UNLOC_NAME, data.writeToNBT());
-
-            // Notify the user
-            memoryCard.notifyUser(player, MemoryCardMessages.SETTINGS_SAVED);
-
-            // Mark that we are not a provider
-            this.setIsVisProvider(false);
-
-            // Mark for save
-            this.markForSave();
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Reads the interface data from the tag
-     */
-    @Override
-    public void readFromNBT(final NBTTagCompound data) {
-        // Call super
-        super.readFromNBT(data);
-
-        // Does it contain the UID?
-        if (data.hasKey(PartVisInterface.NBT_KEY_UID)) {
-            // Read the UID
-            this.UID = data.getLong(PartVisInterface.NBT_KEY_UID);
-        }
-
-        // Is there provider data?
-        if (data.hasKey(PartVisInterface.NBT_KEY_IS_PROVIDER)) {
-            // Set provider status
-            this.isProvider = data.getBoolean(PartVisInterface.NBT_KEY_IS_PROVIDER);
-
-            // Read source information
-            if (data.hasKey(PartVisInterface.NBT_KEY_PROVIDER_SOURCE)) {
-                this.visP2PSourceInfo.readFromNBT(data, PartVisInterface.NBT_KEY_PROVIDER_SOURCE);
-            }
-        }
-    }
-
-    /**
-     * Reads server-sent data
-     */
-    @Override
-    public boolean readFromStream(final ByteBuf data) throws IOException {
-        boolean redraw = false;
-
-        // Call super
-        redraw |= super.readFromStream(data);
-
-        // Cache old color
-        int oldColor = this.visDrainingColor;
-
-        // Read the drain color
-        this.visDrainingColor = data.readInt();
-
-        // Redraw if colors changed
-        redraw |= (this.visDrainingColor != oldColor);
-
-        return redraw;
-    }
-
-    /**
-     * Draws the interface in the inventory.
-     */
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void renderInventory(final IPartRenderHelper helper, final RenderBlocks renderer) {
-        IIcon side = BlockTextureManager.VIS_RELAY_INTERFACE.getTextures()[2];
-        helper.setTexture(side, side, side, BlockTextureManager.VIS_RELAY_INTERFACE.getTexture(), side, side);
-
-        // Face
-        helper.setBounds(6.0F, 6.0F, 15.0F, 10.0F, 10.0F, 16.0F);
-        helper.renderInventoryBox(renderer);
-
-        // Mid
-        helper.setBounds(4.0F, 4.0F, 14.0F, 12.0F, 12.0F, 15.0F);
-        helper.renderInventoryBox(renderer);
-
-        // Back
-        helper.setBounds(5.0F, 5.0F, 13.0F, 11.0F, 11.0F, 14.0F);
-        this.renderInventoryBusLights(helper, renderer);
-    }
-
-    /**
-     * Draws the interface in the world.
-     */
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void renderStatic(final int x, final int y, final int z, final IPartRenderHelper helper,
-            final RenderBlocks renderer) {
-        Tessellator tessellator = Tessellator.instance;
-
-        IIcon side = BlockTextureManager.VIS_RELAY_INTERFACE.getTextures()[2];
-        helper.setTexture(side, side, side, BlockTextureManager.VIS_RELAY_INTERFACE.getTexture(), side, side);
-
-        // Face
-        helper.setBounds(6.0F, 6.0F, 15.0F, 10.0F, 10.0F, 16.0F);
-        helper.renderBlock(x, y, z, renderer);
-
-        // Mid
-        helper.setBounds(4.0F, 4.0F, 14.0F, 12.0F, 12.0F, 15.0F);
-        helper.renderBlock(x, y, z, renderer); // Mid face
-
-        if (this.visDrainingColor != 0) {
-            tessellator.setColorOpaque_I(this.visDrainingColor);
-            helper.renderFace(
-                    x,
-                    y,
-                    z,
-                    BlockTextureManager.VIS_RELAY_INTERFACE.getTextures()[1],
-                    ForgeDirection.SOUTH,
-                    renderer);
-        }
-
-        // Back (facing bus)
-        helper.setBounds(5.0F, 5.0F, 13.0F, 11.0F, 11.0F, 14.0F);
-        this.renderStaticBusLights(x, y, z, helper, renderer);
     }
 
     /**
@@ -662,7 +160,7 @@ public class PartVisInterface extends ThEPartBase implements IGridTickable, IDig
                     this.visProviderSubTile = new VisProviderProxy(this);
 
                     // Register the provider
-                    VisNetHandler.addSource(this.getHostTile().getWorldObj(), this.visProviderSubTile);
+                    VisNetHandler.addSource(this.getTile().getWorldObj(), this.visProviderSubTile);
                 } else if (hasProvider) {
                     this.visProviderSubTile.updateEntity();
                 }
@@ -673,19 +171,309 @@ public class PartVisInterface extends ThEPartBase implements IGridTickable, IDig
     }
 
     /**
-     * Write the interface data to the tag
+     * Requests that the interface drain vis from the relay
      */
-    @Override
-    public void writeToNBT(final NBTTagCompound data, final PartItemStack saveType) {
-        // Call super
-        super.writeToNBT(data, saveType);
+    protected int consumeVisFromVisNetwork(final Aspect digiVisAspect, final int amount) {
+        // Get the relay
+        TileVisRelay visRelay = this.getRelay();
 
-        // Only write NBT if world save
-        if (saveType != PartItemStack.World) {
-            return;
+        // Ensure there is a relay
+        if (visRelay == null) {
+            return 0;
         }
 
-        // Write the UID
+        // Get the power grid
+        IGrid grid = this.getGrid();
+        if (grid == null) return 0;
+
+        IEnergyGrid eGrid = grid.getCache(IEnergyGrid.class);
+        if (eGrid == null) return 0;
+
+        // Simulate a power drain
+        double drainedPower = eGrid
+                .extractAEPower(PartVisInterface.POWER_PER_REQUESTED_VIS, Actionable.SIMULATE, PowerMultiplier.CONFIG);
+
+        // Ensure we got the power we need
+        if (drainedPower < PartVisInterface.POWER_PER_REQUESTED_VIS) {
+            return 0;
+        }
+
+        // Ask it for vis
+        int amountReceived = visRelay.consumeVis(digiVisAspect, amount);
+
+        // Did we get any vis?
+        if (amountReceived > 0) {
+            // Drain the power
+            eGrid.extractAEPower(PartVisInterface.POWER_PER_REQUESTED_VIS, Actionable.MODULATE, PowerMultiplier.CONFIG);
+        }
+
+        // Return the amount we received
+        return amountReceived;
+    }
+
+    /**
+     * Verifies that a p2p source is valid
+     */
+    private boolean isP2PSourceValid() {
+        // Is there anything even linked to?
+        if (!this.visP2PSourceInfo.hasSourceData()) {
+            return false;
+        }
+
+        // Get the source
+        IDigiVisSource p2pSource = this.visP2PSourceInfo.tryGetSource(this.getGrid());
+
+        // There must be source data
+        if (p2pSource == null) {
+            return false;
+        }
+
+        // Source must be a vis interface
+        if (!(p2pSource instanceof PartVisInterface partVisInterface)) {
+            return false;
+        }
+
+        // Can't link to self
+        if (this.equals(p2pSource)) {
+            return false;
+        }
+
+        // Source must not be a provider
+        if (partVisInterface.isVisProvider()) {
+            return false;
+        }
+
+        // Source seems valid
+        return true;
+    }
+
+    /**
+     * Sets the color we are draining.
+     */
+    private void setDrainColor(final int color) {
+
+        // Are we setting the color?
+        if (color != 0) {
+            // Does it match what we already have?
+            if (color == this.visDrainingColor) {
+                // Set the update time
+                this.lastColorUpdate = System.currentTimeMillis();
+
+                return;
+            }
+
+            // Has the alloted time passed for a change?
+            if ((System.currentTimeMillis() - this.lastColorUpdate) <= (PartVisInterface.TIME_TO_CLEAR / 2)) {
+                return;
+            }
+
+            // Set the update time
+            this.lastColorUpdate = System.currentTimeMillis();
+        }
+
+        // Set the color
+        this.visDrainingColor = color;
+
+        // Update
+        this.saveChanges();
+    }
+
+    private void setIsVisProvider(final boolean isProviding) {
+
+        // Is the interface to be a provider?
+        if (!isProviding) {
+            // Clear the source info
+            this.visP2PSourceInfo.clearData();
+
+            // Null the subtile
+            if (this.visProviderSubTile != null) {
+                this.visProviderSubTile.invalidate();
+                this.visProviderSubTile = null;
+            }
+        }
+
+        this.isProvider = isProviding;
+    }
+
+    /**
+     * Drains vis from either the vis relay network, or from the p2p source.
+     */
+    @Override
+    public int consumeVis(final @NotNull Aspect digiVisAspect, final int amount) {
+        // Ensure the interface is active
+        if (!this.isActive()) {
+            return 0;
+        }
+
+        int amountReceived = 0;
+
+        // Is the interface a provider?
+        if (this.isProvider) {
+            if (this.isP2PSourceValid()) {
+                // Get the p2p source
+                IDigiVisSource source = this.visP2PSourceInfo.tryGetSource(this.getGrid());
+
+                // Ask the source for vis
+                amountReceived = source.consumeVis(digiVisAspect, amount);
+            }
+        } else {
+            amountReceived = this.consumeVisFromVisNetwork(digiVisAspect, amount);
+        }
+
+        // Was any vis received?
+        if (amountReceived > 0) {
+            // Set the color
+            this.setDrainColor(digiVisAspect.getColor());
+        }
+
+        return amountReceived;
+    }
+
+    private TileEntity getFacingTile() {
+        TileEntity hostTile = this.getTile();
+        if (hostTile == null) return null;
+
+        // Get the world
+        World world = hostTile.getWorldObj();
+        if (world == null) // may happen during unload
+            return null;
+
+        // Get our location
+        int x = hostTile.xCoord;
+        int y = hostTile.yCoord;
+        int z = hostTile.zCoord;
+
+        // Get the tile entity we are facing
+        return world.getTileEntity(x + this.side.offsetX, y + this.side.offsetY, z + this.side.offsetZ);
+    }
+
+    public TileVisRelay getRelay() {
+        // Get the cached relay
+        TileVisRelay tVR = this.cachedRelay.get();
+
+        // Is there a cached relay?
+        if (tVR != null
+                && tVR == this.getHost().getTile().getWorldObj().getTileEntity(tVR.xCoord, tVR.yCoord, tVR.zCoord)) {
+            // Ensure it is still there
+            return tVR;
+        }
+
+        // Get the tile we are facing
+        TileEntity facingTile = this.getFacingTile();
+
+        // Is it a relay?
+        if (facingTile instanceof TileVisRelay) {
+            // Get the relay
+            tVR = (TileVisRelay) facingTile;
+
+            // Is it facing the same direction as we are?
+            if (tVR.orientation == this.getSide().ordinal()) {
+                // Set the cache
+                this.cachedRelay = new WeakReference<>(tVR);
+
+                // Return it
+                return tVR;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return the unique ID for this interface
+     */
+    @Override
+    public long getUID() {
+        return this.UID;
+    }
+
+    public Boolean isVisProvider() {
+        return this.isProvider;
+    }
+
+    @Override
+    public @Nullable IGrid getGrid() {
+        IGridNode gridNode = this.getGridNode();
+        if (gridNode == null) return null;
+        return gridNode.getGrid();
+    }
+
+    @Override
+    public boolean isActive() {
+        IGridNode gridNode = this.getGridNode();
+        if (gridNode == null) return false;
+        return gridNode.isActive();
+    }
+
+    @Override
+    protected boolean useMemoryCard(EntityPlayer player) {
+        final ItemStack hand = player.inventory.getCurrentItem();
+        if (hand == null || !(hand.getItem() instanceof IMemoryCard memoryCard)) return false;
+
+        if (ForgeEventFactory.onItemUseStart(player, hand, 1) <= 0) return false;
+
+        if (player.isSneaking()) {
+            // Create the info data
+            DigiVisSourceData data = new DigiVisSourceData(this);
+
+            // Write into the memory card
+            memoryCard.setMemoryCardContents(hand, DigiVisSourceData.SOURCE_UNLOC_NAME, data.writeToNBT());
+
+            // Notify the user
+            memoryCard.notifyUser(player, MemoryCardMessages.SETTINGS_SAVED);
+
+            // Mark that we are not a provider
+            this.setIsVisProvider(false);
+
+            // Mark for save
+            this.saveChanges();
+
+            return true;
+        } else {
+            final String storedName = memoryCard.getSettingsName(hand);
+            if (DigiVisSourceData.SOURCE_UNLOC_NAME.equals(storedName)) {
+                NBTTagCompound data = memoryCard.getData(hand);
+
+                // Load the info
+                this.visP2PSourceInfo.readFromNBT(data);
+
+                // Ensure there is valid data
+                if (this.visP2PSourceInfo.hasSourceData()) {
+                    // Can the link be established?
+                    if (!this.isP2PSourceValid()) {
+                        // Unable to link
+                        memoryCard.notifyUser(player, MemoryCardMessages.INVALID_MACHINE);
+
+                        // Clear the source data
+                        this.visP2PSourceInfo.clearData();
+                    } else {
+                        // Mark that we are now a provider
+                        this.setIsVisProvider(true);
+
+                        // Inform the user
+                        memoryCard.notifyUser(player, MemoryCardMessages.SETTINGS_LOADED);
+                    }
+                }
+
+                // Mark for a save
+                this.saveChanges();
+            } else if ("gui.appliedenergistics2.Blank".equals(storedName) && this.isProvider) {
+                this.setIsVisProvider(false);
+
+                // Inform the user
+                memoryCard.notifyUser(player, MemoryCardMessages.SETTINGS_CLEARED);
+
+                // Mark for save
+                this.saveChanges();
+            }
+            return true;
+        }
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound data) {
+        super.writeToNBT(data);
+
         data.setLong(PartVisInterface.NBT_KEY_UID, this.UID);
 
         if (this.isProvider) {
@@ -694,6 +482,46 @@ public class PartVisInterface extends ThEPartBase implements IGridTickable, IDig
 
             // Write source data
             this.visP2PSourceInfo.writeToNBT(data, PartVisInterface.NBT_KEY_PROVIDER_SOURCE);
+        }
+    }
+
+    /**
+     * Reads the interface data from the tag
+     */
+    @Override
+    public void readFromNBT(final NBTTagCompound data) {
+        // Call super
+        super.readFromNBT(data);
+
+        // Does it contain the UID?
+        if (data.hasKey(PartVisInterface.NBT_KEY_UID)) {
+            // Read the UID
+            this.UID = data.getLong(PartVisInterface.NBT_KEY_UID);
+        }
+
+        // Is there provider data?
+        if (data.hasKey(PartVisInterface.NBT_KEY_IS_PROVIDER)) {
+            // Set provider status
+            this.isProvider = data.getBoolean(PartVisInterface.NBT_KEY_IS_PROVIDER);
+
+            // Read source information
+            if (data.hasKey(PartVisInterface.NBT_KEY_PROVIDER_SOURCE)) {
+                this.visP2PSourceInfo.readFromNBT(data, PartVisInterface.NBT_KEY_PROVIDER_SOURCE);
+            }
+        }
+    }
+
+    private static final String NBT_KEY_OWNER = "Owner";
+
+    @Override
+    public void addToWorld() {
+        super.addToWorld();
+
+        // For back compatibility
+        NBTTagCompound data = this.getItemStack().getTagCompound();
+        if (data != null && data.hasKey(NBT_KEY_OWNER)) {
+            int ownerID = data.getInteger(NBT_KEY_OWNER);
+            this.getProxy().getNode().setPlayerID(ownerID);
         }
     }
 
@@ -707,5 +535,186 @@ public class PartVisInterface extends ThEPartBase implements IGridTickable, IDig
 
         // Write the drain color
         data.writeInt(this.visDrainingColor);
+    }
+
+    /**
+     * Reads server-sent data
+     */
+    @Override
+    public boolean readFromStream(final ByteBuf data) throws IOException {
+        boolean redraw = false;
+
+        // Call super
+        redraw |= super.readFromStream(data);
+
+        // Cache old color
+        int oldColor = this.visDrainingColor;
+
+        // Read the drain color
+        this.visDrainingColor = data.readInt();
+
+        // Redraw if colors changed
+        redraw |= (this.visDrainingColor != oldColor);
+
+        return redraw;
+    }
+
+    /**
+     * How far to extend the cable.
+     */
+    @Override
+    public int cableConnectionRenderTo() {
+        return 2;
+    }
+
+    /**
+     * Hit boxes.
+     */
+    @Override
+    public void getBoxes(final IPartCollisionHelper helper) {
+        // Face
+        helper.addBox(6.0F, 6.0F, 15.0F, 10.0F, 10.0F, 16.0F);
+
+        // Mid
+        helper.addBox(4.0D, 4.0D, 14.0D, 12.0D, 12.0D, 15.0D);
+
+        // Back
+        helper.addBox(5.0D, 5.0D, 13.0D, 11.0D, 11.0D, 14.0D);
+    }
+
+    @Override
+    public IIcon getBreakingTexture() {
+        return BlockTextureManager.VIS_RELAY_INTERFACE.getTextures()[0];
+    }
+
+    /**
+     * Produces a small amount of light.
+     */
+    @Override
+    public int getLightLevel() {
+        return 8;
+    }
+
+    @SideOnly(Side.CLIENT)
+    private static void renderInventoryBusLights(final IPartRenderHelper helper, final RenderBlocks renderer) {
+        // Set color to white
+        helper.setInvColor(0xFFFFFF);
+
+        IIcon busColorTexture = BlockTextureManager.BUS_COLOR.getTextures()[0];
+
+        IIcon sideTexture = BlockTextureManager.BUS_COLOR.getTextures()[2];
+
+        helper.setTexture(busColorTexture, busColorTexture, sideTexture, sideTexture, busColorTexture, busColorTexture);
+
+        // Rend the box
+        helper.renderInventoryBox(renderer);
+
+        // Set the brightness
+        Tessellator.instance.setBrightness(0xD000D0);
+
+        helper.setInvColor(AEColor.Transparent.blackVariant);
+
+        IIcon lightTexture = BlockTextureManager.BUS_COLOR.getTextures()[1];
+
+        // Render the lights
+        helper.renderInventoryFace(lightTexture, ForgeDirection.UP, renderer);
+        helper.renderInventoryFace(lightTexture, ForgeDirection.DOWN, renderer);
+        helper.renderInventoryFace(lightTexture, ForgeDirection.NORTH, renderer);
+        helper.renderInventoryFace(lightTexture, ForgeDirection.EAST, renderer);
+        helper.renderInventoryFace(lightTexture, ForgeDirection.SOUTH, renderer);
+        helper.renderInventoryFace(lightTexture, ForgeDirection.WEST, renderer);
+    }
+
+    /**
+     * Draws the interface in the inventory.
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void renderInventory(final IPartRenderHelper helper, final RenderBlocks renderer) {
+        IIcon side = BlockTextureManager.VIS_RELAY_INTERFACE.getTextures()[2];
+        helper.setTexture(side, side, side, BlockTextureManager.VIS_RELAY_INTERFACE.getTexture(), side, side);
+
+        // Face
+        helper.setBounds(6.0F, 6.0F, 15.0F, 10.0F, 10.0F, 16.0F);
+        helper.renderInventoryBox(renderer);
+
+        // Mid
+        helper.setBounds(4.0F, 4.0F, 14.0F, 12.0F, 12.0F, 15.0F);
+        helper.renderInventoryBox(renderer);
+
+        // Back
+        helper.setBounds(5.0F, 5.0F, 13.0F, 11.0F, 11.0F, 14.0F);
+        renderInventoryBusLights(helper, renderer);
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void renderStaticBusLights(final int x, final int y, final int z, final IPartRenderHelper helper,
+            final RenderBlocks renderer) {
+        IIcon busColorTexture = BlockTextureManager.BUS_COLOR.getTextures()[0];
+
+        IIcon sideTexture = BlockTextureManager.BUS_COLOR.getTextures()[2];
+
+        helper.setTexture(busColorTexture, busColorTexture, sideTexture, sideTexture, busColorTexture, busColorTexture);
+
+        // Render the box
+        helper.renderBlock(x, y, z, renderer);
+
+        // Are we active?
+        if (this.isActive()) {
+            // Set the brightness
+            Tessellator.instance.setBrightness(0xD000D0);
+
+            // Set the color to match the cable
+            Tessellator.instance.setColorOpaque_I(this.host.getColor().blackVariant);
+        } else {
+            // Set the color to black
+            Tessellator.instance.setColorOpaque_I(0);
+        }
+
+        IIcon lightTexture = BlockTextureManager.BUS_COLOR.getTextures()[1];
+
+        // Render the lights
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.UP, renderer);
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.DOWN, renderer);
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.NORTH, renderer);
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.EAST, renderer);
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.SOUTH, renderer);
+        helper.renderFace(x, y, z, lightTexture, ForgeDirection.WEST, renderer);
+    }
+
+    /**
+     * Draws the interface in the world.
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void renderStatic(final int x, final int y, final int z, final IPartRenderHelper helper,
+            final RenderBlocks renderer) {
+        Tessellator tessellator = Tessellator.instance;
+
+        IIcon side = BlockTextureManager.VIS_RELAY_INTERFACE.getTextures()[2];
+        helper.setTexture(side, side, side, BlockTextureManager.VIS_RELAY_INTERFACE.getTexture(), side, side);
+
+        // Face
+        helper.setBounds(6.0F, 6.0F, 15.0F, 10.0F, 10.0F, 16.0F);
+        helper.renderBlock(x, y, z, renderer);
+
+        // Mid
+        helper.setBounds(4.0F, 4.0F, 14.0F, 12.0F, 12.0F, 15.0F);
+        helper.renderBlock(x, y, z, renderer); // Mid face
+
+        if (this.visDrainingColor != 0) {
+            tessellator.setColorOpaque_I(this.visDrainingColor);
+            helper.renderFace(
+                    x,
+                    y,
+                    z,
+                    BlockTextureManager.VIS_RELAY_INTERFACE.getTextures()[1],
+                    ForgeDirection.SOUTH,
+                    renderer);
+        }
+
+        // Back (facing bus)
+        helper.setBounds(5.0F, 5.0F, 13.0F, 11.0F, 11.0F, 14.0F);
+        this.renderStaticBusLights(x, y, z, helper, renderer);
     }
 }

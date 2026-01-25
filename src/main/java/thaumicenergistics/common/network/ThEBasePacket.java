@@ -10,14 +10,11 @@ import java.util.zip.GZIPOutputStream;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import com.google.common.base.Charsets;
 
-import appeng.api.parts.IPartHost;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -28,7 +25,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import thaumcraft.api.aspects.Aspect;
-import thaumicenergistics.common.parts.ThEPartBase;
 import thaumicenergistics.common.utils.ThELog;
 
 /**
@@ -117,20 +113,6 @@ public abstract class ThEBasePacket implements IMessage {
     }
 
     /**
-     * Reads an AE part from the stream.
-     *
-     * @param stream
-     * @return
-     */
-    protected static ThEPartBase readPart(final ByteBuf stream) {
-        ForgeDirection side = ForgeDirection.getOrientation(stream.readInt());
-
-        IPartHost host = (IPartHost) ThEBasePacket.readTileEntity(stream);
-
-        return (ThEPartBase) host.getPart(side);
-    }
-
-    /**
      * Reads a player entity from the stream.
      *
      * @param stream
@@ -159,18 +141,6 @@ public abstract class ThEBasePacket implements IMessage {
         stream.readBytes(stringBytes);
 
         return new String(stringBytes, Charsets.UTF_8);
-    }
-
-    /**
-     * Reads a tile entity from the stream.
-     *
-     * @param stream
-     * @return
-     */
-    protected static TileEntity readTileEntity(final ByteBuf stream) {
-        World world = ThEBasePacket.readWorld(stream);
-
-        return world.getTileEntity(stream.readInt(), stream.readInt(), stream.readInt());
     }
 
     /**
@@ -218,18 +188,6 @@ public abstract class ThEBasePacket implements IMessage {
     }
 
     /**
-     * Writes an AE part to the stream.
-     *
-     * @param part
-     * @param stream
-     */
-    protected static void writePart(final ThEPartBase part, final ByteBuf stream) {
-        stream.writeInt(part.getSide().ordinal());
-
-        ThEBasePacket.writeTileEntity(part.getHost().getTile(), stream);
-    }
-
-    /**
      * Writes a player to the stream.
      *
      * @param player
@@ -259,19 +217,6 @@ public abstract class ThEBasePacket implements IMessage {
         stream.writeInt(stringBytes.length);
 
         stream.writeBytes(stringBytes);
-    }
-
-    /**
-     * Writes a tile entity to the stream.
-     *
-     * @param entity
-     * @param stream
-     */
-    protected static void writeTileEntity(final TileEntity entity, final ByteBuf stream) {
-        ThEBasePacket.writeWorld(entity.getWorldObj(), stream);
-        stream.writeInt(entity.xCoord);
-        stream.writeInt(entity.yCoord);
-        stream.writeInt(entity.zCoord);
     }
 
     /**
