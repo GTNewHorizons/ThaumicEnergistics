@@ -109,7 +109,7 @@ thaumicenergistics.research_page.TEESSPROV.1=While import and export buses are u
 # Research Infusion Provider
 tc.research_name.thaumicenergistics.TEINFPROV=주입용 공급기
 tc.research_text.thaumicenergistics.TEINFPROV=이제 더 이상 주입(Infusion)은 어렵지 않다!
-thaumicenergistics.research_page.TEINFPROV.1=By researching the process of essentia infusion, you have discovered a method for instantaneous conversion between digi-sentia and essentia that can be used for infusion.<BR>By placing the §lInfusion Provider§r near a thaumic device, the device can draw essentia directly from the network. This could prove to be very useful for infusion alter.
+thaumicenergistics.research_page.TEINFPROV.1=By researching the process of essentia infusion, you have discovered a method for instantaneous conversion between digi-sentia and essentia that can be used for infusion.<BR>By placing the §lInfusion Provider§r near a thaumic device, the device can draw essentia directly from the network. This could prove to be very useful for infusion altar.
 
 # Research Vis Interface
 tc.research_name.thaumicenergistics.TEVISINT=비스 중계 인터페이스
