@@ -11,12 +11,12 @@ import net.minecraft.util.EnumChatFormatting;
 
 import org.lwjgl.input.Keyboard;
 
+import it.unimi.dsi.fastutil.objects.ObjectLongImmutablePair;
+import it.unimi.dsi.fastutil.objects.ObjectLongPair;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumicenergistics.api.items.IRestrictedEssentiaContainerItem;
-import thaumicenergistics.api.storage.IAspectStack;
 import thaumicenergistics.common.registries.ThEStrings;
-import thaumicenergistics.common.storage.AspectStack;
 import thaumicenergistics.common.tiles.TileEssentiaVibrationChamber;
 import thaumicenergistics.common.tiles.abstraction.TileEVCBase;
 
@@ -28,29 +28,31 @@ import thaumicenergistics.common.tiles.abstraction.TileEVCBase;
  */
 public class ItemBlockEssentiaVibrationChamber extends ItemBlock implements IRestrictedEssentiaContainerItem {
 
+    private static final String NBTKEY_ASPECT_TAG = "AspectTag", NBTKEY_ASPECT_AMOUNT = "Amount";
+
     public ItemBlockEssentiaVibrationChamber(final Block block) {
         super(block);
     }
 
     /**
      * Gets the aspect stack from the EVC item.
-     *
-     * @param evcStack
-     * @return AspectStack or null
      */
-    private IAspectStack getStoredAspectStack(final ItemStack evcStack) {
+    private ObjectLongPair<Aspect> getStoredAspectStack(final ItemStack evcStack) {
         // Get the tag
         NBTTagCompound data = evcStack.getTagCompound();
-
-        // Is there essentia stored?
-        if ((data == null) || (!data.hasKey(TileEVCBase.NBTKEY_STORED))) {
-            return null;
+        if (data != null && data.hasKey(TileEVCBase.NBTKEY_STORED)) {
+            NBTTagCompound storedTag = data.getCompoundTag(TileEVCBase.NBTKEY_STORED);
+            Aspect aspect = Aspect.aspects.get(storedTag.getString(NBTKEY_ASPECT_TAG));
+            long amount = storedTag.getLong(NBTKEY_ASPECT_AMOUNT);
+            if (aspect != null || amount > 0) {
+                return new ObjectLongImmutablePair<>(aspect, amount);
+            }
         }
 
-        return AspectStack.loadAspectStackFromNBT(data.getCompoundTag(TileEVCBase.NBTKEY_STORED));
+        return null;
     }
 
-    private void setStoredAspectStack(final ItemStack evcStack, final IAspectStack aspectStack) {
+    private void setStoredAspectStack(final ItemStack evcStack, final Aspect aspect, final long amount) {
         // Get the tag
         NBTTagCompound data = evcStack.getTagCompound();
         if (data == null) {
@@ -58,15 +60,15 @@ public class ItemBlockEssentiaVibrationChamber extends ItemBlock implements IRes
         }
 
         // Is the stack empty?
-        if (aspectStack == null) {
+        if (aspect == null || amount <= 0) {
             // Remove the stored data
             data.removeTag(TileEVCBase.NBTKEY_STORED);
         } else {
             // Create the subtag
             NBTTagCompound storedTag = new NBTTagCompound();
 
-            // Write the aspect stack into it
-            aspectStack.writeToNBT(storedTag);
+            storedTag.setString(NBTKEY_ASPECT_TAG, aspect.getTag());
+            storedTag.setLong(NBTKEY_ASPECT_AMOUNT, amount);
 
             // Write the stored tag
             data.setTag(TileEVCBase.NBTKEY_STORED, storedTag);
@@ -100,12 +102,11 @@ public class ItemBlockEssentiaVibrationChamber extends ItemBlock implements IRes
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) {
 
             // Load the stack
-            IAspectStack storedEssentia = this.getStoredAspectStack(evcStack);
+            ObjectLongPair<Aspect> storedEssentia = this.getStoredAspectStack(evcStack);
 
             // Add stored info
             if (storedEssentia != null) {
-                displayList
-                        .add(String.format("%s x %d", storedEssentia.getAspectName(), storedEssentia.getStackSize()));
+                displayList.add(String.format("%s x %d", storedEssentia.left().getName(), storedEssentia.rightLong()));
             }
         } else {
             // Let the user know they can hold shift
@@ -122,10 +123,10 @@ public class ItemBlockEssentiaVibrationChamber extends ItemBlock implements IRes
         // Ignore stacks without a tag
         if (evcStack.hasTagCompound()) {
             // Get the stored aspect
-            IAspectStack stored = this.getStoredAspectStack(evcStack);
-            if ((stored != null) && !stored.isEmpty()) {
+            ObjectLongPair<Aspect> stored = this.getStoredAspectStack(evcStack);
+            if (stored != null) {
                 // Add it
-                list.add(stored.getAspect(), (int) stored.getStackSize());
+                list.add(stored.left(), (int) stored.rightLong());
             }
         }
 
@@ -134,16 +135,12 @@ public class ItemBlockEssentiaVibrationChamber extends ItemBlock implements IRes
 
     @Override
     public void setAspects(final ItemStack evcStack, final AspectList list) {
-        IAspectStack aspectStack = null;
-
         if (list.size() > 0) {
             Aspect aspect = list.getAspects()[0];
 
-            // Create the aspect stack
-            aspectStack = new AspectStack(aspect, list.getAmount(aspect));
+            this.setStoredAspectStack(evcStack, aspect, list.getAmount(aspect));
+        } else {
+            this.setStoredAspectStack(evcStack, null, 0);
         }
-
-        // Set the tag
-        this.setStoredAspectStack(evcStack, aspectStack);
     }
 }

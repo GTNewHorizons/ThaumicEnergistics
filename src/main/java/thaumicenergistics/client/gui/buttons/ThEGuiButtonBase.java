@@ -1,9 +1,11 @@
 package thaumicenergistics.client.gui.buttons;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
 
+import appeng.client.gui.widgets.ITooltip;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.client.gui.ThEGuiHelper;
@@ -15,15 +17,11 @@ import thaumicenergistics.client.gui.ThEGuiHelper;
  *
  */
 @SideOnly(Side.CLIENT)
-public abstract class ThEGuiButtonBase extends GuiButton {
+public abstract class ThEGuiButtonBase extends GuiButton implements ITooltip {
 
     public ThEGuiButtonBase(final int ID, final int xPosition, final int yPosition, final int width, final int height,
             final String text) {
         super(ID, xPosition, yPosition, width, height, text);
-    }
-
-    public ThEGuiButtonBase(final int ID, final int xPosition, final int yPosition, final String text) {
-        super(ID, xPosition, yPosition, text);
     }
 
     /**
@@ -43,5 +41,39 @@ public abstract class ThEGuiButtonBase extends GuiButton {
     public boolean isMouseOverButton(final int mouseX, final int mouseY) {
         return ThEGuiHelper.INSTANCE
                 .isPointInRegion(this.yPosition, this.xPosition, this.height, this.width, mouseX, mouseY);
+    }
+
+    @Override
+    public String getMessage() {
+        List<String> lines = new ArrayList<>();
+        this.getTooltip(lines);
+        return String.join("\n", lines);
+    }
+
+    @Override
+    public int xPos() {
+        return this.xPosition;
+    }
+
+    @Override
+    public int yPos() {
+        return this.yPosition;
+    }
+
+    @Override
+    public int getWidth() {
+        return this.width;
+    }
+
+    @Override
+    public int getHeight() {
+        return this.height;
+    }
+
+    @Override
+    public boolean isVisible() {
+        List<String> lines = new ArrayList<>();
+        this.getTooltip(lines);
+        return !lines.isEmpty();
     }
 }

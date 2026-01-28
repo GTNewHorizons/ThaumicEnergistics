@@ -60,7 +60,7 @@ public class BlockArcaneAssembler extends AbstractBlockAEWrenchable {
      * @return
      */
     @Override
-    protected boolean onBlockActivated(final World world, final int x, final int y, final int z,
+    protected boolean onBlockActivated(final World world, final int x, final int y, final int z, final int side,
             final EntityPlayer player) {
         // Get what the player is holding
         ItemStack playerHolding = player.inventory.getCurrentItem();

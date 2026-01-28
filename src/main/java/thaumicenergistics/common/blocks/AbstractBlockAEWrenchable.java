@@ -30,7 +30,7 @@ public abstract class AbstractBlockAEWrenchable extends BlockContainer {
      * @param player
      * @return
      */
-    protected boolean onBlockActivated(final World world, final int x, final int y, final int z,
+    protected boolean onBlockActivated(final World world, final int x, final int y, final int z, final int side,
             final EntityPlayer player) {
         return false;
     }
@@ -88,6 +88,6 @@ public abstract class AbstractBlockAEWrenchable extends BlockContainer {
             return true;
         }
 
-        return this.onBlockActivated(world, x, y, z, player);
+        return this.onBlockActivated(world, x, y, z, side, player);
     }
 }

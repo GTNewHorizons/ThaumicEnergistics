@@ -54,7 +54,7 @@ public abstract class AbstractBlockGearBoxBase extends AbstractBlockAEWrenchable
      * Crank the gearbox.
      */
     @Override
-    protected boolean onBlockActivated(final World world, final int x, final int y, final int z,
+    protected boolean onBlockActivated(final World world, final int x, final int y, final int z, final int side,
             final EntityPlayer player) {
 
         // Get the tile

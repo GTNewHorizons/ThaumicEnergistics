@@ -1,10 +1,15 @@
 package thaumicenergistics.common;
 
+import static thaumicenergistics.common.items.ItemEnum.WIRELESS_TERMINAL;
+import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STACK_TYPE;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import appeng.api.AEApi;
+import appeng.api.features.IWirelessTermHandler;
+import appeng.api.storage.data.AEStackTypeRegistry;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -17,15 +22,14 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import thaumicenergistics.Tags;
 import thaumicenergistics.api.IThEConfig;
 import thaumicenergistics.api.ThEApi;
-import thaumicenergistics.api.grid.IEssentiaGrid;
 import thaumicenergistics.common.entities.WirelessGolemHandler;
-import thaumicenergistics.common.grid.GridEssentiaCache;
 import thaumicenergistics.common.integration.IntegrationCore;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
 import thaumicenergistics.common.integration.tc.EssentiaTileContainerHelper;
 import thaumicenergistics.common.items.ItemCraftingAspect;
 import thaumicenergistics.common.network.NetworkHandler;
 import thaumicenergistics.common.registries.AEAspectRegister;
+import thaumicenergistics.common.storage.EssentiaExternalStorageHandler;
 import thaumicenergistics.common.utils.ThELog;
 
 /**
@@ -40,7 +44,7 @@ import thaumicenergistics.common.utils.ThELog;
         modid = ThaumicEnergistics.MOD_ID,
         name = "Thaumic Energistics",
         version = ThaumicEnergistics.VERSION,
-        dependencies = "required-after:appliedenergistics2@[rv3-beta-214,);required-after:Thaumcraft@[4.2.3.5,);after:Waila;after:extracells")
+        dependencies = "required-after:appliedenergistics2@[rv3-beta-214,);required-after:Thaumcraft@[4.2.3.5,);after:Waila")
 public class ThaumicEnergistics {
 
     /**
@@ -126,11 +130,11 @@ public class ThaumicEnergistics {
         // Register integration
         IntegrationCore.init();
 
-        // Register the essentia grid cache
-        AEApi.instance().registries().gridCache().registerGridCache(IEssentiaGrid.class, GridEssentiaCache.class);
-
         // Register blacklist
         AEApi.instance().registries().itemDisplay().blacklistItemDisplay(ItemCraftingAspect.class);
+
+        AEApi.instance().registries().wireless()
+                .registerWirelessHandler((IWirelessTermHandler) WIRELESS_TERMINAL.getItem());
 
         // Register the wireless golem handler
         ThEApi.instance().interact().registerGolemHookHandler(WirelessGolemHandler.getInstance());
@@ -160,9 +164,6 @@ public class ThaumicEnergistics {
         // Register my tiles with SpatialIO
         ThaumicEnergistics.proxy.registerSpatialIOMovables();
 
-        // Register fluids
-        ThaumicEnergistics.proxy.registerFluids();
-
         // Give AE items aspects
         try {
             AEAspectRegister.INSTANCE.registerAEAspects();
@@ -191,6 +192,11 @@ public class ThaumicEnergistics {
 
         // Sync with config
         ThaumicEnergistics.config = ConfigurationHandler.loadAndSyncConfigFile(event.getSuggestedConfigurationFile());
+
+        AEStackTypeRegistry.register(ESSENTIA_STACK_TYPE);
+
+        AEApi.instance().registries().externalStorage()
+                .addExternalStorageInterface(new EssentiaExternalStorageHandler());
 
         // Register the gui handler
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new ThEGuiHandler());

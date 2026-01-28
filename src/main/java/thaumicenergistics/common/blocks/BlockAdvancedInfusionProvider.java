@@ -43,7 +43,7 @@ public class BlockAdvancedInfusionProvider extends AbstractBlockProviderBase {
      * @return
      */
     @Override
-    protected boolean onBlockActivated(final World world, final int x, final int y, final int z,
+    protected boolean onBlockActivated(final World world, final int x, final int y, final int z, final int side,
             final EntityPlayer player) {
         if (world.getTileEntity(x, y, z) instanceof TileAdvancedInfusionProvider taip && taip.isActive()) {
             if (!taip.matrices.isEmpty()) {
