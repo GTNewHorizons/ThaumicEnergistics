@@ -6,6 +6,8 @@ import java.util.Objects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +17,7 @@ import com.djgiannuzz.thaumcraftneiplugin.items.ItemAspect;
 
 import appeng.api.storage.data.IAEStackType;
 import appeng.api.storage.data.IItemList;
+import appeng.client.texture.ExtraBlockTextures;
 import cpw.mods.fml.common.Loader;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectLongImmutablePair;
@@ -28,6 +31,7 @@ import thaumcraft.common.items.ItemEssence;
 import thaumicenergistics.api.IThEEssentiaContainerPermission;
 import thaumicenergistics.api.items.IRestrictedEssentiaContainerItem;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
+import thaumicenergistics.common.registries.ThEStrings;
 
 public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
 
@@ -37,6 +41,11 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
     @Override
     public String getId() {
         return ESSENTIA_STACK_ID;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return ThEStrings.Gui_TypeEssentia.getLocalized();
     }
 
     @Override
@@ -308,5 +317,61 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
         }
 
         return new ObjectLongImmutablePair<>(resultStack, amountToFill);
+    }
+
+    @Override
+    public ResourceLocation getButtonTexture() {
+        return ExtraBlockTextures.GuiTexture("guis/states.png");
+    }
+
+    @Override
+    public IIcon getButtonIcon() {
+        return new IIcon() {
+
+            @Override
+            public int getIconWidth() {
+                return 16;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return 16;
+            }
+
+            @Override
+            public float getMinU() {
+                return (float) 128 / 256;
+            }
+
+            @Override
+            public float getMaxU() {
+                return (float) 144 / 256;
+            }
+
+            @Override
+            public float getInterpolatedU(double p_94214_1_) {
+                return 0;
+            }
+
+            @Override
+            public float getMinV() {
+                return (float) 160 / 256;
+            }
+
+            @Override
+            public float getMaxV() {
+                return (float) 176 / 256;
+            }
+
+            @Override
+            public float getInterpolatedV(double p_94207_1_) {
+                return 0;
+            }
+
+            @Override
+            public String getIconName() {
+                return "EssentiaIcon";
+            }
+        };
     }
 }

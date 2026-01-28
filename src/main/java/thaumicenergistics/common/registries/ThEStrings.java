@@ -100,7 +100,9 @@ public enum ThEStrings {
 
     Gui_DigiVisSource("gui.digivis.source", true),
     GUi_VibrationChamber_Stored("gui.vibration.chamber.stored", false),
-    GUi_VibrationChamber_Processing("gui.vibration.chamber.processing", false);
+    GUi_VibrationChamber_Processing("gui.vibration.chamber.processing", false),
+
+    Gui_TypeEssentia("gui.essentia", false);
 
     private String unlocalized;
     private boolean isDotName;
