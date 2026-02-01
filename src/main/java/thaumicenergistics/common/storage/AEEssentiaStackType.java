@@ -49,6 +49,11 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
     }
 
     @Override
+    public String getDisplayUnit() {
+        return "";
+    }
+
+    @Override
     public AEEssentiaStack loadStackFromNBT(NBTTagCompound tag) {
         return AEEssentiaStack.loadStackFromNBT(tag);
     }
