@@ -26,6 +26,7 @@ public enum AEStateIconsEnum implements IStateIconTexture {
     REGULAR_BUTTON(240, 240),
     TAB_BUTTON(208, 0, 22, 22),
     RESET_BUTTON(0, 240),
+    TAB_BUTTON_EDGELESS(176, 0, 25, 22),
 
     // Sorting modes
     SORT_MODE_ALPHABETIC(0, 64),
