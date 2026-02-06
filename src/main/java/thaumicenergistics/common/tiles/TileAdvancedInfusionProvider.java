@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
+import appeng.helpers.MultiCraftingTracker;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import thaumcraft.api.aspects.Aspect;
@@ -13,7 +14,6 @@ import thaumcraft.api.aspects.IAspectSource;
 import thaumcraft.common.tiles.TileInfusionMatrix;
 import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.common.registries.ThEStrings;
-import thaumicenergistics.implementaion.ThEMultiCraftingTracker;
 
 /**
  * Upgrade version of {@link TileInfusionProvider} works like intercepter and old provider can auto order essential it
@@ -25,7 +25,7 @@ import thaumicenergistics.implementaion.ThEMultiCraftingTracker;
 public class TileAdvancedInfusionProvider extends TileInfusionProvider implements IAspectSource {
 
     public List<TileInfusionMatrix> matrices = new ArrayList<>();
-    private List<TileInfusionMatrix> matricesToRemove = new ArrayList<>();
+    private final List<TileInfusionMatrix> matricesToRemove = new ArrayList<>();
 
     public static final int HORIZONTAL_RADIUS = 12;
     public static final int VERTICAL_RADIUS = 5;
@@ -33,7 +33,7 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
 
     public TileAdvancedInfusionProvider() {
         super();
-        this.craftingTracker = new ThEMultiCraftingTracker(this, 16);
+        this.craftingTracker = new MultiCraftingTracker(this, 16);
     }
 
     /**

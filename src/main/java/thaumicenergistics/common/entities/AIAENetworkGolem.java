@@ -14,10 +14,10 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.golems.EntityGolemBase;
-import thaumicenergistics.api.grid.IMEEssentiaMonitor;
 import thaumicenergistics.common.grid.WirelessAELink;
 import thaumicenergistics.common.integration.tc.GolemUpgradeTypes;
 import thaumicenergistics.common.items.ItemGolemWirelessBackpack;
+import thaumicenergistics.common.storage.AEEssentiaStack;
 
 /**
  * Base AI script for golems wearing the {@link ItemGolemWirelessBackpack}.
@@ -133,17 +133,19 @@ public abstract class AIAENetworkGolem extends EntityAIBase {
          */
         public long extractEssentia(final Aspect aspect, final int amount, final Actionable mode) {
             // Get the essentia monitor
-            IMEEssentiaMonitor monitor = this.getEssentiaInventory();
+            IMEMonitor<AEEssentiaStack> monitor = this.getEssentiaMonitor();
             if (monitor == null) {
                 return 0;
             }
 
-            return monitor.extractEssentia(
-                    aspect,
-                    Math.min(amount, this.maxEssentiaRate),
+            AEEssentiaStack extracted = monitor.extractItems(
+                    new AEEssentiaStack(aspect, Math.min(amount, this.maxEssentiaRate)),
                     mode,
-                    this.actionSource,
-                    mode == Actionable.MODULATE);
+                    this.actionSource);
+            if (extracted != null) {
+                return extracted.getStackSize();
+            }
+            return 0;
         }
 
         /**
@@ -232,7 +234,7 @@ public abstract class AIAENetworkGolem extends EntityAIBase {
          */
         public long insertEssentia(final Aspect aspect, final int amount) {
             // Get the essentia monitor
-            IMEEssentiaMonitor monitor = this.getEssentiaInventory();
+            IMEMonitor<AEEssentiaStack> monitor = this.getEssentiaMonitor();
             if (monitor == null) {
                 return 0;
             }
@@ -240,12 +242,12 @@ public abstract class AIAENetworkGolem extends EntityAIBase {
             // Calculate the amount to inject
             int amountToInject = Math.min(amount, this.maxEssentiaRate);
 
-            // Attempt to inject
-            long amountRejected = monitor
-                    .injectEssentia(aspect, amountToInject, Actionable.MODULATE, this.actionSource, true);
-
-            // Return the amount that was injected
-            return amountToInject - amountRejected;
+            AEEssentiaStack leftover = monitor
+                    .injectItems(new AEEssentiaStack(aspect, amountToInject), Actionable.MODULATE, this.actionSource);
+            if (leftover != null) {
+                return amountToInject - leftover.getStackSize();
+            }
+            return amountToInject;
         }
 
         /**

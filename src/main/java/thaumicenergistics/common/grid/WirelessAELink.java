@@ -1,5 +1,7 @@
 package thaumicenergistics.common.grid;
 
+import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STACK_TYPE;
+
 import java.util.ArrayList;
 
 import javax.annotation.Nonnull;
@@ -27,8 +29,7 @@ import appeng.api.util.DimensionalCoord;
 import appeng.me.GridException;
 import appeng.tile.misc.TileSecurity;
 import appeng.tile.networking.TileWireless;
-import thaumicenergistics.api.grid.IEssentiaGrid;
-import thaumicenergistics.api.grid.IMEEssentiaMonitor;
+import thaumicenergistics.common.storage.AEEssentiaStack;
 
 /**
  * Provides wireless access to a ME network.
@@ -362,20 +363,15 @@ public abstract class WirelessAELink implements IStorageMonitorable {
         return null;
     }
 
-    /**
-     * Gets the essentia inventory.
-     *
-     * @return
-     */
-    public IMEEssentiaMonitor getEssentiaInventory() {
-        // Check connectivity
+    public IMEMonitor<AEEssentiaStack> getEssentiaMonitor() {
         if ((this.accessPoint == null) || !this.isConnected()) {
             return null;
         }
 
         try {
             // Get the network essentia monitor
-            return ((IMEEssentiaMonitor) this.accessPoint.getGrid().getCache(IEssentiaGrid.class));
+            IStorageGrid storageGrid = this.accessPoint.getGrid().getCache(IStorageGrid.class);
+            return (IMEMonitor<AEEssentiaStack>) storageGrid.getMEMonitor(ESSENTIA_STACK_TYPE);
         } catch (Exception e) {
             return null;
         }

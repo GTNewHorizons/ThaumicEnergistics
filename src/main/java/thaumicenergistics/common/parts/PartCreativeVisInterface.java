@@ -1,11 +1,13 @@
 package thaumicenergistics.common.parts;
 
+import net.minecraft.item.ItemStack;
+
 import thaumcraft.api.aspects.Aspect;
 
 public class PartCreativeVisInterface extends PartVisInterface {
 
-    public PartCreativeVisInterface() {
-        super(AEPartsEnum.CreativeVisInterface);
+    public PartCreativeVisInterface(final ItemStack is) {
+        super(is);
     }
 
     @Override

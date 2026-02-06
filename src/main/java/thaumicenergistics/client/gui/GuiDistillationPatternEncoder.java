@@ -1,33 +1,33 @@
 package thaumicenergistics.client.gui;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
+import appeng.api.storage.data.IAEStackType;
+import appeng.client.gui.AEBaseGui;
+import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.client.lib.UtilsFX;
 import thaumcraft.common.config.ConfigItems;
-import thaumicenergistics.api.storage.IInventoryUpdateReceiver;
-import thaumicenergistics.client.gui.abstraction.ThEBaseGui;
 import thaumicenergistics.client.gui.buttons.GuiButtonEncodePattern;
 import thaumicenergistics.client.gui.buttons.GuiButtonResetAspectSlot;
 import thaumicenergistics.client.textures.AEStateIconsEnum;
 import thaumicenergistics.client.textures.GuiTextureManager;
 import thaumicenergistics.common.container.ContainerDistillationPatternEncoder;
-import thaumicenergistics.common.items.ItemCraftingAspect;
 import thaumicenergistics.common.network.packet.server.Packet_S_DistillationEncoder;
 import thaumicenergistics.common.registries.ThEStrings;
+import thaumicenergistics.common.storage.AEEssentiaStack;
 import thaumicenergistics.common.tiles.TileDistillationPatternEncoder;
 import thaumicenergistics.common.utils.ThEUtils;
 
@@ -38,7 +38,11 @@ import thaumicenergistics.common.utils.ThEUtils;
  *
  */
 @SideOnly(Side.CLIENT)
-public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInventoryUpdateReceiver {
+public class GuiDistillationPatternEncoder extends AEBaseGui {
+
+    private static final ResourceLocation UNKNOWN_TEXTURE = new ResourceLocation(
+            "thaumcraft",
+            "textures/aspects/_unknown.png");
 
     /**
      * Gui size.
@@ -104,6 +108,9 @@ public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInvent
      * Set true when the source item may have been changed.
      */
     private boolean sourceItemDirty = false;
+    private boolean unknownAspect = false;
+
+    public VirtualMEPhantomSlot[] aspectSlots = new VirtualMEPhantomSlot[16];
 
     public GuiDistillationPatternEncoder(final EntityPlayer player, final World world, final int x, final int y,
             final int z) {
@@ -119,74 +126,38 @@ public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInvent
 
         // Set the container
         this.deContainer = (ContainerDistillationPatternEncoder) this.inventorySlots;
-        this.deContainer.slotUpdateReceiver = this;
     }
 
-    /**
-     * Checks for item changes to the source item.
-     */
-    private void checkSourceItem() {
-        // Clear the dirty bit
-        this.sourceItemDirty = false;
-
-        // Clear any existing particles
-        this.particles.clear();
-
-        // Is there a source item to check?
-        if (!this.deContainer.slotSourceItem.getHasStack()) {
-            // Done
-            return;
-        }
-
-        // Check each slot
-        boolean isItemScanned = false;
-        for (Slot slot : this.deContainer.slotSourceAspects) {
-            // Does the slot have a stack?
-            if (slot.getHasStack()) {
-                // Get the aspect for that stack
-                Aspect aspect = ItemCraftingAspect.getAspect(slot.getStack());
-                if (aspect != null) {
-                    // Found something
-                    isItemScanned = true;
-
-                    // Create the animator
-                    GuiParticleAnimator gpa = new GuiParticleAnimator(
-                            this.deContainer.slotSourceItem.xDisplayPosition,
-                            this.deContainer.slotSourceItem.yDisplayPosition,
-                            slot.xDisplayPosition,
-                            slot.yDisplayPosition,
-                            0.3f,
-                            EnumGuiParticles.Orb);
-
-                    // Set FPS
-                    gpa.setFPS(30);
-
-                    // Set the color
-                    float[] argb = ThEGuiHelper.INSTANCE.convertPackedColorToARGBf(aspect.getColor());
-                    gpa.setColor(argb[1], argb[2], argb[3]);
-
-                    // Add to the list
-                    this.particles.add(gpa);
-                }
-            } else {
-                break;
-            }
-        }
-
-        if (isItemScanned) {
-            // Play the on sound
-            ThEUtils.playClientSound(null, "thaumcraft:hhon");
-        } else {
-            // Play the off sound
-            ThEUtils.playClientSound(null, "thaumcraft:hhoff");
-        }
-    }
-
-    /**
-     * Draw the background.
-     */
     @Override
-    protected void drawGuiContainerBackgroundLayer(final float alpha, final int mouseX, final int mouseY) {
+    public void drawFG(int i, int i1, int i2, int i3) {
+        // Draw the title
+        this.fontRendererObj.drawString(
+                this.title,
+                GuiDistillationPatternEncoder.TITLE_POS_X,
+                GuiDistillationPatternEncoder.TITLE_POS_Y,
+                0);
+
+        // Check the source item
+        if (this.sourceItemDirty) {
+            this.checkSourceItem();
+        }
+
+        // Any particles?
+        if (!this.particles.isEmpty()) {
+            // Prep
+            EnumGuiParticles.Orb.prepareDraw();
+
+            // Draw each
+            // Remove if done.
+            this.particles.removeIf(guiParticleAnimator -> !guiParticleAnimator.draw(this, false));
+
+            // Finish
+            EnumGuiParticles.finishDraw();
+        }
+    }
+
+    @Override
+    public void drawBG(int i, int i1, int i2, int i3) {
         // Full white
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -203,6 +174,23 @@ public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInvent
                 + GuiDistillationPatternEncoder.ITEM_HALF_SIZE;
         float th_Rotation = (System.currentTimeMillis() % 36000) * 0.02f;
         float th_ScaleOffset = (float) Math.sin(th_Rotation * 0.15f) * 0.1f;
+
+        if (unknownAspect) {
+            mc.renderEngine.bindTexture(UNKNOWN_TEXTURE);
+
+            GL11.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+
+            for (int x = 0; x < 4; x++) {
+                for (int y = 0; y < 4; y++) {
+                    UtilsFX.drawTexturedQuadFull(this.guiLeft + 62 + 18 * x, this.guiTop + 42 + 18 * y, 0);
+                }
+            }
+
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+            GL11.glDisable(GL11.GL_BLEND);
+        }
 
         // Disable depth testing and push the matrix
         GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -234,72 +222,77 @@ public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInvent
     }
 
     /**
-     * Draw the foreground.
+     * Checks for item changes to the source item.
      */
-    @Override
-    protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
-        // Draw the title
-        this.fontRendererObj.drawString(
-                this.title,
-                GuiDistillationPatternEncoder.TITLE_POS_X,
-                GuiDistillationPatternEncoder.TITLE_POS_Y,
-                0);
+    private void checkSourceItem() {
+        // Clear the dirty bit
+        this.sourceItemDirty = false;
 
-        // Check the source item
-        if (this.sourceItemDirty) {
-            this.checkSourceItem();
+        // Clear any existing particles
+        this.particles.clear();
+
+        // Is there a source item to check?
+        if (!this.deContainer.slotSourceItem.getHasStack()) {
+            unknownAspect = false;
+            return;
         }
 
-        // Any particles?
-        if (this.particles.size() > 0) {
-            // Prep
-            EnumGuiParticles.Orb.prepareDraw();
+        // Check each slot
+        boolean isItemScanned = false;
+        for (VirtualMEPhantomSlot slot : this.aspectSlots) {
+            // Does the slot have a stack?
+            if (slot.getAEStack() != null) {
+                // Get the aspect for that stack
+                Aspect aspect = ((AEEssentiaStack) slot.getAEStack()).getAspect();
 
-            // Draw each
-            for (Iterator<GuiParticleAnimator> iterator = this.particles.iterator(); iterator.hasNext();) {
-                if (!iterator.next().draw(this, false)) {
-                    // Remove if done.
-                    iterator.remove();
-                }
-            }
+                // Found something
+                isItemScanned = true;
 
-            // Finish
-            EnumGuiParticles.finishDraw();
-        }
-    }
+                // Create the animator
+                GuiParticleAnimator gpa = new GuiParticleAnimator(
+                        this.deContainer.slotSourceItem.xDisplayPosition,
+                        this.deContainer.slotSourceItem.yDisplayPosition,
+                        slot.getX(),
+                        slot.getY(),
+                        0.3f,
+                        EnumGuiParticles.Orb);
 
-    @Override
-    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
-        // Call super
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+                // Set FPS
+                gpa.setFPS(30);
 
-        // Was the mouse clicked over a widget?
-        for (Slot slot : this.deContainer.slotSourceAspects) {
-            if (slot.getHasStack() && ThEGuiHelper.INSTANCE.isPointInGuiRegion(
-                    slot.yDisplayPosition,
-                    slot.xDisplayPosition,
-                    18,
-                    18,
-                    mouseX,
-                    mouseY,
-                    this.guiLeft,
-                    this.guiTop)) {
-                // Play clicky sound
-                ThEUtils.playClientSound(null, "gui.button.press");
+                // Set the color
+                float[] argb = ThEGuiHelper.INSTANCE.convertPackedColorToARGBf(aspect.getColor());
+                gpa.setColor(argb[1], argb[2], argb[3]);
+
+                // Add to the list
+                this.particles.add(gpa);
+            } else {
                 break;
             }
         }
+
+        if (isItemScanned) {
+            unknownAspect = false;
+            // Play the on sound
+            ThEUtils.playClientSound(null, "thaumcraft:hhon");
+        } else {
+            unknownAspect = true;
+            // Play the off sound
+            ThEUtils.playClientSound(null, "thaumcraft:hhoff");
+        }
     }
 
     @Override
-    protected void onButtonClicked(final GuiButton button, final int mouseButton) {
-        // Encode button?
+    protected void actionPerformed(GuiButton button) {
         if (button == this.buttonEncode) {
             // Ask server to encode
-            Packet_S_DistillationEncoder.sendEncodePattern(this.deContainer.getPlayer());
+
+            Packet_S_DistillationEncoder.sendEncodePattern();
         } else if (button == this.buttonReset) {
             // Ask server to reset aspects
-            Packet_S_DistillationEncoder.sendResetAspect(this.deContainer.getPlayer());
+            Packet_S_DistillationEncoder.sendResetAspect();
+        } else {
+            super.actionPerformed(button);
         }
     }
 
@@ -329,13 +322,29 @@ public class GuiDistillationPatternEncoder extends ThEBaseGui implements IInvent
 
         // Reset flags
         this.sourceItemDirty = false;
+
+        for (int i = 0; i < this.aspectSlots.length; i++) {
+            VirtualMEPhantomSlot slot = new VirtualMEPhantomSlot(
+                    62 + 18 * (i % 4),
+                    42 + 18 * (i / 4),
+                    this.deContainer.getAspectsInventory(),
+                    i,
+                    GuiDistillationPatternEncoder::acceptType);
+            this.aspectSlots[i] = slot;
+            this.registerVirtualSlots(slot);
+        }
     }
 
-    /**
-     * Called by the container when the source item has changed.
-     */
-    @Override
-    public void onInventoryChanged(final IInventory sourceInventory) {
+    public void setChangedSrcItem() {
         this.sourceItemDirty = true;
+        this.unknownAspect = false;
+    }
+
+    public void setUnknownAspect() {
+        this.unknownAspect = true;
+    }
+
+    private static boolean acceptType(VirtualMEPhantomSlot slot, IAEStackType<?> type, int mouseButton) {
+        return true;
     }
 }
