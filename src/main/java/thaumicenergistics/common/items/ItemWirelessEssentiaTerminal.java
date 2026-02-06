@@ -14,7 +14,6 @@ import appeng.api.config.PowerMultiplier;
 import appeng.api.config.Settings;
 import appeng.api.config.SortDir;
 import appeng.api.config.SortOrder;
-import appeng.api.config.TypeFilter;
 import appeng.api.config.ViewItems;
 import appeng.api.features.IWirelessTermHandler;
 import appeng.api.util.IConfigManager;
@@ -180,7 +179,6 @@ public class ItemWirelessEssentiaTerminal extends AEBasePoweredItem implements I
         out.registerSetting(Settings.SORT_BY, SortOrder.NAME);
         out.registerSetting(Settings.VIEW_MODE, ViewItems.ALL);
         out.registerSetting(Settings.SORT_DIRECTION, SortDir.ASCENDING);
-        out.registerSetting(Settings.TYPE_FILTER, TypeFilter.ALL);
 
         out.readFromNBT((NBTTagCompound) Platform.openNbtData(is).copy());
         return out;
