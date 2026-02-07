@@ -222,7 +222,7 @@ public class PartEssentiaExportBus extends PartBaseExportBus<AEEssentiaStack> im
             if (data.hasKey(NBT_KEY_FILTER_NUMBER + index)) {
                 Aspect aspect = Aspect.aspects.get(data.getString(NBT_KEY_FILTER_NUMBER + index));
                 if (aspect != null) {
-                    IAEStackInventory config = this.getAEInventoryByName(StorageName.NONE);
+                    IAEStackInventory config = this.getAEInventoryByName(StorageName.CONFIG);
                     config.putAEStackInSlot(index, new AEEssentiaStack(aspect));
                 }
             }

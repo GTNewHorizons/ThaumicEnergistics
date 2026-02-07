@@ -47,7 +47,7 @@ public class PartEssentiaStorageBus extends PartStorageBus {
             setPriority(data.getInteger(NBT_KEY_PRIORITY));
         }
 
-        IAEStackInventory config = this.getAEInventoryByName(StorageName.NONE);
+        IAEStackInventory config = this.getAEInventoryByName(StorageName.CONFIG);
         // Read the filter list
         for (int index = 0; index < FILTER_SIZE; index++) {
             if (data.hasKey(NBT_KEY_FILTER + index)) {

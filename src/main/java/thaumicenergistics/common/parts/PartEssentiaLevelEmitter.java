@@ -25,7 +25,7 @@ public class PartEssentiaLevelEmitter extends PartLevelEmitter {
         super.readFromNBT(data);
 
         if (data.hasKey(NBT_KEY_ASPECT_FILTER)) {
-            this.getAEInventoryByName(StorageName.NONE).putAEStackInSlot(
+            this.getAEInventoryByName(StorageName.CONFIG).putAEStackInSlot(
                     0,
                     new AEEssentiaStack(Aspect.aspects.get(data.getString(NBT_KEY_ASPECT_FILTER))));
         }
