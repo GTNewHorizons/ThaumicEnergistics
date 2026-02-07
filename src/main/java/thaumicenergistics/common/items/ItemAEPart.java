@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import appeng.api.AEApi;
@@ -17,8 +18,10 @@ import appeng.api.config.Upgrades;
 import appeng.api.implementations.items.IItemGroup;
 import appeng.api.parts.IPart;
 import appeng.api.parts.IPartItem;
+import appeng.items.parts.PartType;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import thaumicenergistics.client.textures.BlockTextureManager;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.parts.AEPartsEnum;
 import thaumicenergistics.common.utils.ThELog;
@@ -125,4 +128,28 @@ public class ItemAEPart extends Item implements IPartItem, IItemGroup {
     @SideOnly(Side.CLIENT)
     @Override
     public void registerIcons(final IIconRegister par1IconRegister) {}
+
+    @Override
+    public IIcon getIconFromDamage(int damage) {
+        if (damage == AEPartsEnum.EssentiaLevelEmitter.ordinal()) {
+            Item emitter = AEApi.instance().definitions().parts().levelEmitter().maybeItem().get();
+            return emitter.getIconFromDamage(PartType.LevelEmitter.baseDamage);
+        }
+        if (damage == AEPartsEnum.EssentiaStorageMonitor.ordinal()) {
+            return BlockTextureManager.ARCANE_CRAFTING_TERMINAL.getTextures()[0];
+        }
+        if (damage == AEPartsEnum.EssentiaConversionMonitor.ordinal()) {
+            return BlockTextureManager.ARCANE_CRAFTING_TERMINAL.getTextures()[0];
+        }
+        return super.getIconFromDamage(damage);
+    }
+
+    @Override
+    public void addInformation(ItemStack itemStack, EntityPlayer p_77624_2_, List lines, boolean p_77624_4_) {
+        AEPartsEnum part = AEPartsEnum.getPartFromDamageValue(itemStack);
+        String tooltip = part.getTooltip();
+        if (tooltip != null) {
+            lines.add(tooltip);
+        }
+    }
 }

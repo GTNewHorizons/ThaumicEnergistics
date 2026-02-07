@@ -1,24 +1,14 @@
 package thaumicenergistics.implementaion;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-
-import com.google.common.collect.ImmutableList;
-
 import cpw.mods.fml.common.LoaderState;
-import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.api.IThEBlocks;
 import thaumicenergistics.api.IThEConfig;
-import thaumicenergistics.api.IThEEssentiaGas;
 import thaumicenergistics.api.IThEInteractionHelper;
 import thaumicenergistics.api.IThEItems;
 import thaumicenergistics.api.IThEParts;
 import thaumicenergistics.api.IThETransportPermissions;
 import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.common.ThaumicEnergistics;
-import thaumicenergistics.common.fluids.GaseousEssentia;
 import thaumicenergistics.common.utils.ThELog;
 
 /**
@@ -37,7 +27,6 @@ public class ThEAPIImplementation extends ThEApi {
     private final ThEBlocks blocks;
     private final ThEItems items;
     private final ThEParts parts;
-    private final List<IThEEssentiaGas> essentiaGases;
     private final ThETransportPermissions transportPermissions;
 
     private final ThEInteractionHelper interactionHelper;
@@ -49,7 +38,6 @@ public class ThEAPIImplementation extends ThEApi {
         this.blocks = new ThEBlocks();
         this.items = new ThEItems();
         this.parts = new ThEParts();
-        this.essentiaGases = new ArrayList<IThEEssentiaGas>();
         this.transportPermissions = new ThETransportPermissions();
         this.interactionHelper = new ThEInteractionHelper();
     }
@@ -96,25 +84,6 @@ public class ThEAPIImplementation extends ThEApi {
     @Override
     public IThEConfig config() {
         return ThaumicEnergistics.config;
-    }
-
-    @Override
-    public ImmutableList<List<IThEEssentiaGas>> essentiaGases() {
-        // Do we need to update?
-        if (this.essentiaGases.size() != GaseousEssentia.gasList.size()) {
-            // Clear the list
-            this.essentiaGases.clear();
-
-            // Get the iterator
-            Iterator<Entry<Aspect, GaseousEssentia>> iterator = GaseousEssentia.gasList.entrySet().iterator();
-
-            // Add all gasses
-            while (iterator.hasNext()) {
-                this.essentiaGases.add(iterator.next().getValue());
-            }
-        }
-
-        return ImmutableList.of(this.essentiaGases);
     }
 
     @Override

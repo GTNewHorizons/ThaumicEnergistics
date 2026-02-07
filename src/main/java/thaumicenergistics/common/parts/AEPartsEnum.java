@@ -9,8 +9,10 @@ import net.minecraft.util.MathHelper;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import appeng.api.config.Upgrades;
+import appeng.api.parts.IPart;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.items.ItemEnum;
 import thaumicenergistics.common.registries.ThEStrings;
@@ -23,31 +25,28 @@ import thaumicenergistics.common.registries.ThEStrings;
  */
 public enum AEPartsEnum {
 
-    @SuppressWarnings("unchecked")
     EssentiaImportBus(ThEStrings.Part_EssentiaImportBus, PartEssentiaImportBus.class,
             ThaumicEnergistics.MOD_ID + ".group.essentia.transport", generatePair(Upgrades.CAPACITY, 2),
             generatePair(Upgrades.REDSTONE, 1), generatePair(Upgrades.SPEED, 4)),
 
-    EssentiaLevelEmitter(ThEStrings.Part_EssentiaLevelEmitter, PartEssentiaLevelEmitter.class),
+    EssentiaLevelEmitter(ThEStrings.Part_EssentiaLevelEmitter, PartEssentiaLevelEmitter.class, true),
 
-    @SuppressWarnings("unchecked")
     EssentiaStorageBus(ThEStrings.Part_EssentiaStorageBus, PartEssentiaStorageBus.class, null,
             generatePair(Upgrades.INVERTER, 1)),
 
-    @SuppressWarnings("unchecked")
     EssentiaExportBus(ThEStrings.Part_EssentiaExportBus, PartEssentiaExportBus.class,
             ThaumicEnergistics.MOD_ID + ".group.essentia.transport", generatePair(Upgrades.CAPACITY, 2),
             generatePair(Upgrades.REDSTONE, 1), generatePair(Upgrades.SPEED, 4), generatePair(Upgrades.CRAFTING, 1)),
 
-    EssentiaTerminal(ThEStrings.Part_EssentiaTerminal, PartEssentiaTerminal.class),
+    EssentiaTerminal(ThEStrings.Part_EssentiaTerminal, PartEssentiaTerminal.class, true),
 
     ArcaneCraftingTerminal(ThEStrings.Part_ArcaneCraftingTerminal, PartArcaneCraftingTerminal.class),
 
     VisInterface(ThEStrings.Part_VisRelayInterface, PartVisInterface.class),
 
-    EssentiaStorageMonitor(ThEStrings.Part_EssentiaStorageMonitor, PartEssentiaStorageMonitor.class),
+    EssentiaStorageMonitor(ThEStrings.Part_EssentiaStorageMonitor, PartEssentiaStorageMonitor.class, true),
 
-    EssentiaConversionMonitor(ThEStrings.Part_EssentiaConversionMonitor, PartEssentiaConversionMonitor.class),
+    EssentiaConversionMonitor(ThEStrings.Part_EssentiaConversionMonitor, PartEssentiaConversionMonitor.class, true),
 
     CreativeVisInterface(ThEStrings.Part_CreativeVisRelayInterface, PartCreativeVisInterface.class);
 
@@ -56,20 +55,26 @@ public enum AEPartsEnum {
      */
     public static final AEPartsEnum[] VALUES = AEPartsEnum.values();
 
-    private ThEStrings unlocalizedName;
+    private final ThEStrings unlocalizedName;
 
-    private Class<? extends ThEPartBase> partClass;
+    private final Class<? extends IPart> partClass;
 
-    private String groupName;
+    private final String groupName;
 
-    private Map<Upgrades, Integer> upgrades = new HashMap<Upgrades, Integer>();
+    private final Map<Upgrades, Integer> upgrades = new HashMap<Upgrades, Integer>();
 
-    private AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends ThEPartBase> partClass) {
-        this(unlocalizedName, partClass, null);
+    private final String tooltip;
+
+    AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass, boolean deprecated) {
+        this(unlocalizedName, partClass, null, deprecated ? "§4DEPRECATED!" : "");
     }
 
-    private AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends ThEPartBase> partClass,
-            final String groupName) {
+    AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass) {
+        this(unlocalizedName, partClass, null, "");
+    }
+
+    AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass, final String groupName,
+            final String tooltip) {
         // Set the localization string
         this.unlocalizedName = unlocalizedName;
 
@@ -78,11 +83,14 @@ public enum AEPartsEnum {
 
         // Set the group name
         this.groupName = groupName;
+
+        this.tooltip = tooltip;
     }
 
-    private AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends ThEPartBase> partClass,
-            final String groupName, final Pair<Upgrades, Integer>... upgrades) {
-        this(unlocalizedName, partClass, groupName);
+    @SafeVarargs
+    AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass, final String groupName,
+            final Pair<Upgrades, Integer>... upgrades) {
+        this(unlocalizedName, partClass, groupName, "");
 
         for (Pair<Upgrades, Integer> pair : upgrades) {
             // Add the upgrade to the map
@@ -91,7 +99,7 @@ public enum AEPartsEnum {
     }
 
     private static Pair<Upgrades, Integer> generatePair(final Upgrades upgrade, final int maximum) {
-        return new ImmutablePair<Upgrades, Integer>(upgrade, Integer.valueOf(maximum));
+        return new ImmutablePair<>(upgrade, Integer.valueOf(maximum));
     }
 
     /**
@@ -108,34 +116,10 @@ public enum AEPartsEnum {
         return AEPartsEnum.VALUES[clamped];
     }
 
-    public static int getPartID(final Class<? extends ThEPartBase> partClass) {
-        int id = -1;
-
-        // Check each part
-        for (int i = 0; i < AEPartsEnum.VALUES.length; i++) {
-            // Is it the same as the specified part?
-            if (AEPartsEnum.VALUES[i].getPartClass().equals(partClass)) {
-                // Found the id, set and stop searching
-                id = i;
-                break;
-            }
-        }
-
-        // Return the id
-        return id;
-    }
-
-    public ThEPartBase createPartInstance(final ItemStack itemStack)
-            throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException {
+    public IPart createPartInstance(final ItemStack itemStack) throws InstantiationException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         // Create a new instance of the part
-        ThEPartBase part = this.partClass.getDeclaredConstructor().newInstance();
-
-        // Setup based on the itemStack
-        part.setupPartFromItem(itemStack);
-
-        // Return the newly created part
-        return part;
+        return this.partClass.getConstructor(ItemStack.class).newInstance(itemStack);
     }
 
     /**
@@ -156,7 +140,7 @@ public enum AEPartsEnum {
      *
      * @return
      */
-    public Class<? extends ThEPartBase> getPartClass() {
+    public Class<? extends IPart> getPartClass() {
         return this.partClass;
     }
 
@@ -175,5 +159,13 @@ public enum AEPartsEnum {
 
     public Map<Upgrades, Integer> getUpgrades() {
         return this.upgrades;
+    }
+
+    @Nullable
+    public String getTooltip() {
+        if (tooltip == null) {
+            return null;
+        }
+        return tooltip.isEmpty() ? null : tooltip;
     }
 }

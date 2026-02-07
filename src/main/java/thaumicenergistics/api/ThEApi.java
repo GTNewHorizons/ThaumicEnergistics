@@ -1,12 +1,9 @@
 package thaumicenergistics.api;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * Thaumic Energistics API
@@ -54,12 +51,6 @@ public abstract class ThEApi {
      */
     @Nonnull
     public abstract IThEConfig config();
-
-    /**
-     * Essentia Gasses
-     */
-    @Nonnull
-    public abstract ImmutableList<List<IThEEssentiaGas>> essentiaGases();
 
     /**
      * Gets the ThE interaction manager

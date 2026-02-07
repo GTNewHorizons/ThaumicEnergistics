@@ -1,15 +1,16 @@
 package thaumicenergistics.common.items;
 
+import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STACK_TYPE;
+
 import java.text.NumberFormat;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,34 +19,41 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
 
 import appeng.api.AEApi;
+import appeng.api.config.FuzzyMode;
+import appeng.api.exceptions.AppEngException;
+import appeng.api.implementations.items.IStorageCell;
 import appeng.api.implementations.tiles.IChestOrDrive;
-import appeng.api.implementations.tiles.IMEChest;
-import appeng.api.networking.security.PlayerSource;
 import appeng.api.storage.ICellHandler;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.ISaveProvider;
-import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.StorageChannel;
-import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStackType;
+import appeng.api.storage.data.IItemList;
 import appeng.core.localization.GuiText;
+import appeng.core.sync.GuiBridge;
+import appeng.items.contents.CellUpgrades;
+import appeng.me.storage.CreativeCellInventory;
+import appeng.tile.inventory.IAEStackInventory;
+import appeng.util.IterationCounter;
+import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import thaumicenergistics.api.storage.IAspectStack;
+import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.client.textures.BlockTextureManager;
-import thaumicenergistics.common.ThEGuiHandler;
 import thaumicenergistics.common.ThaumicEnergistics;
-import thaumicenergistics.common.inventory.HandlerItemEssentiaCell;
-import thaumicenergistics.common.inventory.HandlerItemEssentiaCellCreative;
+import thaumicenergistics.common.inventory.CreativeEssentiaCellConfig;
+import thaumicenergistics.common.inventory.EssentiaCellConfig;
+import thaumicenergistics.common.inventory.EssentiaCellInventory;
+import thaumicenergistics.common.inventory.EssentiaCellInventoryHandler;
 import thaumicenergistics.common.registries.ThEStrings;
-import thaumicenergistics.common.storage.AspectStack;
-import thaumicenergistics.common.storage.AspectStackComparator;
+import thaumicenergistics.common.storage.AEEssentiaStack;
 import thaumicenergistics.common.storage.EnumEssentiaStorageTypes;
+import thaumicenergistics.common.storage.EssentiaList;
 
 /**
  * Stores essentia.
@@ -53,12 +61,17 @@ import thaumicenergistics.common.storage.EnumEssentiaStorageTypes;
  * @author Nividica
  *
  */
-public class ItemEssentiaCell extends Item implements ICellHandler {
+public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell {
 
     /**
      * Status of the cell.
      */
     private static final int CELL_STATUS_MISSING = 0;
+
+    /**
+     * Essentia cells do not use a fixed bytes-per-type
+     */
+    private static final int BYTES_PER_ESSENTIA_TYPE = 0;
 
     /**
      * Icons for each type.
@@ -79,6 +92,10 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
         this.setHasSubtypes(true);
     }
 
+    private boolean isCreative(ItemStack is) {
+        return is.getItemDamage() == EnumEssentiaStorageTypes.Type_Creative.index;
+    }
+
     /**
      * Adds the contents of the cell to the description tooltip.
      *
@@ -87,26 +104,23 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
      * @param player
      */
     @SuppressWarnings("unchecked")
-    private void addContentsToCellDescription(final HandlerItemEssentiaCell cellHandler,
+    private void addContentsToCellDescription(final EssentiaCellInventoryHandler cellHandler,
             @SuppressWarnings("rawtypes") final List displayList, final EntityPlayer player) {
-        // Get the list of stored aspects
-        List<IAspectStack> cellAspects = cellHandler.getStoredEssentia();
+        IItemList<AEEssentiaStack> list = cellHandler.getCellInv()
+                .getAvailableItems(new EssentiaList(), IterationCounter.fetchNewId());
 
-        // Sort the list
-        Collections.sort(cellAspects, new AspectStackComparator());
-
-        for (IAspectStack currentStack : cellAspects) {
-            if (currentStack != null) {
+        for (AEEssentiaStack stack : list) {
+            if (stack != null) {
                 // Get the chat color
-                String aspectChatColor = currentStack.getChatColor();
+                String aspectChatColor = stack.getChatColor();
 
                 // Build the display string
                 String aspectInfo = String.format(
                         "  %s%s%s x %d",
                         aspectChatColor,
-                        currentStack.getAspectName(player),
+                        stack.getDisplayName(player),
                         EnumChatFormatting.WHITE,
-                        currentStack.getStackSize());
+                        stack.getStackSize());
 
                 // Add to the list
                 displayList.add(aspectInfo);
@@ -120,12 +134,16 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
      * @param cellHandler
      * @param player
      */
-    private List<String> addPartitionsToCellDescription(final HandlerItemEssentiaCell cellHandler,
+    private List<String> addPartitionsToCellDescription(final EssentiaCellInventoryHandler cellHandler,
             final EntityPlayer player) {
-        return cellHandler.getPartitionAspects().stream().filter(Objects::nonNull)
-                .map(aspect -> new AspectStack(aspect, 1)).sorted(new AspectStackComparator())
-                .map(aspect -> String.format("  %s%s", aspect.getChatColor(), aspect.getAspectName(player)))
-                .collect(Collectors.toList());
+
+        List<String> list = new ArrayList<>();
+        for (AEEssentiaStack stack : cellHandler.getPartitionList().getItems()) {
+            if (stack == null) continue;
+            Aspect aspect = stack.getAspect();
+            list.add(String.format("  %s%s", aspect.getChatcolor(), stack.getDisplayName(player)));
+        }
+        return list;
     }
 
     /**
@@ -135,17 +153,19 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
     @Override
     public void addInformation(final ItemStack essentiaCell, final EntityPlayer player,
             @SuppressWarnings("rawtypes") final List displayList, final boolean advancedItemTooltips) {
-        // Get the contents of the cell
-        IMEInventoryHandler<IAEFluidStack> handler = AEApi.instance().registries().cell()
-                .getCellInventory(essentiaCell, null, StorageChannel.FLUIDS);
-
-        // Ensure we have a cell inventory handler
-        if (!(handler instanceof HandlerItemEssentiaCell)) {
+        if (isCreative(essentiaCell)) {
+            displayList.add(ThEStrings.Tooltip_CellCreative.getLocalized());
             return;
         }
 
-        // Cast to cell inventory handler
-        HandlerItemEssentiaCell cellHandler = (HandlerItemEssentiaCell) handler;
+        // Get the contents of the cell
+        IMEInventoryHandler<AEEssentiaStack> handler = AEApi.instance().registries().cell()
+                .getCellInventory(essentiaCell, null, ESSENTIA_STACK_TYPE);
+
+        // Ensure we have a cell inventory handler
+        if (!(handler instanceof EssentiaCellInventoryHandler cellHandler)) {
+            return;
+        }
 
         // Create the bytes tooltip
         displayList.add(
@@ -174,7 +194,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
                         + ThEStrings.Tooltip_CellTypes.getLocalized());
 
         // Is the cell pre-formated?
-        if (cellHandler.isPartitioned()) {
+        if (cellHandler.isPreformatted()) {
             displayList.add(GuiText.Partitioned.getLocal());
 
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) {
@@ -212,21 +232,24 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
      * Gets a handler for the cell.
      */
     @Override
-    public IMEInventoryHandler<?> getCellInventory(final ItemStack essentiaCell, final ISaveProvider saveProvider,
-            final StorageChannel channel) {
+    public IMEInventoryHandler getCellInventory(ItemStack essentiaCell, ISaveProvider saveProvider,
+            IAEStackType<?> type) {
         // Ensure the channel is fluid and there is an appropriate item.
-        if ((channel != StorageChannel.FLUIDS) || !(essentiaCell.getItem() instanceof ItemEssentiaCell)) {
+        if (essentiaCell == null || type != ESSENTIA_STACK_TYPE
+                || !(essentiaCell.getItem() instanceof ItemEssentiaCell)) {
             return null;
         }
 
         // Is the type creative?
         if (essentiaCell.getItemDamage() == EnumEssentiaStorageTypes.Type_Creative.index) {
-            // Return a creative handler.
-            return new HandlerItemEssentiaCellCreative(essentiaCell, saveProvider);
+            return new EssentiaCellInventoryHandler(new CreativeCellInventory<>(essentiaCell));
         }
 
         // Return a standard handler.
-        return new HandlerItemEssentiaCell(essentiaCell, saveProvider);
+        try {
+            return new EssentiaCellInventoryHandler(new EssentiaCellInventory(essentiaCell, saveProvider));
+        } catch (final AppEngException ignored) {}
+        return null;
     }
 
     /**
@@ -265,7 +288,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
         }
 
         // Get the inventory handler
-        return ((HandlerItemEssentiaCell) handler).getCellStatus();
+        return ((EssentiaCellInventoryHandler) handler).getCellStatus();
     }
 
     /**
@@ -371,16 +394,13 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
 
         // Get the handler
         @SuppressWarnings("unchecked")
-        IMEInventoryHandler<IAEFluidStack> handler = AEApi.instance().registries().cell()
-                .getCellInventory(essentiaCell, null, StorageChannel.FLUIDS);
+        IMEInventoryHandler<AEEssentiaStack> handler = AEApi.instance().registries().cell()
+                .getCellInventory(essentiaCell, null, ESSENTIA_STACK_TYPE);
 
         // Is it the correct handler type?
-        if (!(handler instanceof HandlerItemEssentiaCell)) {
+        if (!(handler instanceof EssentiaCellInventoryHandler cellHandler)) {
             return essentiaCell;
         }
-
-        // Cast
-        HandlerItemEssentiaCell cellHandler = (HandlerItemEssentiaCell) handler;
 
         // If the cell is empty, and the player can hold the casing
         if ((cellHandler.getUsedBytes() == 0)
@@ -400,32 +420,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
     public void openChestGui(final EntityPlayer player, final IChestOrDrive chest, final ICellHandler cellHandler,
             @SuppressWarnings("rawtypes") final IMEInventoryHandler inv, final ItemStack itemStack,
             final StorageChannel channel) {
-        // Ensure this is the fluid channel
-        if (channel != StorageChannel.FLUIDS) {
-            return;
-        }
-
-        // Ensure we have a chest
-        if (chest != null) {
-            // Get a reference to the chest's inventories
-            IStorageMonitorable monitorable = ((IMEChest) chest)
-                    .getMonitorable(ForgeDirection.UNKNOWN, new PlayerSource(player, chest));
-
-            // Ensure we got the inventories
-            if (monitorable != null) {
-                // Get the chest tile entity
-                TileEntity chestEntity = (TileEntity) chest;
-
-                // Show the terminal gui
-                ThEGuiHandler.launchGui(
-                        ThEGuiHandler.ESSENTIA_CELL_ID,
-                        player,
-                        chestEntity.getWorldObj(),
-                        chestEntity.xCoord,
-                        chestEntity.yCoord,
-                        chestEntity.zCoord);
-            }
-        }
+        Platform.openGUI(player, (TileEntity) chest, chest.getUp(), GuiBridge.GUI_ME);
     }
 
     @Override
@@ -438,5 +433,78 @@ public class ItemEssentiaCell extends Item implements ICellHandler {
             this.icons[i] = iconRegister.registerIcon(
                     ThaumicEnergistics.MOD_ID + ":essentia.cell." + EnumEssentiaStorageTypes.fromIndex[i].suffix);
         }
+    }
+
+    @Override
+    public long getBytesLong(ItemStack cellItem) {
+        return EnumEssentiaStorageTypes.fromIndex[cellItem.getItemDamage()].capacity;
+    }
+
+    @Override
+    public int getBytes(ItemStack cellItem) {
+        return (int) Math.min(this.getBytesLong(cellItem), Integer.MAX_VALUE);
+    }
+
+    @Override
+    public int BytePerType(ItemStack cellItem) {
+        return BYTES_PER_ESSENTIA_TYPE;
+    }
+
+    @Override
+    public int getBytesPerType(ItemStack cellItem) {
+        return BYTES_PER_ESSENTIA_TYPE;
+    }
+
+    @Override
+    public int getTotalTypes(ItemStack cellItem) {
+        return EnumEssentiaStorageTypes.fromIndex[cellItem.getItemDamage()].maxStoredTypes;
+    }
+
+    @Override
+    public boolean storableInStorageCell() {
+        return false;
+    }
+
+    @Override
+    public boolean isStorageCell(ItemStack i) {
+        return i != null && i.getItem() == this;
+    }
+
+    @Override
+    public double getIdleDrain() {
+        return 0;
+    }
+
+    @Override
+    public boolean isEditable(ItemStack is) {
+        return !this.isCreative(is);
+    }
+
+    @Override
+    public IInventory getUpgradesInventory(ItemStack is) {
+        return new CellUpgrades(is, 5);
+    }
+
+    @Override
+    public FuzzyMode getFuzzyMode(ItemStack is) {
+        return FuzzyMode.IGNORE_ALL;
+    }
+
+    @Override
+    public void setFuzzyMode(ItemStack is, FuzzyMode fzMode) {
+
+    }
+
+    @Override
+    public IAEStackType<?> getStackType() {
+        return ESSENTIA_STACK_TYPE;
+    }
+
+    @Override
+    public IAEStackInventory getConfigAEInventory(ItemStack is) {
+        if (this.isCreative(is)) {
+            return new CreativeEssentiaCellConfig();
+        }
+        return new EssentiaCellConfig(is);
     }
 }
