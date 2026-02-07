@@ -247,12 +247,6 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
     public final void onNBTLoad(final NBTTagCompound data) {
-        // // Is there essentia stored?
-        // if (data.hasKey(TileEVCBase.NBTKEY_STORED)) {
-        // // Load the stack
-        // this.storedEssentia = AspectStack.loadAspectStackFromNBT(data.getCompoundTag(TileEVCBase.NBTKEY_STORED));
-        // }
-
         if (data.hasKey(TileEVCBase.NBTKEY_STORED)) {
             NBTTagCompound storedTag = data.getCompoundTag(TileEVCBase.NBTKEY_STORED);
             Aspect aspect = Aspect.aspects.get(storedTag.getString(NBTKEY_ASPECT_TAG));
@@ -270,10 +264,7 @@ public abstract class TileEVCBase extends AENetworkTile implements IEssentiaTran
     public final void onNBTSave(final NBTTagCompound data) {
         // Save storage
         if (this.storedEssentia != null) {
-            // Save stack
             NBTTagCompound stack = new NBTTagCompound();
-            // this.storedEssentia.writeToNBT(stack);
-
             stack.setString(NBTKEY_ASPECT_TAG, this.storedEssentia.left().getTag());
             stack.setLong(NBTKEY_ASPECT_AMOUNT, this.storedEssentia.rightInt());
 

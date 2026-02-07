@@ -72,6 +72,11 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
     private static final int CELL_STATUS_MISSING = 0;
 
     /**
+     * Essentia cells do not use a fixed bytes-per-type
+     */
+    private static final int BYTES_PER_ESSENTIA_TYPE = 0;
+
+    /**
      * Icons for each type.
      */
     private IIcon[] icons;
@@ -106,12 +111,6 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
             @SuppressWarnings("rawtypes") final List displayList, final EntityPlayer player) {
         IItemList<AEEssentiaStack> list = cellHandler.getCellInv()
                 .getAvailableItems(new EssentiaList(), IterationCounter.fetchNewId());
-
-        // Get the list of stored aspects
-        // List<IAspectStack> cellAspects = cellHandler.getStoredEssentia();
-
-        // Sort the list
-        // Collections.sort(cellAspects, new AspectStackComparator());
 
         for (AEEssentiaStack stack : list) {
             if (stack != null) {
@@ -148,10 +147,6 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
             list.add(String.format("  %s%s", aspect.getChatcolor(), stack.getDisplayName(player)));
         }
         return list;
-        // return cellHandler.getPartitionList().getItems().iterator().filter(Objects::nonNull)
-        // .map(aspect -> new AspectStack(aspect, 1)).sorted(new AspectStackComparator())
-        // .map(aspect -> String.format(" %s%s", aspect.getChatColor(), aspect.getAspectName(player)))
-        // .collect(Collectors.toList());
     }
 
     /**
@@ -169,9 +164,6 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
         if (!(handler instanceof EssentiaCellInventoryHandler cellHandler)) {
             return;
         }
-
-        // Cast to cell inventory handler
-        // HandlerItemEssentiaCell cellHandler = (HandlerItemEssentiaCell) handler;
 
         // Create the bytes tooltip
         displayList.add(
@@ -237,30 +229,6 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
     /**
      * Gets a handler for the cell.
      */
-    // @Override
-    // public IMEInventoryHandler<?> getCellInventory(final ItemStack essentiaCell, final ISaveProvider saveProvider,
-    // final StorageChannel channel) {
-    // // Ensure the channel is fluid and there is an appropriate item.
-    // if (essentiaCell == null || !(essentiaCell.getItem() instanceof ItemEssentiaCell)) {
-    // return null;
-    // }
-    //
-    // // Is the type creative?
-    // if (essentiaCell.getItemDamage() == EnumEssentiaStorageTypes.Type_Creative.index) {
-    // // Return a creative handler.
-    // return new EssentiaCellInventoryHandler(new CreativeCellInventory<>(essentiaCell));
-    // // return new HandlerItemEssentiaCellCreative(essentiaCell, saveProvider);
-    // }
-    //
-    // // Return a standard handler.
-    // try {
-    // return new EssentiaCellInventoryHandler(new EssentiaCellInventory(essentiaCell, saveProvider));
-    // } catch (final AppEngException ignored) {}
-    // return null;
-    //
-    // // return new HandlerItemEssentiaCell(essentiaCell, saveProvider);
-    // }
-
     @Override
     public IMEInventoryHandler getCellInventory(ItemStack essentiaCell, ISaveProvider saveProvider,
             IAEStackType<?> type) {
@@ -272,9 +240,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
 
         // Is the type creative?
         if (essentiaCell.getItemDamage() == EnumEssentiaStorageTypes.Type_Creative.index) {
-            // Return a creative handler.
             return new EssentiaCellInventoryHandler(new CreativeCellInventory<>(essentiaCell));
-            // return new HandlerItemEssentiaCellCreative(essentiaCell, saveProvider);
         }
 
         // Return a standard handler.
@@ -504,12 +470,12 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
 
     @Override
     public int BytePerType(ItemStack cellItem) {
-        return 0;
+        return BYTES_PER_ESSENTIA_TYPE;
     }
 
     @Override
     public int getBytesPerType(ItemStack cellItem) {
-        return 0;
+        return BYTES_PER_ESSENTIA_TYPE;
     }
 
     @Override
