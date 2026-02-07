@@ -115,7 +115,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
         for (AEEssentiaStack stack : list) {
             if (stack != null) {
                 // Get the chat color
-                String aspectChatColor = stack.getAspect().getChatcolor();
+                String aspectChatColor = stack.getChatColor();
 
                 // Build the display string
                 String aspectInfo = String.format(
@@ -156,6 +156,11 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
     @Override
     public void addInformation(final ItemStack essentiaCell, final EntityPlayer player,
             @SuppressWarnings("rawtypes") final List displayList, final boolean advancedItemTooltips) {
+        if (isCreative(essentiaCell)) {
+            displayList.add(ThEStrings.Tooltip_CellCreative.getLocalized());
+            return;
+        }
+
         // Get the contents of the cell
         IMEInventoryHandler<AEEssentiaStack> handler = AEApi.instance().registries().cell()
                 .getCellInventory(essentiaCell, null, ESSENTIA_STACK_TYPE);

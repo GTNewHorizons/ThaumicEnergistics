@@ -72,6 +72,7 @@ public enum ThEStrings {
     Tooltip_CellBytes("tooltip.essentia.cell.bytes", false),
     Tooltip_CellTypes("tooltip.essentia.cell.types", false),
     Tooltip_CellContains("tooltip.essentia.cell.contains", false),
+    Tooltip_CellCreative("tooltip.essentia.cell.creative", false),
     Tooltip_ArcaneAssemblerHasVis("tooltip.arcane.assembler.hasVis", false),
     Tooltip_AdvancedInfusionProviderWorkingMode("tooltip.advanced.infusion.provider.working.on", false),
     Tooltip_AdvancedInfusionProviderNormalMode("tooltip.advanced.infusion.provider.normal", false),

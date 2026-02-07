@@ -32,6 +32,7 @@ import io.netty.buffer.ByteBuf;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.Thaumcraft;
+import thaumicenergistics.client.gui.ThEGuiHelper;
 import thaumicenergistics.client.render.RendererAEEssentiaStack;
 
 public class AEEssentiaStack extends AEStack<AEEssentiaStack> {
@@ -268,6 +269,10 @@ public class AEEssentiaStack extends AEStack<AEEssentiaStack> {
         }
 
         return false;
+    }
+
+    public String getChatColor() {
+        return ThEGuiHelper.INSTANCE.getAspectChatColor(this.aspect);
     }
 
     @Nullable
