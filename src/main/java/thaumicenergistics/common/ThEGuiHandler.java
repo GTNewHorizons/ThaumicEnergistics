@@ -37,11 +37,6 @@ public class ThEGuiHandler implements IGuiHandler {
     private static final int ID_STEP_VALUE = 10;
 
     /**
-     * Singular ID of the essentia cell gui
-     */
-    public static final int ESSENTIA_CELL_ID = ThEGuiHandler.ID_STEP_VALUE * 1;
-
-    /**
      * ID of the arcane assembler gui.
      */
     public static final int ARCANE_ASSEMBLER_ID = ThEGuiHandler.ID_STEP_VALUE * 5;
@@ -138,8 +133,6 @@ public class ThEGuiHandler implements IGuiHandler {
 
     public static void launchGui(final AEBasePart part, final EntityPlayer player, final World world, final int x,
             final int y, final int z) {
-        // Ensure the player is allowed to open the gui
-        // TODO: permission check
         player.openGui(ThaumicEnergistics.INSTANCE, part.getSide().ordinal(), world, x, y, z);
     }
 
