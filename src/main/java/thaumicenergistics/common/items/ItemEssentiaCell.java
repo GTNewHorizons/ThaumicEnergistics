@@ -19,7 +19,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
 
@@ -28,26 +27,24 @@ import appeng.api.config.FuzzyMode;
 import appeng.api.exceptions.AppEngException;
 import appeng.api.implementations.items.IStorageCell;
 import appeng.api.implementations.tiles.IChestOrDrive;
-import appeng.api.implementations.tiles.IMEChest;
-import appeng.api.networking.security.PlayerSource;
 import appeng.api.storage.ICellHandler;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.ISaveProvider;
-import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEStackType;
 import appeng.api.storage.data.IItemList;
 import appeng.core.localization.GuiText;
+import appeng.core.sync.GuiBridge;
 import appeng.items.contents.CellUpgrades;
 import appeng.me.storage.CreativeCellInventory;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.IterationCounter;
+import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.client.textures.BlockTextureManager;
-import thaumicenergistics.common.ThEGuiHandler;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.inventory.CreativeEssentiaCellConfig;
 import thaumicenergistics.common.inventory.EssentiaCellConfig;
@@ -70,6 +67,11 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
      * Status of the cell.
      */
     private static final int CELL_STATUS_MISSING = 0;
+
+    /**
+     * Essentia cells do not use a fixed bytes-per-type
+     */
+    private static final int BYTES_PER_ESSENTIA_TYPE = 0;
 
     /**
      * Icons for each type.
@@ -107,16 +109,10 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
         IItemList<AEEssentiaStack> list = cellHandler.getCellInv()
                 .getAvailableItems(new EssentiaList(), IterationCounter.fetchNewId());
 
-        // Get the list of stored aspects
-        // List<IAspectStack> cellAspects = cellHandler.getStoredEssentia();
-
-        // Sort the list
-        // Collections.sort(cellAspects, new AspectStackComparator());
-
         for (AEEssentiaStack stack : list) {
             if (stack != null) {
                 // Get the chat color
-                String aspectChatColor = stack.getAspect().getChatcolor();
+                String aspectChatColor = stack.getChatColor();
 
                 // Build the display string
                 String aspectInfo = String.format(
@@ -148,10 +144,6 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
             list.add(String.format("  %s%s", aspect.getChatcolor(), stack.getDisplayName(player)));
         }
         return list;
-        // return cellHandler.getPartitionList().getItems().iterator().filter(Objects::nonNull)
-        // .map(aspect -> new AspectStack(aspect, 1)).sorted(new AspectStackComparator())
-        // .map(aspect -> String.format(" %s%s", aspect.getChatColor(), aspect.getAspectName(player)))
-        // .collect(Collectors.toList());
     }
 
     /**
@@ -161,6 +153,11 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
     @Override
     public void addInformation(final ItemStack essentiaCell, final EntityPlayer player,
             @SuppressWarnings("rawtypes") final List displayList, final boolean advancedItemTooltips) {
+        if (isCreative(essentiaCell)) {
+            displayList.add(ThEStrings.Tooltip_CellCreative.getLocalized());
+            return;
+        }
+
         // Get the contents of the cell
         IMEInventoryHandler<AEEssentiaStack> handler = AEApi.instance().registries().cell()
                 .getCellInventory(essentiaCell, null, ESSENTIA_STACK_TYPE);
@@ -169,9 +166,6 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
         if (!(handler instanceof EssentiaCellInventoryHandler cellHandler)) {
             return;
         }
-
-        // Cast to cell inventory handler
-        // HandlerItemEssentiaCell cellHandler = (HandlerItemEssentiaCell) handler;
 
         // Create the bytes tooltip
         displayList.add(
@@ -237,30 +231,6 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
     /**
      * Gets a handler for the cell.
      */
-    // @Override
-    // public IMEInventoryHandler<?> getCellInventory(final ItemStack essentiaCell, final ISaveProvider saveProvider,
-    // final StorageChannel channel) {
-    // // Ensure the channel is fluid and there is an appropriate item.
-    // if (essentiaCell == null || !(essentiaCell.getItem() instanceof ItemEssentiaCell)) {
-    // return null;
-    // }
-    //
-    // // Is the type creative?
-    // if (essentiaCell.getItemDamage() == EnumEssentiaStorageTypes.Type_Creative.index) {
-    // // Return a creative handler.
-    // return new EssentiaCellInventoryHandler(new CreativeCellInventory<>(essentiaCell));
-    // // return new HandlerItemEssentiaCellCreative(essentiaCell, saveProvider);
-    // }
-    //
-    // // Return a standard handler.
-    // try {
-    // return new EssentiaCellInventoryHandler(new EssentiaCellInventory(essentiaCell, saveProvider));
-    // } catch (final AppEngException ignored) {}
-    // return null;
-    //
-    // // return new HandlerItemEssentiaCell(essentiaCell, saveProvider);
-    // }
-
     @Override
     public IMEInventoryHandler getCellInventory(ItemStack essentiaCell, ISaveProvider saveProvider,
             IAEStackType<?> type) {
@@ -272,9 +242,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
 
         // Is the type creative?
         if (essentiaCell.getItemDamage() == EnumEssentiaStorageTypes.Type_Creative.index) {
-            // Return a creative handler.
             return new EssentiaCellInventoryHandler(new CreativeCellInventory<>(essentiaCell));
-            // return new HandlerItemEssentiaCellCreative(essentiaCell, saveProvider);
         }
 
         // Return a standard handler.
@@ -452,32 +420,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
     public void openChestGui(final EntityPlayer player, final IChestOrDrive chest, final ICellHandler cellHandler,
             @SuppressWarnings("rawtypes") final IMEInventoryHandler inv, final ItemStack itemStack,
             final StorageChannel channel) {
-        // Ensure this is the fluid channel
-        if (channel != StorageChannel.FLUIDS) {
-            return;
-        }
-
-        // Ensure we have a chest
-        if (chest != null) {
-            // Get a reference to the chest's inventories
-            IStorageMonitorable monitorable = ((IMEChest) chest)
-                    .getMonitorable(ForgeDirection.UNKNOWN, new PlayerSource(player, chest));
-
-            // Ensure we got the inventories
-            if (monitorable != null) {
-                // Get the chest tile entity
-                TileEntity chestEntity = (TileEntity) chest;
-
-                // Show the terminal gui
-                ThEGuiHandler.launchGui(
-                        ThEGuiHandler.ESSENTIA_CELL_ID,
-                        player,
-                        chestEntity.getWorldObj(),
-                        chestEntity.xCoord,
-                        chestEntity.yCoord,
-                        chestEntity.zCoord);
-            }
-        }
+        Platform.openGUI(player, (TileEntity) chest, chest.getUp(), GuiBridge.GUI_ME);
     }
 
     @Override
@@ -504,12 +447,12 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
 
     @Override
     public int BytePerType(ItemStack cellItem) {
-        return 0;
+        return BYTES_PER_ESSENTIA_TYPE;
     }
 
     @Override
     public int getBytesPerType(ItemStack cellItem) {
-        return 0;
+        return BYTES_PER_ESSENTIA_TYPE;
     }
 
     @Override

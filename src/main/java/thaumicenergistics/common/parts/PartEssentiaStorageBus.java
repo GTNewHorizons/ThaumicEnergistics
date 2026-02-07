@@ -20,6 +20,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.client.textures.BlockTextureManager;
+import thaumicenergistics.common.registries.Renderers;
 import thaumicenergistics.common.storage.AEEssentiaStack;
 
 public class PartEssentiaStorageBus extends PartStorageBus {
@@ -47,7 +48,7 @@ public class PartEssentiaStorageBus extends PartStorageBus {
             setPriority(data.getInteger(NBT_KEY_PRIORITY));
         }
 
-        IAEStackInventory config = this.getAEInventoryByName(StorageName.NONE);
+        IAEStackInventory config = this.getAEInventoryByName(StorageName.CONFIG);
         // Read the filter list
         for (int index = 0; index < FILTER_SIZE; index++) {
             if (data.hasKey(NBT_KEY_FILTER + index)) {
@@ -93,7 +94,7 @@ public class PartEssentiaStorageBus extends PartStorageBus {
         helper.renderInventoryBox(renderer);
 
         // Set the brightness
-        Tessellator.instance.setBrightness(0xD000D0);
+        Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
         helper.setInvColor(AEColor.Transparent.blackVariant);
 
@@ -127,7 +128,7 @@ public class PartEssentiaStorageBus extends PartStorageBus {
         // Color overlay
         helper.setBounds(2.0F, 2.0F, 15.0F, 14.0F, 14.0F, 16.0F);
         helper.setInvColor(AEColor.Black.blackVariant);
-        ts.setBrightness(0xF000F0);
+        ts.setBrightness(Renderers.PART_INVENTORY_FACE_BRIGHTNESS);
         helper.renderInventoryFace(
                 BlockTextureManager.ESSENTIA_STORAGE_BUS.getTextures()[1],
                 ForgeDirection.SOUTH,
@@ -153,7 +154,7 @@ public class PartEssentiaStorageBus extends PartStorageBus {
         // Are we active?
         if (this.isActive()) {
             // Set the brightness
-            Tessellator.instance.setBrightness(0xD000D0);
+            Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
             // Set the color to match the cable
             Tessellator.instance.setColorOpaque_I(this.host.getColor().blackVariant);
@@ -189,7 +190,7 @@ public class PartEssentiaStorageBus extends PartStorageBus {
         tessellator.setColorOpaque_I(this.getHost().getColor().blackVariant);
 
         if (this.isActive()) {
-            tessellator.setBrightness(0xD000D0);
+            tessellator.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
         }
 
         // Mid

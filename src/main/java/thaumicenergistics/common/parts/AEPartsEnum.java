@@ -9,6 +9,7 @@ import net.minecraft.util.MathHelper;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import appeng.api.config.Upgrades;
 import appeng.api.parts.IPart;
@@ -28,7 +29,7 @@ public enum AEPartsEnum {
             ThaumicEnergistics.MOD_ID + ".group.essentia.transport", generatePair(Upgrades.CAPACITY, 2),
             generatePair(Upgrades.REDSTONE, 1), generatePair(Upgrades.SPEED, 4)),
 
-    EssentiaLevelEmitter(ThEStrings.Part_EssentiaLevelEmitter, PartEssentiaLevelEmitter.class),
+    EssentiaLevelEmitter(ThEStrings.Part_EssentiaLevelEmitter, PartEssentiaLevelEmitter.class, true),
 
     EssentiaStorageBus(ThEStrings.Part_EssentiaStorageBus, PartEssentiaStorageBus.class, null,
             generatePair(Upgrades.INVERTER, 1)),
@@ -37,15 +38,15 @@ public enum AEPartsEnum {
             ThaumicEnergistics.MOD_ID + ".group.essentia.transport", generatePair(Upgrades.CAPACITY, 2),
             generatePair(Upgrades.REDSTONE, 1), generatePair(Upgrades.SPEED, 4), generatePair(Upgrades.CRAFTING, 1)),
 
-    EssentiaTerminal(ThEStrings.Part_EssentiaTerminal, PartEssentiaTerminal.class),
+    EssentiaTerminal(ThEStrings.Part_EssentiaTerminal, PartEssentiaTerminal.class, true),
 
     ArcaneCraftingTerminal(ThEStrings.Part_ArcaneCraftingTerminal, PartArcaneCraftingTerminal.class),
 
     VisInterface(ThEStrings.Part_VisRelayInterface, PartVisInterface.class),
 
-    EssentiaStorageMonitor(ThEStrings.Part_EssentiaStorageMonitor, PartEssentiaStorageMonitor.class),
+    EssentiaStorageMonitor(ThEStrings.Part_EssentiaStorageMonitor, PartEssentiaStorageMonitor.class, true),
 
-    EssentiaConversionMonitor(ThEStrings.Part_EssentiaConversionMonitor, PartEssentiaConversionMonitor.class),
+    EssentiaConversionMonitor(ThEStrings.Part_EssentiaConversionMonitor, PartEssentiaConversionMonitor.class, true),
 
     CreativeVisInterface(ThEStrings.Part_CreativeVisRelayInterface, PartCreativeVisInterface.class);
 
@@ -62,11 +63,18 @@ public enum AEPartsEnum {
 
     private final Map<Upgrades, Integer> upgrades = new HashMap<Upgrades, Integer>();
 
-    AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass) {
-        this(unlocalizedName, partClass, null);
+    private final String tooltip;
+
+    AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass, boolean deprecated) {
+        this(unlocalizedName, partClass, null, deprecated ? "§4DEPRECATED!" : "");
     }
 
-    AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass, final String groupName) {
+    AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass) {
+        this(unlocalizedName, partClass, null, "");
+    }
+
+    AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass, final String groupName,
+            final String tooltip) {
         // Set the localization string
         this.unlocalizedName = unlocalizedName;
 
@@ -75,12 +83,14 @@ public enum AEPartsEnum {
 
         // Set the group name
         this.groupName = groupName;
+
+        this.tooltip = tooltip;
     }
 
     @SafeVarargs
     AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass, final String groupName,
             final Pair<Upgrades, Integer>... upgrades) {
-        this(unlocalizedName, partClass, groupName);
+        this(unlocalizedName, partClass, groupName, "");
 
         for (Pair<Upgrades, Integer> pair : upgrades) {
             // Add the upgrade to the map
@@ -149,5 +159,13 @@ public enum AEPartsEnum {
 
     public Map<Upgrades, Integer> getUpgrades() {
         return this.upgrades;
+    }
+
+    @Nullable
+    public String getTooltip() {
+        if (tooltip == null) {
+            return null;
+        }
+        return tooltip.isEmpty() ? null : tooltip;
     }
 }

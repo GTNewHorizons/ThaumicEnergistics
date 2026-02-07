@@ -329,14 +329,9 @@ public class TileEssentiaVibrationChamber extends TileEVCBase implements IGridTi
             // Create the stack if needed
             if (storedAspect == null) {
                 this.storedEssentia = new ObjectIntMutablePair<>(aspect, addedAmount);
-                // this.storedEssentia = new AspectStack(aspect, 0);
             } else {
                 this.storedEssentia.right(this.storedEssentia.rightInt() + addedAmount);
-                // this.storedEssentia.setAspect(aspect);
             }
-
-            // Add to the amount
-            // this.storedEssentia.adjustStackSize(addedAmount);
 
             // Mark for update
             this.markForUpdate();

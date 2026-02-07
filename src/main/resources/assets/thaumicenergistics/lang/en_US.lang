@@ -1,4 +1,4 @@
-﻿#Group names
+#Group names
 itemGroup.ThaumicEnergistics=Thaumic Energistics
 thaumicenergistics.group.essentia.transport=ME Essentia Import/Export Bus
 
@@ -68,6 +68,7 @@ thaumicenergistics.item.cell.microscope.name=Cell Microscope
 #Tooltips
 thaumicenergistics.tooltip.itemstack.details=Hold §eCTRL§f for details.
 thaumicenergistics.tooltip.essentia.cell.contains=Contains
+thaumicenergistics.tooltip.essentia.cell.creative=Supplies all essentia types infinitely.
 thaumicenergistics.tooltip.essentia.cell.bytes=Bytes Used.
 thaumicenergistics.tooltip.essentia.cell.types=essentia types stored.
 thaumicenergistics.tooltip.button.void=Allow Void?

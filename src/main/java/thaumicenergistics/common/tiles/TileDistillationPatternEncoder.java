@@ -155,6 +155,7 @@ public class TileDistillationPatternEncoder extends ThETileInventory implements 
 
     @Override
     public IAEStackInventory getAEInventoryByName(StorageName storageName) {
-        return this.aspectsInventory;
+        // aspectsInventory is not exposed externally through this method
+        return null;
     }
 }

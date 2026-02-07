@@ -143,4 +143,13 @@ public class ItemAEPart extends Item implements IPartItem, IItemGroup {
         }
         return super.getIconFromDamage(damage);
     }
+
+    @Override
+    public void addInformation(ItemStack itemStack, EntityPlayer p_77624_2_, List lines, boolean p_77624_4_) {
+        AEPartsEnum part = AEPartsEnum.getPartFromDamageValue(itemStack);
+        String tooltip = part.getTooltip();
+        if (tooltip != null) {
+            lines.add(tooltip);
+        }
+    }
 }

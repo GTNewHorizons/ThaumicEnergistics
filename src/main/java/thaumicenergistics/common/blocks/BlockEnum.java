@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 
 import thaumicenergistics.common.items.ItemBlockArcaneAssembler;
+import thaumicenergistics.common.items.ItemBlockDeprecated;
 import thaumicenergistics.common.items.ItemBlockEssentiaVibrationChamber;
 import thaumicenergistics.common.registries.ThEStrings;
 
@@ -20,7 +21,8 @@ public enum BlockEnum {
     ADVANCED_INFUSION_PROVIDER(ThEStrings.Block_AdvancedInfusionProvider, new BlockAdvancedInfusionProvider()),
     IRON_GEAR_BOX(ThEStrings.Block_IronGearbox, new BlockGearBox()),
     THAUMIUM_GEAR_BOX(ThEStrings.Block_ThaumiumGearbox, new BlockGolemGearBox()),
-    ESSENTIA_CELL_WORKBENCH(ThEStrings.Block_EssentiaCellWorkbench, new BlockEssentiaCellWorkbench()),
+    ESSENTIA_CELL_WORKBENCH(ThEStrings.Block_EssentiaCellWorkbench, new BlockEssentiaCellWorkbench(),
+            ItemBlockDeprecated.class),
     ARCANE_ASSEMBLER(ThEStrings.Block_ArcaneAssembler, new BlockArcaneAssembler(), ItemBlockArcaneAssembler.class),
     KNOWLEDGE_INSCRIBER(ThEStrings.Block_KnowledgeInscriber, new BlockKnowledgeInscriber()),
     ESSENTIA_VIBRATION_CHAMBER(ThEStrings.Block_EssentiaVibrationChamber, new BlockEssentiaVibrationChamber(),
