@@ -27,6 +27,9 @@ import thaumicenergistics.common.tiles.TileGearBox;
 @SideOnly(Side.CLIENT)
 public class Renderers {
 
+    public static final int PART_ACTIVE_FACE_BRIGHTNESS = 0xD000D0;
+    public static final int PART_INVENTORY_FACE_BRIGHTNESS = 0xF000F0;
+
     public static final int PASS_OPAQUE = 0;
     public static final int PASS_ALPHA = 1;
 

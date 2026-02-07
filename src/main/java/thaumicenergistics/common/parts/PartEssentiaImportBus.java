@@ -35,6 +35,7 @@ import thaumcraft.api.aspects.IAspectContainer;
 import thaumicenergistics.client.textures.BlockTextureManager;
 import thaumicenergistics.common.integration.tc.EssentiaTileContainerHelper;
 import thaumicenergistics.common.registries.EnumCache;
+import thaumicenergistics.common.registries.Renderers;
 import thaumicenergistics.common.storage.AEEssentiaStack;
 
 /**
@@ -207,7 +208,7 @@ public class PartEssentiaImportBus extends PartBaseImportBus<AEEssentiaStack> {
         helper.renderInventoryBox(renderer);
 
         // Set the brightness
-        Tessellator.instance.setBrightness(0xD000D0);
+        Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
         helper.setInvColor(AEColor.Transparent.blackVariant);
 
@@ -264,7 +265,7 @@ public class PartEssentiaImportBus extends PartBaseImportBus<AEEssentiaStack> {
         // Face overlay
         helper.setBounds(4.0F, 4.0F, 15.0F, 12.0F, 12.0F, 16.0F);
         helper.setInvColor(AEColor.Black.blackVariant);
-        ts.setBrightness(15728880);
+        ts.setBrightness(Renderers.PART_INVENTORY_FACE_BRIGHTNESS);
         helper.renderInventoryFace(
                 BlockTextureManager.ESSENTIA_IMPORT_BUS.getTextures()[1],
                 ForgeDirection.SOUTH,
@@ -290,7 +291,7 @@ public class PartEssentiaImportBus extends PartBaseImportBus<AEEssentiaStack> {
         // Are we active?
         if (this.isActive()) {
             // Set the brightness
-            Tessellator.instance.setBrightness(0xD000D0);
+            Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
             // Set the color to match the cable
             Tessellator.instance.setColorOpaque_I(this.host.getColor().blackVariant);
@@ -336,7 +337,7 @@ public class PartEssentiaImportBus extends PartBaseImportBus<AEEssentiaStack> {
         }
 
         if (this.isActive()) {
-            Tessellator.instance.setBrightness(0xD000D0);
+            Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
         }
 
         // Face overlay

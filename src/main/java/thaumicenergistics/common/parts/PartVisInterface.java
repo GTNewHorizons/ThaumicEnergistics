@@ -41,6 +41,7 @@ import thaumicenergistics.api.grid.IDigiVisSource;
 import thaumicenergistics.client.textures.BlockTextureManager;
 import thaumicenergistics.common.integration.tc.DigiVisSourceData;
 import thaumicenergistics.common.integration.tc.VisProviderProxy;
+import thaumicenergistics.common.registries.Renderers;
 
 /**
  * Interfaces with a {@link TileVisRelay}.
@@ -610,7 +611,7 @@ public class PartVisInterface extends AEBasePart implements IGridTickable, IDigi
         helper.renderInventoryBox(renderer);
 
         // Set the brightness
-        Tessellator.instance.setBrightness(0xD000D0);
+        Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
         helper.setInvColor(AEColor.Transparent.blackVariant);
 
@@ -662,7 +663,7 @@ public class PartVisInterface extends AEBasePart implements IGridTickable, IDigi
         // Are we active?
         if (this.isActive()) {
             // Set the brightness
-            Tessellator.instance.setBrightness(0xD000D0);
+            Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
             // Set the color to match the cable
             Tessellator.instance.setColorOpaque_I(this.host.getColor().blackVariant);

@@ -37,6 +37,7 @@ import thaumicenergistics.client.textures.BlockTextureManager;
 import thaumicenergistics.common.ThEGuiHandler;
 import thaumicenergistics.common.container.ContainerPartArcaneCraftingTerminal;
 import thaumicenergistics.common.integration.tc.DigiVisSourceData;
+import thaumicenergistics.common.registries.Renderers;
 import thaumicenergistics.common.utils.ThEUtils;
 
 public class PartArcaneCraftingTerminal extends AbstractPartTerminal implements IGridTickable {
@@ -302,7 +303,7 @@ public class PartArcaneCraftingTerminal extends AbstractPartTerminal implements 
         helper.renderInventoryBox(renderer);
 
         // Set the brightness
-        Tessellator.instance.setBrightness(0xD000D0);
+        Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
         helper.setInvColor(AEColor.Transparent.blackVariant);
 
@@ -368,7 +369,7 @@ public class PartArcaneCraftingTerminal extends AbstractPartTerminal implements 
         // Are we active?
         if (this.isActive()) {
             // Set the brightness
-            Tessellator.instance.setBrightness(0xD000D0);
+            Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
             // Set the color to match the cable
             Tessellator.instance.setColorOpaque_I(this.host.getColor().blackVariant);
@@ -418,7 +419,7 @@ public class PartArcaneCraftingTerminal extends AbstractPartTerminal implements 
 
         if (this.isActive()) {
             // Set brightness
-            tessellator.setBrightness(0xD000D0);
+            tessellator.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
             // Draw corners
             helper.setBounds(2.0F, 2.0F, 15.0F, 14.0F, 14.0F, 16.0F);

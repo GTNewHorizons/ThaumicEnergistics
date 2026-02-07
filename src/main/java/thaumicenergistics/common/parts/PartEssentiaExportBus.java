@@ -47,6 +47,7 @@ import thaumicenergistics.client.gui.widget.ExportBusVoidButtonObject;
 import thaumicenergistics.client.textures.BlockTextureManager;
 import thaumicenergistics.common.integration.tc.EssentiaTileContainerHelper;
 import thaumicenergistics.common.registries.EnumCache;
+import thaumicenergistics.common.registries.Renderers;
 import thaumicenergistics.common.storage.AEEssentiaStack;
 
 public class PartEssentiaExportBus extends PartBaseExportBus<AEEssentiaStack> implements ICustomButtonProvider {
@@ -301,7 +302,7 @@ public class PartEssentiaExportBus extends PartBaseExportBus<AEEssentiaStack> im
         helper.renderInventoryBox(renderer);
 
         // Set the brightness
-        Tessellator.instance.setBrightness(0xD000D0);
+        Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
         helper.setInvColor(AEColor.Transparent.blackVariant);
 
@@ -363,7 +364,7 @@ public class PartEssentiaExportBus extends PartBaseExportBus<AEEssentiaStack> im
 
         // Face overlay
         helper.setInvColor(AEColor.Black.blackVariant);
-        ts.setBrightness(0xF000F0);
+        ts.setBrightness(Renderers.PART_INVENTORY_FACE_BRIGHTNESS);
         IIcon faceOverlayTexture = BlockTextureManager.ESSENTIA_EXPORT_BUS.getTextures()[1];
         helper.renderInventoryFace(faceOverlayTexture, ForgeDirection.UP, renderer);
         helper.renderInventoryFace(faceOverlayTexture, ForgeDirection.DOWN, renderer);
@@ -390,7 +391,7 @@ public class PartEssentiaExportBus extends PartBaseExportBus<AEEssentiaStack> im
         // Are we active?
         if (this.isActive()) {
             // Set the brightness
-            Tessellator.instance.setBrightness(0xD000D0);
+            Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
 
             // Set the color to match the cable
             Tessellator.instance.setColorOpaque_I(this.host.getColor().blackVariant);
@@ -466,7 +467,7 @@ public class PartEssentiaExportBus extends PartBaseExportBus<AEEssentiaStack> im
         ts.setColorOpaque_I(this.getHost().getColor().blackVariant);
 
         if (this.isActive()) {
-            Tessellator.instance.setBrightness(0xD000D0);
+            Tessellator.instance.setBrightness(Renderers.PART_ACTIVE_FACE_BRIGHTNESS);
         }
 
         IIcon faceOverlayTexture = BlockTextureManager.ESSENTIA_EXPORT_BUS.getTextures()[1];
