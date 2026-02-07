@@ -19,7 +19,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
 
@@ -28,26 +27,24 @@ import appeng.api.config.FuzzyMode;
 import appeng.api.exceptions.AppEngException;
 import appeng.api.implementations.items.IStorageCell;
 import appeng.api.implementations.tiles.IChestOrDrive;
-import appeng.api.implementations.tiles.IMEChest;
-import appeng.api.networking.security.PlayerSource;
 import appeng.api.storage.ICellHandler;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.ISaveProvider;
-import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEStackType;
 import appeng.api.storage.data.IItemList;
 import appeng.core.localization.GuiText;
+import appeng.core.sync.GuiBridge;
 import appeng.items.contents.CellUpgrades;
 import appeng.me.storage.CreativeCellInventory;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.IterationCounter;
+import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.client.textures.BlockTextureManager;
-import thaumicenergistics.common.ThEGuiHandler;
 import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.inventory.CreativeEssentiaCellConfig;
 import thaumicenergistics.common.inventory.EssentiaCellConfig;
@@ -423,32 +420,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
     public void openChestGui(final EntityPlayer player, final IChestOrDrive chest, final ICellHandler cellHandler,
             @SuppressWarnings("rawtypes") final IMEInventoryHandler inv, final ItemStack itemStack,
             final StorageChannel channel) {
-        // Ensure this is the fluid channel
-        if (channel != StorageChannel.FLUIDS) {
-            return;
-        }
-
-        // Ensure we have a chest
-        if (chest != null) {
-            // Get a reference to the chest's inventories
-            IStorageMonitorable monitorable = ((IMEChest) chest)
-                    .getMonitorable(ForgeDirection.UNKNOWN, new PlayerSource(player, chest));
-
-            // Ensure we got the inventories
-            if (monitorable != null) {
-                // Get the chest tile entity
-                TileEntity chestEntity = (TileEntity) chest;
-
-                // Show the terminal gui
-                ThEGuiHandler.launchGui(
-                        ThEGuiHandler.ESSENTIA_CELL_ID,
-                        player,
-                        chestEntity.getWorldObj(),
-                        chestEntity.xCoord,
-                        chestEntity.yCoord,
-                        chestEntity.zCoord);
-            }
-        }
+        Platform.openGUI(player, (TileEntity) chest, chest.getUp(), GuiBridge.GUI_ME);
     }
 
     @Override
