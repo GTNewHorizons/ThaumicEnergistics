@@ -7,6 +7,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import appeng.api.AEApi;
 import appeng.core.AEConfig;
 import appeng.core.features.AEFeature;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -420,10 +421,9 @@ public class FeatureCells extends ThEThaumcraftResearchFeature {
 
         // Workbench
         GameRegistry.addRecipe(
-                RecipeRegistry.BLOCK_CELL_WORKBENCH = new ShapelessOreRecipe(
-                        EssentiaCellWorkbench,
-                        EssentiaStorageComponent_1k,
-                        cdi.MECellWorkbench));
+                new ShapelessOreRecipe(
+                        AEApi.instance().definitions().blocks().cellWorkbench().maybeStack(1).get(),
+                        EssentiaCellWorkbench));
     }
 
     @Override
@@ -465,8 +465,7 @@ public class FeatureCells extends ThEThaumcraftResearchFeature {
         ResearchPage[] storagePages = new ResearchPage[] { new ResearchPage(ResearchTypes.STORAGE.getPageName(1)),
                 new ResearchPage(ResearchTypes.STORAGE.getPageName(2)),
                 new ResearchPage(RecipeRegistry.ITEM_STORAGE_COMPONENT_1K), new ResearchPage(storageComponentRecipes),
-                new ResearchPage(RecipeRegistry.ITEM_STORAGE_HOUSING), new ResearchPage(storageCellsShaped),
-                new ResearchPage(storageCellsShapeless), new ResearchPage(RecipeRegistry.BLOCK_CELL_WORKBENCH) };
+                new ResearchPage(RecipeRegistry.ITEM_STORAGE_HOUSING), new ResearchPage(storageCellsShaped) };
 
         String[] storageParents;
 

@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import appeng.api.AEApi;
 import appeng.core.AEConfig;
 import appeng.core.features.AEFeature;
 import cpw.mods.fml.common.registry.GameRegistry;
-import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.research.ResearchPage;
@@ -21,7 +21,6 @@ import thaumicenergistics.common.parts.PartEssentiaConversionMonitor;
 import thaumicenergistics.common.parts.PartEssentiaStorageMonitor;
 import thaumicenergistics.common.parts.PartEssentiaTerminal;
 import thaumicenergistics.common.registries.FeatureRegistry;
-import thaumicenergistics.common.registries.RecipeRegistry;
 import thaumicenergistics.common.registries.ResearchRegistry;
 import thaumicenergistics.common.registries.ResearchRegistry.ResearchTypes;
 
@@ -64,28 +63,15 @@ public class FeatureEssentiaMonitoring extends ThEThaumcraftResearchFeature {
         // My items
         IThEItems theItems = ThEApi.instance().items();
         IThEParts theParts = ThEApi.instance().parts();
-        ItemStack DiffusionCore = theItems.DiffusionCore.getStack();
-        ItemStack CoalescenceCore = theItems.CoalescenceCore.getStack();
         ItemStack EssentiaTerminal = theParts.Essentia_Terminal.getStack();
         ItemStack EssentiaLevelEmitter = theParts.Essentia_LevelEmitter.getStack();
         ItemStack EssentiaStorageMonitor = theParts.Essentia_StorageMonitor.getStack();
 
-        // Set Essentia Terminal aspects
-        AspectList etAspectList = new AspectList();
-        etAspectList.add(Aspect.WATER, 5);
-        etAspectList.add(Aspect.ORDER, 2);
-        etAspectList.add(Aspect.FIRE, 1);
-
         // Register Essentia Terminal
-        RecipeRegistry.PART_ESSENTIA_TERMINAL = ThaumcraftApi.addShapelessArcaneCraftingRecipe(
-                this.researchKey,
-                EssentiaTerminal,
-                etAspectList,
-                cdi.IlluminatedPanel,
-                DiffusionCore,
-                CoalescenceCore,
-                cdi.LogicProcessor,
-                cdi.VisFilter);
+        GameRegistry.addRecipe(
+                new ShapelessOreRecipe(
+                        AEApi.instance().definitions().parts().terminal().maybeStack(1).get(),
+                        EssentiaTerminal));
 
         // Is wireless term enabled?
         if (this.isWirelessEnabled) {
@@ -93,35 +79,23 @@ public class FeatureEssentiaMonitoring extends ThEThaumcraftResearchFeature {
 
             // Register Wireless Essentia Terminal
             GameRegistry.addRecipe(
-                    RecipeRegistry.ITEM_WIRELESS_ESSENTIA_TERMINAL = new ShapelessOreRecipe(
-                            WirelessEssentiaTerminal,
-                            cdi.WirelessReceiver,
-                            EssentiaTerminal,
-                            cdi.DenseCell));
+                    new ShapelessOreRecipe(
+                            AEApi.instance().definitions().items().wirelessTerminal().maybeStack(1).get(),
+                            WirelessEssentiaTerminal));
+
         }
 
-        // Set Essentia Level Emitter aspects
-        AspectList emitterAspectList = new AspectList();
-        emitterAspectList.add(Aspect.FIRE, 4);
-
-        // Set Essentia Level Emitter crafting result count
-        EssentiaLevelEmitter.stackSize = 4;
-
         // Register Essentia Level Emitter
-        RecipeRegistry.PART_ESSENTIA_LEVEL_EMITTER = ThaumcraftApi.addShapelessArcaneCraftingRecipe(
-                this.researchKey,
-                EssentiaLevelEmitter,
-                emitterAspectList,
-                cdi.CalculationProcessor,
-                cdi.RedstoneTorch,
-                cdi.SalisMundus);
+        GameRegistry.addRecipe(
+                new ShapelessOreRecipe(
+                        AEApi.instance().definitions().parts().levelEmitter().maybeStack(1).get(),
+                        EssentiaLevelEmitter));
 
         // Register Essentia Storage Monitor
         GameRegistry.addRecipe(
-                RecipeRegistry.PART_ESSENTIA_STORAGE_MONITOR = new ShapelessOreRecipe(
-                        EssentiaStorageMonitor,
-                        EssentiaLevelEmitter,
-                        cdi.IlluminatedPanel));
+                new ShapelessOreRecipe(
+                        AEApi.instance().definitions().parts().storageMonitor().maybeStack(1).get(),
+                        EssentiaStorageMonitor));
 
         // Is conversion monitor enabled?
         if (this.isConversionEnabled) {
@@ -129,11 +103,9 @@ public class FeatureEssentiaMonitoring extends ThEThaumcraftResearchFeature {
 
             // Register Essentia Conversion Monitor
             GameRegistry.addRecipe(
-                    RecipeRegistry.PART_ESSENTIA_CONVERSION_MONITOR = new ShapelessOreRecipe(
-                            EssentiaConversionMonitor,
-                            CoalescenceCore,
-                            EssentiaStorageMonitor,
-                            DiffusionCore));
+                    new ShapelessOreRecipe(
+                            AEApi.instance().definitions().parts().conversionMonitor().maybeStack(1).get(),
+                            EssentiaConversionMonitor));
         }
     }
 
@@ -156,17 +128,8 @@ public class FeatureEssentiaMonitoring extends ThEThaumcraftResearchFeature {
         ArrayList<ResearchPage> pageList = new ArrayList<ResearchPage>();
         pageList.add(new ResearchPage(ResearchTypes.ESSENTIA_TERMINAL.getPageName(1)));
         pageList.add(new ResearchPage(ResearchTypes.ESSENTIA_TERMINAL.getPageName(2)));
-        pageList.add(new ResearchPage(RecipeRegistry.PART_ESSENTIA_TERMINAL));
-        if (this.isWirelessEnabled) {
-            pageList.add(new ResearchPage(RecipeRegistry.ITEM_WIRELESS_ESSENTIA_TERMINAL));
-        }
         pageList.add(new ResearchPage(ResearchTypes.ESSENTIA_TERMINAL.getPageName(3)));
-        pageList.add(new ResearchPage(RecipeRegistry.PART_ESSENTIA_LEVEL_EMITTER));
         pageList.add(new ResearchPage(ResearchTypes.ESSENTIA_TERMINAL.getPageName(4)));
-        pageList.add(new ResearchPage(RecipeRegistry.PART_ESSENTIA_STORAGE_MONITOR));
-        if (this.isConversionEnabled) {
-            pageList.add(new ResearchPage(RecipeRegistry.PART_ESSENTIA_CONVERSION_MONITOR));
-        }
 
         // Set the pages
         ResearchPage[] etPages = pageList.toArray(new ResearchPage[pageList.size()]);
