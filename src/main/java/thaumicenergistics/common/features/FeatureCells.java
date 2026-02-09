@@ -20,6 +20,7 @@ import thaumcraft.api.research.ResearchPage;
 import thaumcraft.common.config.Config;
 import thaumicenergistics.api.IThEConfig;
 import thaumicenergistics.api.IThEItems;
+import thaumicenergistics.api.IThEParts;
 import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.common.items.ItemEssentiaCell;
 import thaumicenergistics.common.items.ItemStorageComponent;
@@ -68,12 +69,17 @@ public class FeatureCells extends ThEThaumcraftResearchFeature {
         }
     }
 
+    private boolean isWirelessEnabled = false, isConversionEnabled = false;
+
     @Override
     protected boolean checkConfigs(final IThEConfig theConfig) {
         // Depends on cells
         if (!AEConfig.instance.isFeatureEnabled(AEFeature.StorageCells)) {
             return false;
         }
+
+        this.isConversionEnabled = AEConfig.instance.isFeatureEnabled(AEFeature.PartConversionMonitor);
+        this.isWirelessEnabled = AEConfig.instance.isFeatureEnabled(AEFeature.WirelessAccessTerminal);
 
         return theConfig.craftEssentiaCells();
     }
@@ -424,6 +430,54 @@ public class FeatureCells extends ThEThaumcraftResearchFeature {
                 new ShapelessOreRecipe(
                         AEApi.instance().definitions().blocks().cellWorkbench().maybeStack(1).get(),
                         EssentiaCellWorkbench));
+
+        // deprecated
+        // My items
+        IThEParts theParts = ThEApi.instance().parts();
+        ItemStack EssentiaTerminal = theParts.Essentia_Terminal.getStack();
+        ItemStack EssentiaLevelEmitter = theParts.Essentia_LevelEmitter.getStack();
+        ItemStack EssentiaStorageMonitor = theParts.Essentia_StorageMonitor.getStack();
+
+        // Register Essentia Terminal
+        GameRegistry.addRecipe(
+                new ShapelessOreRecipe(
+                        AEApi.instance().definitions().parts().terminal().maybeStack(1).get(),
+                        EssentiaTerminal));
+
+        // Is wireless term enabled?
+        if (this.isWirelessEnabled) {
+            ItemStack WirelessEssentiaTerminal = theItems.WirelessEssentiaTerminal.getStack();
+
+            // Register Wireless Essentia Terminal
+            GameRegistry.addRecipe(
+                    new ShapelessOreRecipe(
+                            AEApi.instance().definitions().items().wirelessTerminal().maybeStack(1).get(),
+                            WirelessEssentiaTerminal));
+
+        }
+
+        // Register Essentia Level Emitter
+        GameRegistry.addRecipe(
+                new ShapelessOreRecipe(
+                        AEApi.instance().definitions().parts().levelEmitter().maybeStack(1).get(),
+                        EssentiaLevelEmitter));
+
+        // Register Essentia Storage Monitor
+        GameRegistry.addRecipe(
+                new ShapelessOreRecipe(
+                        AEApi.instance().definitions().parts().storageMonitor().maybeStack(1).get(),
+                        EssentiaStorageMonitor));
+
+        // Is conversion monitor enabled?
+        if (this.isConversionEnabled) {
+            ItemStack EssentiaConversionMonitor = theParts.Essentia_ConversionMonitor.getStack();
+
+            // Register Essentia Conversion Monitor
+            GameRegistry.addRecipe(
+                    new ShapelessOreRecipe(
+                            AEApi.instance().definitions().parts().conversionMonitor().maybeStack(1).get(),
+                            EssentiaConversionMonitor));
+        }
     }
 
     @Override

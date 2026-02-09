@@ -71,7 +71,6 @@ public class ResearchRegistry {
         STORAGE("STORAGE", 0, 2),
         IO("IO", -2, -2),
         ARCANE_TERMINAL("ARCANETERM", 2, -1),
-        ESSENTIA_TERMINAL("ESSTERM", -1, -4),
         ESSENTIA_PROVIDER("ESSPROV", -2, -4),
         INFUSION_PROVIDER("INFPROV", -5, -2),
         ADVANCED_INFUSION_PROVIDER("ADVINFPROV", -7, -2),
