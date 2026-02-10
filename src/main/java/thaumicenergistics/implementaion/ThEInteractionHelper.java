@@ -3,9 +3,11 @@ package thaumicenergistics.implementaion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.util.FakePlayer;
 
 import appeng.api.AEApi;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.api.IThEInteractionHelper;
@@ -70,5 +72,23 @@ public class ThEInteractionHelper implements IThEInteractionHelper {
             ThELog.warning(e.toString());
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void openWirelessTerminalGui(final EntityPlayer player) {
+        // Valid player?
+        if ((player == null) || (player instanceof FakePlayer)) {
+            return;
+        }
+
+        // Ignored client side
+        if (Platform.isClient()) {
+            return;
+        }
+
+        // Get the item the player is holding.
+        ItemStack wirelessTerminal = player.getHeldItem();
+
+        AEApi.instance().registries().wireless().openWirelessTerminalGui(wirelessTerminal, player.worldObj, player);
     }
 }
