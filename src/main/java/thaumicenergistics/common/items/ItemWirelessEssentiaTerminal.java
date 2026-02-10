@@ -1,5 +1,7 @@
 package thaumicenergistics.common.items;
 
+import java.util.List;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -182,5 +184,12 @@ public class ItemWirelessEssentiaTerminal extends AEBasePoweredItem implements I
 
         out.readFromNBT((NBTTagCompound) Platform.openNbtData(is).copy());
         return out;
+    }
+
+    @Override
+    public void addCheckedInformation(ItemStack stack, EntityPlayer player, List<String> lines,
+            boolean displayMoreInfo) {
+        lines.add("§4DEPRECATED!");
+        super.addCheckedInformation(stack, player, lines, displayMoreInfo);
     }
 }

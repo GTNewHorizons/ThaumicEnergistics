@@ -28,6 +28,7 @@ import appeng.core.AELog;
 import appeng.helpers.InventoryAction;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.InventoryAdaptor;
+import appeng.util.Platform;
 import appeng.util.inv.AdaptorPlayerHand;
 import appeng.util.item.AEItemStack;
 import thaumcraft.api.aspects.Aspect;
@@ -131,18 +132,16 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
 
         this.bindPlayerInventory(ip, 1, 0);
 
-        if (!ip.player.worldObj.isRemote) {
-            this.terminal.registerContainer(this);
-        }
+        if (Platform.isServer()) this.terminal.registerContainer(this);
 
         this.onCraftMatrixChanged(null);
     }
 
     @Override
     public void onContainerClosed(EntityPlayer player) {
-        if (!player.worldObj.isRemote) {
-            this.terminal.removeContainer(this);
-        }
+        super.onContainerClosed(player);
+
+        if (Platform.isServer()) this.terminal.removeContainer(this);
     }
 
     @Override
@@ -428,7 +427,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer p, int idx) {
-        if (p.worldObj.isRemote) {
+        if (Platform.isClient()) {
             return null;
         }
 

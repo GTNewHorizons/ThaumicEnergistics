@@ -96,8 +96,6 @@ public class FeatureAutocrafting_Essentia extends ThEThaumcraftResearchFeature {
 
         // Set parents
         ResearchTypes.DISTILLATION_PATTERN_ENCODER.researchItem.setParents(this.getFirstValidParentKey(false));
-        ResearchTypes.DISTILLATION_PATTERN_ENCODER.researchItem
-                .setParentsHidden(FeatureRegistry.instance().featureEssentiaMonitoring.getFirstValidParentKey(true));
         ResearchTypes.DISTILLATION_PATTERN_ENCODER.researchItem.setConcealed();
 
         // Register the research

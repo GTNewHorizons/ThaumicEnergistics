@@ -78,12 +78,6 @@ tc.research_name.thaumicenergistics.TEARCANETERM=Arkane Fertigungskonsole
 tc.research_text.thaumicenergistics.TEARCANETERM=Herstellung mit Magie §ound Technik.§r
 thaumicenergistics.research_page.TEARCANETERM.1=Du hast herausgefunden, dass du mithilfe der primären Aspekte eine Konsole an einen arkanen Werktisch binden kannst. Dadurch erhält die Konsole die Fähigkeit, mit Vis arkane Gegenstände herzustellen.
 
-# Research Essentia terminal
-tc.research_name.thaumicenergistics.TEESSTERM=Essentia-Überwachung
-tc.research_text.thaumicenergistics.TEESSTERM=Wissen, wie viel du hast.
-thaumicenergistics.research_page.TEESSTERM.1=Die §lEssentia-Konsole§r ermöglicht dir, die Menge der im Netzwerk gespeicherten Essentia zu überwachen. Außerdem kannst du hier Essentiabehälter auffüllen und leeren.
-thaumicenergistics.research_page.TEESSTERM.2=Der §lEssentia-Füllstandsemitter§r wird kontinuierlich die Füllstände von Essentia im Netzwerk überwachen, und gibt ein Redstone-Signal aus, wenn die eingestellten Bedingungen erfüllt sind.
-
 # Research Essentia Provider
 tc.research_name.thaumicenergistics.TEESSPROV=Essentia-Versorger
 tc.research_text.thaumicenergistics.TEESSPROV=Deine Wünsche werden erhört.

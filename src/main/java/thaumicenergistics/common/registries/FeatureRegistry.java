@@ -12,7 +12,6 @@ import thaumicenergistics.common.features.FeatureCells;
 import thaumicenergistics.common.features.FeatureConversionCores;
 import thaumicenergistics.common.features.FeatureCreativeVisRelayInterface;
 import thaumicenergistics.common.features.FeatureEssentiaIOBuses;
-import thaumicenergistics.common.features.FeatureEssentiaMonitoring;
 import thaumicenergistics.common.features.FeatureEssentiaProvider;
 import thaumicenergistics.common.features.FeatureEssentiaVibrationChamber;
 import thaumicenergistics.common.features.FeatureGearbox;
@@ -104,11 +103,6 @@ public class FeatureRegistry {
     public final FeatureEssentiaProvider featureEssentiaProvider;
 
     /**
-     * Terminal, wireless terminal, level emitter, and storage monitors.
-     */
-    public final FeatureEssentiaMonitoring featureEssentiaMonitoring;
-
-    /**
      * Conversion cores.
      */
     public final FeatureConversionCores featureConversionCores;
@@ -187,9 +181,6 @@ public class FeatureRegistry {
 
         // Build essentia provider
         this.featuresList.add(this.featureEssentiaProvider = new FeatureEssentiaProvider());
-
-        // Build monitoring
-        this.featuresList.add(this.featureEssentiaMonitoring = new FeatureEssentiaMonitoring());
 
         // Build conversion cores
         this.featuresList.add(this.featureConversionCores = new FeatureConversionCores());
