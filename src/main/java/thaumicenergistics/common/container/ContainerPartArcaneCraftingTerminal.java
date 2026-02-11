@@ -162,10 +162,10 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         boolean hasAll = true;
         AspectList wandAspectList = null;
         ItemWandCasting wandItem = null;
+        AppEngInternalInventory gridInventory = this.terminal.craftingGridInventory;
 
         // Get the cost
-        this.requiredAspects = ArcaneRecipeHelper.INSTANCE
-                .getRecipeAspectCost(this.terminal.craftingGridInventory, 0, 9, forRecipe);
+        this.requiredAspects = ArcaneRecipeHelper.INSTANCE.getRecipeAspectCost(gridInventory, 0, 9, forRecipe);
 
         // Ensure there is a cost
         if (this.requiredAspects == null) {
@@ -176,6 +176,12 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         Aspect[] recipeAspects = this.requiredAspects.getAspects();
 
         ItemStack wand = this.terminal.wandInventory.getStackInSlot(0);
+
+        boolean wandInGrid = false;
+        if (wand == null) {
+            wand = getWandFromGridInventory();
+            if (wand != null) wandInGrid = true;
+        }
 
         // Do we have a wand?
         if (wand != null) {
@@ -220,7 +226,38 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         // Did we have all the vis required?
         if (hasAll) {
             // Get the result of the recipe.
-            return ArcaneRecipeHelper.INSTANCE.getRecipeOutput(this.terminal.craftingGridInventory, 0, 9, forRecipe);
+            if (wandInGrid) {
+                AppEngInternalInventory grid = this.terminal.craftingGridInventory;
+                AppEngInternalInventory ghostGrid = new AppEngInternalInventory(null, grid.getSizeInventory());
+
+                for (int i = 0; i < grid.getSizeInventory(); i++) {
+                    ItemStack is = grid.getStackInSlot(i);
+                    if (is != null && is.getItem() instanceof ItemWandCasting ghostWandItem) {
+                        is = is.copy();
+                        ghostWandItem.consumeAllVisCrafting(
+                                is,
+                                this.getInventoryPlayer().player,
+                                this.requiredAspects,
+                                true);
+                    }
+                    ghostGrid.setInventorySlotContents(i, is);
+                }
+
+                return ArcaneRecipeHelper.INSTANCE.getRecipeOutput(ghostGrid, 0, 9, forRecipe);
+            } else return ArcaneRecipeHelper.INSTANCE
+                    .getRecipeOutput(this.terminal.craftingGridInventory, 0, 9, forRecipe);
+        }
+
+        return null;
+    }
+
+    private ItemStack getWandFromGridInventory() {
+        AppEngInternalInventory gridInventory = this.terminal.craftingGridInventory;
+        for (int i = 0; i < gridInventory.getSizeInventory(); i++) {
+            ItemStack is = gridInventory.getStackInSlot(i);
+            if (wandSlot.isItemValid(is)) {
+                return is;
+            }
         }
 
         return null;
@@ -364,7 +401,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
             ItemStack wand = this.terminal.wandInventory.getStackInSlot(0);
             if (wand != null && wand.getItem() instanceof ItemWandCasting wandItem) {
                 wandItem.consumeAllVisCrafting(wand, player, this.requiredAspects, true);
-            } else {
+            } else if (getWandFromGridInventory() == null) {
                 AELog.error("Failed consume vis from the wand");
                 return;
             }
