@@ -227,11 +227,10 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         if (hasAll) {
             // Get the result of the recipe.
             if (wandInGrid) {
-                AppEngInternalInventory grid = this.terminal.craftingGridInventory;
-                AppEngInternalInventory ghostGrid = new AppEngInternalInventory(null, grid.getSizeInventory());
+                AppEngInternalInventory ghostGrid = new AppEngInternalInventory(null, gridInventory.getSizeInventory());
 
-                for (int i = 0; i < grid.getSizeInventory(); i++) {
-                    ItemStack is = grid.getStackInSlot(i);
+                for (int i = 0; i < gridInventory.getSizeInventory(); i++) {
+                    ItemStack is = gridInventory.getStackInSlot(i);
                     if (is != null && is.getItem() instanceof ItemWandCasting ghostWandItem) {
                         is = is.copy();
                         ghostWandItem.consumeAllVisCrafting(
