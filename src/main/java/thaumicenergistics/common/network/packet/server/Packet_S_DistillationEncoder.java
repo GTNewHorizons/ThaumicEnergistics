@@ -2,6 +2,8 @@ package thaumicenergistics.common.network.packet.server;
 
 import net.minecraft.client.Minecraft;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import thaumicenergistics.common.container.ContainerDistillationPatternEncoder;
 import thaumicenergistics.common.network.NetworkHandler;
@@ -18,6 +20,7 @@ public class Packet_S_DistillationEncoder extends ThEServerPacket {
     private static final byte MODE_ENCODE = 1;
     private static final byte MODE_RESETASPECT = 2;
 
+    @SideOnly(Side.CLIENT)
     public static void sendEncodePattern() {
         // Create a new packet
         Packet_S_DistillationEncoder packet = new Packet_S_DistillationEncoder();
@@ -32,6 +35,7 @@ public class Packet_S_DistillationEncoder extends ThEServerPacket {
         NetworkHandler.sendPacketToServer(packet);
     }
 
+    @SideOnly(Side.CLIENT)
     public static void sendResetAspect() {
         // Create a new packet
         Packet_S_DistillationEncoder packet = new Packet_S_DistillationEncoder();

@@ -73,7 +73,7 @@ thaumicenergistics.research_page.TECORES.2=§증류 코어§r<BR>증류된 에�
 tc.research_name.thaumicenergistics.TESTORAGE=[TE] 디지-센시아 저장소
 tc.research_text.thaumicenergistics.TESTORAGE=이걸로 에센시아를 저장할 수 있을까?
 thaumicenergistics.research_page.TESTORAGE.1=디지털 저장장치들을 살펴본 후 당신은 디지털화된 에센시아를 실제로 저장할 수 있다는 결론을 내렸습니다.<BR>§l세투스 석영§r에 농축된 에센스를 주입함으로서, 디지털화된 상태에서도 에센시아를 활성 상태를 유지한 채로 저장할 수 있는 능력을 가지게 할 수 있습니다.<BR>당신은 석영 자체에 저장 가능한 제한량이 있음에도 불구하고, 에센스의 농도가 높으면 높을수록 더 많은 양의 에센시아를 저장할 수 있다고 결론내렸습니다.
-thaumicenergistics.research_page.TESTORAGE.2=§l구성요소들§r<BR>저장요소는 에센시아를 디지털 데이터로써 저장합니다. 저장소 케이싱으로 디지털 네트워크와의 인터페이스를 만들지 않으면 사용할 수 없습니다.<BR>§l저장소 케이싱§r<BR>저장소 케이싱은 구성요소와의 인터페이스를 제공하며, 또한 구성요소를 충격으로부터 보호합니다.<BR>§lEssentia Cell Workbench§r<BR>The cell workbench allows you to partition a cell, specifying what essentia types are allowed to be stored.
+thaumicenergistics.research_page.TESTORAGE.2=§l구성요소들§r<BR>저장요소는 에센시아를 디지털 데이터로써 저장합니다. 저장소 케이싱으로 디지털 네트워크와의 인터페이스를 만들지 않으면 사용할 수 없습니다.<BR>§l저장소 케이싱§r<BR>저장소 케이싱은 구성요소와의 인터페이스를 제공하며, 또한 구성요소를 충격으로부터 보호합니다.
 
 # Research IO
 tc.research_name.thaumicenergistics.TEIO=[TE] 디지-센시아 운송
@@ -85,11 +85,6 @@ thaumicenergistics.research_page.TEIO.2=§l저장 버스§r<BR>입력 버스와 
 tc.research_name.thaumicenergistics.TEARCANETERM=[TE]아케인 조합 단말기
 tc.research_text.thaumicenergistics.TEARCANETERM=마법과§o기술을 이용한 조합§r
 thaumicenergistics.research_page.TEARCANETERM.1=당신은 근본적인 양상들(aspects)을 사용하여 §단말기§를 §l아케인 조합대§에 부착시킴으로서 단말기에 아케인 아이템들을 만드는 조합대의 능력을 불어넣을 수 있다는 사실을 깨닫게 되었습니다.
-
-# Research Essentia terminal
-tc.research_name.thaumicenergistics.TEESSTERM=[TE]에센시아 단말기
-tc.research_text.thaumicenergistics.TEESSTERM=당신이 얼마나 가지고 있는지를 알라.
-thaumicenergistics.research_page.TEESSTERM.1=The 에센시아 단말기는and §l무선 에센시아 단말기§r allows you to monitor how much essentia is stored within the network, and provides a way to fill and drain essentia containers within the terminal.
 
 # Research Essentia Provider
 tc.research_name.thaumicenergistics.TEESSPROV=에센시아 공급기

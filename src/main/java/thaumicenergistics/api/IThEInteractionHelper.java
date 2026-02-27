@@ -2,6 +2,7 @@ package thaumicenergistics.api;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 import cpw.mods.fml.relauncher.Side;
@@ -37,4 +38,7 @@ public interface IThEInteractionHelper {
      */
     @SideOnly(Side.CLIENT)
     void setArcaneCraftingTerminalRecipe(@Nonnull ItemStack[] items);
+
+    @Deprecated
+    void openWirelessTerminalGui(@Nonnull EntityPlayer player);
 }
