@@ -34,7 +34,7 @@ import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.security.ISecurityGrid;
 import appeng.api.networking.security.MachineSource;
-import appeng.api.networking.storage.IStorageGrid;
+import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
@@ -47,6 +47,7 @@ import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
 import appeng.tile.inventory.InvOperation;
+import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -344,43 +345,39 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
 
         // Has the assembler finished crafting?
         if (this.craftTickCounter >= this.ticksPerCraft()) {
+            boolean somethingChanged = false;
+            boolean allInserted = true;
             try {
                 // Get the storage grid
-                IStorageGrid storageGrid = this.getProxy().getStorage();
+                final IMEMonitor<IAEItemStack> itemInventory = this.getProxy().getStorage().getItemInventory();
 
-                // Simulate placing the items
-                boolean rejected = false;
-                for (ItemStack output : this.currentResult) {
-                    IAEItemStack rejectedResult = storageGrid.getItemInventory().injectItems(
-                            AEApi.instance().storage().createItemStack(output),
-                            Actionable.SIMULATE,
-                            this.mySource);
-                    if ((rejectedResult != null) && (rejectedResult.getStackSize() > 0)) {
-                        rejected = true;
-                        break;
+                for (int i = 0; i < this.currentResult.length; i++) {
+                    final ItemStack is = this.currentResult[i];
+                    if (is != null) {
+                        final IAEItemStack rest = itemInventory
+                                .injectItems(AEItemStack.create(is), Actionable.MODULATE, this.mySource);
+                        if (rest != null && rest.getStackSize() > 0) {
+                            allInserted = false;
+                            if (is.stackSize != rest.getStackSize()) somethingChanged = true;
+                            this.currentResult[i] = rest.getItemStack();
+                        } else {
+                            somethingChanged = true;
+                            this.currentResult[i] = null;
+                        }
                     }
                 }
 
                 // Were all items accepted?
-                if (!rejected) {
-                    // Inject into the network
-                    for (ItemStack output : this.currentResult) {
-                        storageGrid.getItemInventory().injectItems(
-                                AEApi.instance().storage().createItemStack(output),
-                                Actionable.MODULATE,
-                                this.mySource);
-                    }
-
+                if (allInserted) {
                     // Mark the assembler as no longer crafting
                     this.isCrafting = false;
                     this.internalInventory.setInventorySlotContents(TARGET_SLOT_INDEX, null);
                     this.currentPattern = null;
-
-                    // Mark for network update
-                    this.markForDelayedUpdate();
                     this.currentResult = null;
                 }
             } catch (GridAccessException ignored) {}
+
+            if (somethingChanged) markForDelayedUpdate();
         } else {
             try {
                 // Calculate power required
