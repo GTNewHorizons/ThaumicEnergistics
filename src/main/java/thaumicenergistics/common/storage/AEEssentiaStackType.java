@@ -99,7 +99,7 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
         if (ModsList.ASPECT_RECIPE_INDEX.isLoaded() && itemStack.getItem() instanceof ItemAspect) {
             Aspect aspect = ItemAspect.getAspect(itemStack);
             if (aspect != null) {
-                return new AEEssentiaStack(aspect);
+                return new AEEssentiaStack(aspect, itemStack.stackSize);
             }
         } else if (ModsList.THAUMCRAFT_NEI_PLUGIN.isLoaded()
                 && itemStack.getItem() instanceof com.djgiannuzz.thaumcraftneiplugin.items.ItemAspect) {
@@ -107,7 +107,7 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
                     if (list != null) {
                         Aspect aspect = list.getAspects()[0];
                         if (aspect != null) {
-                            return new AEEssentiaStack(aspect);
+                            return new AEEssentiaStack(aspect, itemStack.stackSize);
                         }
                     }
                 }
