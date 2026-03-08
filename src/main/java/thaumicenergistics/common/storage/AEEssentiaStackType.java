@@ -6,6 +6,7 @@ import java.util.Objects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 
@@ -51,6 +52,11 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
     @Override
     public String getDisplayUnit() {
         return "";
+    }
+
+    @Override
+    public EnumChatFormatting getColorDefinition() {
+        return EnumChatFormatting.DARK_PURPLE;
     }
 
     @Override
