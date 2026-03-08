@@ -14,6 +14,10 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
+import com.gtnewhorizons.aspectrecipeindex.nei.arcaneworkbench.ShapedArcaneRecipeHandler;
+import com.gtnewhorizons.aspectrecipeindex.nei.arcaneworkbench.ShapelessArcaneRecipeHandler;
+import com.gtnewhorizons.aspectrecipeindex.nei.arcaneworkbench.WandRecipeHandler;
+
 import appeng.util.Platform;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.API;
@@ -22,6 +26,7 @@ import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.api.IStackPositioner;
 import codechicken.nei.recipe.IRecipeHandler;
 import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import thaumicenergistics.client.gui.GuiArcaneCraftingTerminal;
 import thaumicenergistics.client.gui.abstraction.ThEBaseGui;
 import thaumicenergistics.common.container.ContainerPartArcaneCraftingTerminal;
@@ -294,5 +299,32 @@ public class ModuleNEI {
 
         // Hide the crafting aspect item
         API.hideItem(ItemEnum.CRAFTING_ASPECT.getStack());
+
+        if (ModsList.ASPECT_RECIPE_INDEX.isLoaded()) {
+            registerCatalystInfo(
+                    new ShapedArcaneRecipeHandler().getOverlayIdentifier(),
+                    "thaumicenergistics:part.base:5");
+            registerCatalystInfo(
+                    new ShapedArcaneRecipeHandler().getOverlayIdentifier(),
+                    "thaumicenergistics:thaumicenergistics.block.arcane.assembler");
+            registerCatalystInfo(new WandRecipeHandler().getOverlayIdentifier(), "thaumicenergistics:part.base:5");
+            registerCatalystInfo(
+                    new WandRecipeHandler().getOverlayIdentifier(),
+                    "thaumicenergistics:thaumicenergistics.block.arcane.assembler");
+            registerCatalystInfo(
+                    new ShapelessArcaneRecipeHandler().getOverlayIdentifier(),
+                    "thaumicenergistics:part.base:5");
+            registerCatalystInfo(
+                    new ShapelessArcaneRecipeHandler().getOverlayIdentifier(),
+                    "thaumicenergistics:thaumicenergistics.block.arcane.assembler");
+        }
+    }
+
+    private static void registerCatalystInfo(String handlerName, String stack) {
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setString("handlerID", handlerName);
+        nbt.setString("itemName", stack);
+        nbt.setInteger("priority", -1);
+        FMLInterModComms.sendMessage("NotEnoughItems", "registerCatalystInfo", nbt);
     }
 }
