@@ -277,6 +277,18 @@ public class ModuleNEI {
                 thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
                 arcaneOverlayHandler,
                 "arcaneshapelessrecipes");
+        API.registerGuiOverlayHandler(
+                thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
+                arcaneOverlayHandler,
+                "thaumcraft.arcane.shaped");
+        API.registerGuiOverlayHandler(
+                thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
+                arcaneOverlayHandler,
+                "thaumcraft.arcane.shapeless");
+        API.registerGuiOverlayHandler(
+                thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
+                arcaneOverlayHandler,
+                "thaumcraft.wands");
 
         API.registerNEIGuiHandler(new NEIGuiHandler());
 
