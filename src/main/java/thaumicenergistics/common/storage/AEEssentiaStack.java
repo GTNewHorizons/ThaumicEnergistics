@@ -25,7 +25,6 @@ import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEStackType;
 import appeng.api.storage.data.IAETagCompound;
 import appeng.util.item.AEStack;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
@@ -34,6 +33,7 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.Thaumcraft;
 import thaumicenergistics.client.gui.ThEGuiHelper;
 import thaumicenergistics.client.render.RendererAEEssentiaStack;
+import thaumicenergistics.common.integration.ModsList;
 
 public class AEEssentiaStack extends AEStack<AEEssentiaStack> {
 
@@ -278,7 +278,14 @@ public class AEEssentiaStack extends AEStack<AEEssentiaStack> {
     @Nullable
     @Override
     public ItemStack getItemStackForNEI() {
-        if (Loader.isModLoaded("thaumcraftneiplugin")) {
+        if (ModsList.ASPECT_RECIPE_INDEX.isLoaded()) {
+            ItemStack stack = new ItemStack(
+                    com.gtnewhorizons.aspectrecipeindex.ModItems.itemAspect,
+                    (int) Math.min(this.getStackSize(), Integer.MAX_VALUE));
+            com.gtnewhorizons.aspectrecipeindex.common.items.ItemAspect.setAspect(stack, this.aspect);
+            return stack;
+        }
+        if (ModsList.THAUMCRAFT_NEI_PLUGIN.isLoaded()) {
             ItemStack stack = new ItemStack(ModItems.itemAspect);
             ItemAspect.setAspects(
                     stack,

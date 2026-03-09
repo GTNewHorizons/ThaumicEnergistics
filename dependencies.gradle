@@ -5,8 +5,9 @@ dependencies {
     implementation("com.github.GTNewHorizons:CodeChickenCore:1.4.11:dev")
     implementation("com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-859-GTNH:dev")
     implementation("thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev")
-    implementation(rfg.deobf("curse.maven:thaumcraft-nei-plugin-225095:2241913")) { transitive = false }
 
+    devOnlyNonPublishable("com.github.GTNewHorizons:AspectRecipeIndex:1.0.0:dev")
+    compileOnly(rfg.deobf("curse.maven:thaumcraft-nei-plugin-225095:2241913")) { transitive = false }
     compileOnly("com.github.GTNewHorizons:waila:1.19.22:dev") { transitive = false }
     compileOnly("curse.maven:computercraft-67504:2269339") { transitive = false }
     compileOnly("curse.maven:cofh-lib-220333:2388748") { transitive = false }

@@ -14,12 +14,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
-import com.djgiannuzz.thaumcraftneiplugin.items.ItemAspect;
+import com.gtnewhorizons.aspectrecipeindex.common.items.ItemAspect;
 
 import appeng.api.storage.data.IAEStackType;
 import appeng.api.storage.data.IItemList;
 import appeng.client.texture.ExtraBlockTextures;
-import cpw.mods.fml.common.Loader;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectLongImmutablePair;
 import it.unimi.dsi.fastutil.objects.ObjectLongPair;
@@ -31,6 +30,7 @@ import thaumcraft.common.blocks.ItemJarFilled;
 import thaumcraft.common.items.ItemEssence;
 import thaumicenergistics.api.IThEEssentiaContainerPermission;
 import thaumicenergistics.api.items.IRestrictedEssentiaContainerItem;
+import thaumicenergistics.common.integration.ModsList;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
 import thaumicenergistics.common.registries.ThEStrings;
 
@@ -102,15 +102,21 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
 
     @Override
     public @Nullable AEEssentiaStack convertStackFromItem(@NotNull ItemStack itemStack) {
-        if (Loader.isModLoaded("thaumcraftneiplugin") && itemStack.getItem() instanceof ItemAspect) {
-            AspectList list = ItemAspect.getAspects(itemStack);
-            if (list != null) {
-                Aspect aspect = list.getAspects()[0];
-                if (aspect != null) {
-                    return new AEEssentiaStack(aspect);
-                }
+        if (ModsList.ASPECT_RECIPE_INDEX.isLoaded() && itemStack.getItem() instanceof ItemAspect) {
+            Aspect aspect = ItemAspect.getAspect(itemStack);
+            if (aspect != null) {
+                return new AEEssentiaStack(aspect, itemStack.stackSize);
             }
-        }
+        } else if (ModsList.THAUMCRAFT_NEI_PLUGIN.isLoaded()
+                && itemStack.getItem() instanceof com.djgiannuzz.thaumcraftneiplugin.items.ItemAspect) {
+                    AspectList list = com.djgiannuzz.thaumcraftneiplugin.items.ItemAspect.getAspects(itemStack);
+                    if (list != null) {
+                        Aspect aspect = list.getAspects()[0];
+                        if (aspect != null) {
+                            return new AEEssentiaStack(aspect, itemStack.stackSize);
+                        }
+                    }
+                }
         return null;
     }
 

@@ -4,9 +4,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import com.djgiannuzz.thaumcraftneiplugin.items.ItemAspect;
+import com.gtnewhorizons.aspectrecipeindex.common.items.ItemAspect;
 
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -21,6 +20,7 @@ import thaumcraft.common.items.ItemWispEssence;
 import thaumicenergistics.api.IThEEssentiaContainerPermission;
 import thaumicenergistics.api.IThETransportPermissions;
 import thaumicenergistics.api.ThEApi;
+import thaumicenergistics.common.integration.ModsList;
 import thaumicenergistics.common.items.ItemBlockEssentiaVibrationChamber;
 import thaumicenergistics.common.tiles.abstraction.TileEVCBase;
 
@@ -61,7 +61,12 @@ public final class EssentiaItemContainerHelper {
         /**
          * {@link com.djgiannuzz.thaumcraftneiplugin.items.ItemAspect}
          */
-        ItemAspect;
+        TCNEIItemAspect,
+
+        /**
+         * {@link ItemAspect}
+         */
+        ARIItemAspect;
     }
 
     /**
@@ -275,7 +280,7 @@ public final class EssentiaItemContainerHelper {
     /**
      * Gets the information about the container as it was registered to the whitelist.
      *
-     * @param itemstack
+     * @param itemStack
      * @return
      */
     public IThEEssentiaContainerPermission getContainerInfo(final ItemStack itemStack) {
@@ -333,8 +338,10 @@ public final class EssentiaItemContainerHelper {
             case WispEssence:
                 return this.getAspectFromAnyContainerItem(itemStack);
 
-            case ItemAspect:
-                return this.getAspectFromItemAspect(itemStack);
+            case TCNEIItemAspect:
+                return this.getAspectFromTCNEIItemAspect(itemStack);
+            case ARIItemAspect:
+                return this.getAspectFromARIItemAspect(itemStack);
 
             case Invalid:
                 break;
@@ -381,9 +388,15 @@ public final class EssentiaItemContainerHelper {
                     return AspectItemType.JarLabel;
                 }
 
-                // ItemAspect?
-                if (Loader.isModLoaded("thaumcraftneiplugin") && item instanceof ItemAspect) {
-                    return AspectItemType.ItemAspect;
+                // ARI ItemAspect?
+                if (ModsList.ASPECT_RECIPE_INDEX.isLoaded() && item instanceof ItemAspect) {
+                    return AspectItemType.ARIItemAspect;
+                }
+
+                // TCNEI ItemAspect?
+                if (ModsList.THAUMCRAFT_NEI_PLUGIN.isLoaded()
+                        && item instanceof com.djgiannuzz.thaumcraftneiplugin.items.ItemAspect) {
+                    return AspectItemType.TCNEIItemAspect;
                 }
             }
         }
@@ -440,7 +453,7 @@ public final class EssentiaItemContainerHelper {
     /**
      * Quick check to see if the item is whitelisted.
      *
-     * @param item
+     * @param container
      * @param metadata
      * @return
      */
@@ -451,7 +464,7 @@ public final class EssentiaItemContainerHelper {
     /**
      * Quick check to see if the itemstack is whitelisted.
      *
-     * @param item
+     * @param container
      * @return
      */
     public boolean isContainerWhitelisted(final ItemStack container) {
@@ -539,13 +552,24 @@ public final class EssentiaItemContainerHelper {
     }
 
     /**
-     * Get the aspect of the ItemAspect.
+     * Get the aspect of the ARI ItemAspect.
+     *
+     * @param itemStack
+     * @return
+     */
+    @Optional.Method(modid = "aspectrecipeindex")
+    public Aspect getAspectFromARIItemAspect(ItemStack itemStack) {
+        return ItemAspect.getAspect(itemStack);
+    }
+
+    /**
+     * Get the aspect of the TCNEI ItemAspect.
      *
      * @param itemStack
      * @return
      */
     @Optional.Method(modid = "thaumcraftneiplugin")
-    public Aspect getAspectFromItemAspect(ItemStack itemStack) {
-        return ItemAspect.getAspects(itemStack).getAspects()[0];
+    public Aspect getAspectFromTCNEIItemAspect(ItemStack itemStack) {
+        return com.djgiannuzz.thaumcraftneiplugin.items.ItemAspect.getAspects(itemStack).getAspects()[0];
     }
 }
