@@ -263,7 +263,8 @@ public class ContainerDistillationPatternEncoder extends AEBaseContainer impleme
             // Set number to display
             for (int i = 0; i < this.encoder.aspectsInventory.getSizeInventory(); i++) {
                 if (i < sortedAspects.length) {
-                    this.encoder.aspectsInventory.putAEStackInSlot(i, new AEEssentiaStack(sortedAspects[i]));
+                    Aspect aspect = sortedAspects[i];
+                    this.encoder.aspectsInventory.putAEStackInSlot(i, new AEEssentiaStack(aspect, itemAspects.getAmount(aspect)));
                 } else {
                     this.encoder.aspectsInventory.putAEStackInSlot(i, null);
                 }
