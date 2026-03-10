@@ -330,6 +330,8 @@ public class GuiDistillationPatternEncoder extends AEBaseGui {
                     this.deContainer.getAspectsInventory(),
                     i,
                     GuiDistillationPatternEncoder::acceptType);
+            slot.setShowAmount(true);
+            slot.setShowAmountAlways(true);
             this.aspectSlots[i] = slot;
             this.registerVirtualSlots(slot);
         }
