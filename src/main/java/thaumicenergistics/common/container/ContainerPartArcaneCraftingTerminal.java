@@ -24,6 +24,7 @@ import appeng.container.ContainerNull;
 import appeng.container.PrimaryGui;
 import appeng.container.implementations.ContainerMEMonitorable;
 import appeng.container.slot.AppEngSlot;
+import appeng.container.slot.SlotCraftingMatrix;
 import appeng.core.AELog;
 import appeng.helpers.InventoryAction;
 import appeng.tile.inventory.AppEngInternalInventory;
@@ -36,7 +37,6 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.IArcaneRecipe;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumicenergistics.client.gui.ThEPrimaryGui;
-import thaumicenergistics.common.container.slot.SlotArcaneCraftingGrid;
 import thaumicenergistics.common.container.slot.SlotArcaneCraftingResult;
 import thaumicenergistics.common.container.slot.SlotArmor;
 import thaumicenergistics.common.container.slot.SlotWand;
@@ -108,7 +108,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
             for (int column = 0; column < 3; column++) {
                 final int slotIndex = (row * 3) + column;
 
-                final SlotArcaneCraftingGrid slot = new SlotArcaneCraftingGrid(
+                final SlotCraftingMatrix slot = new SlotCraftingMatrix(
                         this,
                         terminal.craftingGridInventory,
                         slotIndex,
