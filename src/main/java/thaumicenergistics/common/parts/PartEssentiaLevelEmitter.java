@@ -9,10 +9,10 @@ import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEStackType;
 import appeng.parts.automation.PartLevelEmitter;
 import appeng.util.LevelEmitterTypeFilter;
+import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.common.storage.AEEssentiaStack;
 import thaumicenergistics.common.storage.AEEssentiaStackType;
-import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
 
 public class PartEssentiaLevelEmitter extends PartLevelEmitter {
 
