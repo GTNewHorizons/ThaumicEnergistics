@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
+import com.gtnewhorizons.aspectrecipeindex.nei.arcaneworkbench.ArcaneSlotPositioner;
 import com.gtnewhorizons.aspectrecipeindex.nei.arcaneworkbench.ShapedArcaneRecipeHandler;
 import com.gtnewhorizons.aspectrecipeindex.nei.arcaneworkbench.ShapelessArcaneRecipeHandler;
 import com.gtnewhorizons.aspectrecipeindex.nei.arcaneworkbench.WandRecipeHandler;
@@ -48,7 +49,9 @@ public class ModuleNEI {
      * @author Nividica
      *
      */
-    static class ACTOverlayHandler implements IOverlayHandler {
+    static abstract class ACTOverlayHandler implements IOverlayHandler {
+
+        protected static final int REGULAR_SLOT_INDEX_DIVISOR = 18;
 
         /**
          * Called when the user has shift-clicked the [?] button in NEI
@@ -82,36 +85,10 @@ public class ModuleNEI {
 
                     NetworkHandler.sendPacketToServer(packet);
                 }
-            } catch (Exception e) {
-                // Silently ignored.
-            }
+            } catch (Exception ignored) {}
         }
 
-        /**
-         * Reduces regular slot offsets to 0, 1, or 2
-         */
-        private static final int REGULAR_SLOT_INDEX_DIVISOR = 18;
-
-        /**
-         * Reduces arcane slot Y offsets to 0,1, or 2
-         */
-        private static final int ARCANE_SLOTY_INDEX_DIVISOR = 20;
-
-        /**
-         * If true incoming ingredients are from ThaumcraftNEIPlugin
-         */
-        private final boolean isArcaneHandler;
-
-        /**
-         * Creates the handler.
-         *
-         * @param isArcane Set to true for arcane recipes
-         */
-        public ACTOverlayHandler(final boolean isArcane) {
-            this.isArcaneHandler = isArcane;
-        }
-
-        private void packIngredient(NBTTagCompound recipe, int slotIndex, PositionedStack positionedStack,
+        protected void packIngredient(NBTTagCompound recipe, int slotIndex, PositionedStack positionedStack,
                 boolean limited) throws IOException {
             final NBTTagList tags = new NBTTagList();
             final List<ItemStack> list = new LinkedList<>();
@@ -146,15 +123,36 @@ public class ModuleNEI {
             return bytes.size() > limit;
         }
 
-        private boolean addArcaneCraftingItems(final PositionedStack ingredient, NBTTagCompound recipe, boolean limited)
-                throws IOException {
-            // Calculate the slot positions
-            int slotX = (int) Math.round(ingredient.relx / (double) ACTOverlayHandler.REGULAR_SLOT_INDEX_DIVISOR) - 3;
-            int slotY = (int) Math.round(ingredient.rely / (double) ACTOverlayHandler.ARCANE_SLOTY_INDEX_DIVISOR) - 2;
+        protected abstract void addIngredientToItems(final PositionedStack ingredient, NBTTagCompound recipe,
+                boolean limited) throws IOException;
+    }
 
-            // Ignore the 'aspects'
+    static class VanillaOverlayHandler extends ACTOverlayHandler {
+
+        @Override
+        protected void addIngredientToItems(final PositionedStack ingredient, NBTTagCompound recipe, boolean limited)
+                throws IOException {
+            final int slotX = (ingredient.relx - ModuleNEI.NEI_REGULAR_SLOT_OFFSET_X) / REGULAR_SLOT_INDEX_DIVISOR;
+            final int slotY = (ingredient.rely - ModuleNEI.NEI_REGULAR_SLOT_OFFSET_Y) / REGULAR_SLOT_INDEX_DIVISOR;
+            final int slotIndex = slotX + (slotY * 3);
+
+            packIngredient(recipe, slotIndex, ingredient, limited);
+        }
+    }
+
+    static class TCNEIOverlayHandler extends ACTOverlayHandler {
+
+        private static final int ARCANE_SLOTY_INDEX_DIVISOR = 20;
+
+        @Override
+        protected void addIngredientToItems(final PositionedStack ingredient, NBTTagCompound recipe, boolean limited)
+                throws IOException {
+            int slotX = (int) Math.round(ingredient.relx / (double) REGULAR_SLOT_INDEX_DIVISOR) - 3;
+            int slotY = (int) Math.round(ingredient.rely / (double) ARCANE_SLOTY_INDEX_DIVISOR) - 2;
+
+            // Ignore the aspect items
             if (slotY >= 3) {
-                return false;
+                return;
             }
 
             // Roundoff fix
@@ -168,36 +166,24 @@ public class ModuleNEI {
             // Bounds check the index
             if ((slotIndex < 0) || (slotIndex > 9)) {
                 // Invalid slot
-                return false;
+                return;
             }
 
             // Add the item to the list
             packIngredient(recipe, slotIndex, ingredient, limited);
-
-            return true;
         }
+    }
 
-        private boolean addRegularCraftingItems(final PositionedStack ingredient, NBTTagCompound recipe,
-                boolean limited) throws IOException {
-            // Calculate the slot positions
-            int slotX = (ingredient.relx - ModuleNEI.NEI_REGULAR_SLOT_OFFSET_X)
-                    / ACTOverlayHandler.REGULAR_SLOT_INDEX_DIVISOR;
-            int slotY = (ingredient.rely - ModuleNEI.NEI_REGULAR_SLOT_OFFSET_Y)
-                    / ACTOverlayHandler.REGULAR_SLOT_INDEX_DIVISOR;
+    static class ARIOverlayHandler extends ACTOverlayHandler {
 
-            // Calculate the slot index
-            int slotIndex = slotX + (slotY * 3);
-
-            // Add the item to the list
-            packIngredient(recipe, slotIndex, ingredient, limited);
-
-            return true;
-        }
-
-        protected boolean addIngredientToItems(final PositionedStack ingredient, NBTTagCompound recipe, boolean limited)
+        @Override
+        protected void addIngredientToItems(final PositionedStack ingredient, NBTTagCompound recipe, boolean limited)
                 throws IOException {
-            return isArcaneHandler ? addArcaneCraftingItems(ingredient, recipe, limited)
-                    : addRegularCraftingItems(ingredient, recipe, limited);
+            int i = ArcaneSlotPositioner.getSlotIndex(ingredient);
+            if (i < 0 || i > 9) {
+                return;
+            }
+            packIngredient(recipe, i, ingredient, limited);
         }
     }
 
@@ -215,7 +201,7 @@ public class ModuleNEI {
             for (PositionedStack ps : stacks) {
                 // Ensure there is a stack
                 if (ps != null) {
-                    // Adjust it's position
+                    // Adjust its position
                     ps.relx += ContainerPartArcaneCraftingTerminal.CRAFTING_SLOT_X_POS
                             - ModuleNEI.NEI_REGULAR_SLOT_OFFSET_X;
                     ps.rely += ContainerPartArcaneCraftingTerminal.CRAFTING_SLOT_Y_POS
@@ -264,36 +250,25 @@ public class ModuleNEI {
                 new ACTSlotPositioner());
 
         // Create the regular overlay handler
-        ACTOverlayHandler craftingOverlayHandler = new ACTOverlayHandler(false);
-
-        // Create the arcane overlay handler
-        ACTOverlayHandler arcaneOverlayHandler = new ACTOverlayHandler(true);
+        ACTOverlayHandler craftingOverlayHandler = new VanillaOverlayHandler();
 
         // Register the handlers
         API.registerGuiOverlayHandler(
                 thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
                 craftingOverlayHandler,
                 "crafting");
-        API.registerGuiOverlayHandler(
-                thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
-                arcaneOverlayHandler,
-                "arcaneshapedrecipes");
-        API.registerGuiOverlayHandler(
-                thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
-                arcaneOverlayHandler,
-                "arcaneshapelessrecipes");
-        API.registerGuiOverlayHandler(
-                thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
-                arcaneOverlayHandler,
-                "thaumcraft.arcane.shaped");
-        API.registerGuiOverlayHandler(
-                thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
-                arcaneOverlayHandler,
-                "thaumcraft.arcane.shapeless");
-        API.registerGuiOverlayHandler(
-                thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
-                arcaneOverlayHandler,
-                "thaumcraft.wands");
+
+        if (ModsList.THAUMCRAFT_NEI_PLUGIN.isLoaded()) {
+            ACTOverlayHandler tcneiOverlayHandler = new TCNEIOverlayHandler();
+            API.registerGuiOverlayHandler(
+                    thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
+                    tcneiOverlayHandler,
+                    "arcaneshapedrecipes");
+            API.registerGuiOverlayHandler(
+                    thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
+                    tcneiOverlayHandler,
+                    "arcaneshapelessrecipes");
+        }
 
         API.registerNEIGuiHandler(new NEIGuiHandler());
 
@@ -301,6 +276,19 @@ public class ModuleNEI {
         API.hideItem(ItemEnum.CRAFTING_ASPECT.getStack());
 
         if (ModsList.ASPECT_RECIPE_INDEX.isLoaded()) {
+            ACTOverlayHandler ariOverlayHandler = new ARIOverlayHandler();
+            API.registerGuiOverlayHandler(
+                    thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
+                    ariOverlayHandler,
+                    "thaumcraft.arcane.shaped");
+            API.registerGuiOverlayHandler(
+                    thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
+                    ariOverlayHandler,
+                    "thaumcraft.arcane.shapeless");
+            API.registerGuiOverlayHandler(
+                    thaumicenergistics.client.gui.GuiArcaneCraftingTerminal.class,
+                    ariOverlayHandler,
+                    "thaumcraft.wands");
             registerCatalystInfo(
                     new ShapedArcaneRecipeHandler().getOverlayIdentifier(),
                     "thaumicenergistics:part.base:5");
