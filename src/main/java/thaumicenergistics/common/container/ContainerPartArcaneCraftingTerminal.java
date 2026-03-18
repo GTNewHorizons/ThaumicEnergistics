@@ -32,6 +32,7 @@ import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.inv.AdaptorPlayerHand;
 import appeng.util.item.AEItemStack;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.IArcaneRecipe;
@@ -392,6 +393,11 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
     }
 
     public void consumeIngredients(final EntityPlayer player) {
+        MinecraftForge.EVENT_BUS.post(
+                new PlayerEvent.ItemCraftedEvent(
+                        player,
+                        this.resultSlot.getStack(),
+                        this.terminal.craftingGridInventory));
         if (player.worldObj.isRemote) return;
 
         if ((this.requiredAspects != null)) {
