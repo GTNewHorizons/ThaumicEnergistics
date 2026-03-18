@@ -14,6 +14,8 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 
+import com.github.bsideup.jabel.Desugar;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.security.PlayerSource;
@@ -48,30 +50,18 @@ import thaumicenergistics.common.parts.PartArcaneCraftingTerminal;
 
 public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable {
 
-    public static class ArcaneCrafingCost {
+    /**
+     * @param visCost      How much vis does the recipe require?
+     * @param primal       Which aspect?
+     * @param hasEnoughVis Do we have enough of this aspect in the wand to perform the craft?
+     */
+    @Desugar
+    public record ArcaneCraftingCost(float visCost, Aspect primal, boolean hasEnoughVis) {
 
-        /**
-         * How much vis does the recipe require?
-         */
-        public final float visCost;
-
-        /**
-         * Which aspect?
-         */
-        public final Aspect primal;
-
-        /**
-         * Do we have enough of this aspect in the wand to perform the craft?
-         */
-        public final boolean hasEnoughVis;
-
-        public ArcaneCrafingCost(final float visCost, final Aspect primal, final boolean hasEnough) {
-            // Round to 1 decimal place
-            this.visCost = Math.round(visCost * 10.0F) / 10.0F;
-
+        public ArcaneCraftingCost(final float visCost, final Aspect primal, final boolean hasEnoughVis) {
+            this.visCost = Math.round(visCost * 10.0F) / 10.0F; // Round to 1 decimal place
             this.primal = primal;
-
-            this.hasEnoughVis = hasEnough;
+            this.hasEnoughVis = hasEnoughVis;
         }
     }
 
@@ -85,7 +75,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
 
     private final IInventory resultInventory;
     private AspectList requiredAspects;
-    private final List<ArcaneCrafingCost> craftingCost = new ArrayList<ArcaneCrafingCost>();
+    private final List<ArcaneCraftingCost> craftingCost = new ArrayList<>();
 
     private final SlotWand wandSlot;
     private final SlotArcaneCraftingResult resultSlot;
@@ -220,7 +210,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
             }
 
             // Add to the cost list
-            this.craftingCost.add(new ArcaneCrafingCost(requiredVis / 100.0F, currentAspect, hasEnough));
+            this.craftingCost.add(new ArcaneCraftingCost(requiredVis / 100.0F, currentAspect, hasEnough));
         }
 
         // Did we have all the vis required?
@@ -504,7 +494,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         return super.transferStackInSlot(p, idx);
     }
 
-    public List<ArcaneCrafingCost> getAspectCosts() {
+    public List<ArcaneCraftingCost> getAspectCosts() {
         return this.craftingCost;
     }
 
