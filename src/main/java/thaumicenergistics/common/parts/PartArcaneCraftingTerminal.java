@@ -195,6 +195,26 @@ public class PartArcaneCraftingTerminal extends AbstractPartTerminal implements 
     }
 
     @Override
+    public void getDrops(final List<ItemStack> drops, final boolean wrenched) {
+        super.getDrops(drops, wrenched);
+        for (final ItemStack is : this.craftingGridInventory) {
+            if (is != null) {
+                drops.add(is);
+            }
+        }
+        for (final ItemStack is : this.armorInventory) {
+            if (is != null) {
+                drops.add(is);
+            }
+        }
+        for (final ItemStack is : this.wandInventory) {
+            if (is != null) {
+                drops.add(is);
+            }
+        }
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound data) {
         super.writeToNBT(data);
         this.craftingGridInventory.writeToNBT(data, "craftingGrid");
