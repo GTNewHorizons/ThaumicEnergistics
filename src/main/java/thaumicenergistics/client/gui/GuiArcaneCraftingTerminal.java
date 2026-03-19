@@ -118,7 +118,7 @@ public class GuiArcaneCraftingTerminal extends GuiMEMonitorable {
     private static final float ASPECT_COST_MAX_ALPHA = 0.75F;
 
     private void drawAspects(int offsetX, int offsetY) {
-        List<ContainerPartArcaneCraftingTerminal.ArcaneCrafingCost> aspectCosts = ((ContainerPartArcaneCraftingTerminal) this.inventorySlots)
+        List<ContainerPartArcaneCraftingTerminal.ArcaneCraftingCost> aspectCosts = ((ContainerPartArcaneCraftingTerminal) this.inventorySlots)
                 .getAspectCosts();
         if (aspectCosts.isEmpty()) return;
 
@@ -126,12 +126,12 @@ public class GuiArcaneCraftingTerminal extends GuiMEMonitorable {
         int column = 0;
 
         // Draw each primal
-        for (ContainerPartArcaneCraftingTerminal.ArcaneCrafingCost cost : aspectCosts) {
+        for (ContainerPartArcaneCraftingTerminal.ArcaneCraftingCost cost : aspectCosts) {
             // Set the alpha to full
             float alpha = 1.0F;
 
             // Do we have enough vis for this aspect?
-            if (!cost.hasEnoughVis) {
+            if (!cost.hasEnoughVis()) {
                 // Ping-pong the alpha
                 alpha = ThEUtils
                         .pingPongFromTime(ASPECT_COST_BLINK_SPEED, ASPECT_COST_MIN_ALPHA, ASPECT_COST_MAX_ALPHA);
@@ -144,8 +144,8 @@ public class GuiArcaneCraftingTerminal extends GuiMEMonitorable {
             UtilsFX.drawTag(
                     posX,
                     posY,
-                    cost.primal,
-                    cost.visCost,
+                    cost.primal(),
+                    cost.visCost(),
                     0,
                     this.zLevel,
                     GL11.GL_ONE_MINUS_SRC_ALPHA,
