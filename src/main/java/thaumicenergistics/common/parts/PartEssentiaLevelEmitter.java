@@ -6,9 +6,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.Settings;
 import appeng.api.storage.StorageName;
+import appeng.api.storage.data.IAEStackType;
 import appeng.parts.automation.PartLevelEmitter;
+import appeng.util.LevelEmitterTypeFilter;
+import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.common.storage.AEEssentiaStack;
+import thaumicenergistics.common.storage.AEEssentiaStackType;
 
 public class PartEssentiaLevelEmitter extends PartLevelEmitter {
 
@@ -38,6 +42,15 @@ public class PartEssentiaLevelEmitter extends PartLevelEmitter {
 
         if (data.hasKey(NBT_KEY_WANTED_AMOUNT)) {
             this.setReportingValue(data.getLong(NBT_KEY_WANTED_AMOUNT));
+        }
+
+        // Legacy essentia level emitter (placed before unified toggle): essentia only, item and fluid off
+        if (!data.hasKey(LevelEmitterTypeFilter.NBT_FILTERS) && !data.hasKey("TYPE_FILTER")) {
+            final Reference2BooleanMap<IAEStackType<?>> filters = this.getTypeFilters().getFilters();
+            for (IAEStackType<?> type : filters.keySet()) {
+                filters.put(type, type == AEEssentiaStackType.ESSENTIA_STACK_TYPE);
+            }
+            this.saveChanges();
         }
     }
 
