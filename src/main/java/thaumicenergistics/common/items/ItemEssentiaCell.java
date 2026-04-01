@@ -6,6 +6,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -18,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
@@ -25,6 +27,7 @@ import org.lwjgl.input.Keyboard;
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.exceptions.AppEngException;
+import appeng.api.implementations.items.IItemGroup;
 import appeng.api.implementations.items.IStorageCell;
 import appeng.api.implementations.tiles.IChestOrDrive;
 import appeng.api.storage.ICellHandler;
@@ -61,7 +64,7 @@ import thaumicenergistics.common.storage.EssentiaList;
  * @author Nividica
  *
  */
-public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell {
+public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell, IItemGroup {
 
     /**
      * Status of the cell.
@@ -340,14 +343,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
      */
     @Override
     public String getUnlocalizedName(final ItemStack itemStack) {
-        int index = MathHelper.clamp_int(itemStack.getItemDamage(), 0, EnumEssentiaStorageTypes.fromIndex.length - 1);
-        EnumEssentiaStorageTypes type = EnumEssentiaStorageTypes.fromIndex[index];
-
-        if (isSizedStorageCell(type)) {
-            return this.getUnlocalizedName();
-        }
-
-        return type.cellName.getUnlocalized();
+        return EnumEssentiaStorageTypes.fromIndex[itemStack.getItemDamage()].cellName.getUnlocalized();
     }
 
     private static boolean isSizedStorageCell(final EnumEssentiaStorageTypes type) {
@@ -358,6 +354,18 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
                 || type == EnumEssentiaStorageTypes.Type_1024K
                 || type == EnumEssentiaStorageTypes.Type_4096K
                 || type == EnumEssentiaStorageTypes.Type_16384K;
+    }
+
+    @Override
+    public String getUnlocalizedGroupName(final Set<ItemStack> itemStacks, final ItemStack itemStack) {
+        EnumEssentiaStorageTypes type = EnumEssentiaStorageTypes.fromIndex[MathHelper
+                .clamp_int(itemStack.getItemDamage(), 0, EnumEssentiaStorageTypes.fromIndex.length - 1)];
+
+        if (isSizedStorageCell(type)) {
+            return StatCollector.translateToLocal(this.getUnlocalizedName() + ".name");
+        }
+
+        return StatCollector.translateToLocal(type.cellName.getUnlocalized() + ".name");
     }
 
     /**
