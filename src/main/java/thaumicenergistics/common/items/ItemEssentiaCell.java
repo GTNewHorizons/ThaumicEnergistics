@@ -340,7 +340,24 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
      */
     @Override
     public String getUnlocalizedName(final ItemStack itemStack) {
-        return EnumEssentiaStorageTypes.fromIndex[itemStack.getItemDamage()].cellName.getUnlocalized();
+        int index = MathHelper.clamp_int(itemStack.getItemDamage(), 0, EnumEssentiaStorageTypes.fromIndex.length - 1);
+        EnumEssentiaStorageTypes type = EnumEssentiaStorageTypes.fromIndex[index];
+
+        if (isSizedStorageCell(type)) {
+            return this.getUnlocalizedName();
+        }
+
+        return type.cellName.getUnlocalized();
+    }
+
+    private static boolean isSizedStorageCell(final EnumEssentiaStorageTypes type) {
+        return type == EnumEssentiaStorageTypes.Type_1K || type == EnumEssentiaStorageTypes.Type_4K
+                || type == EnumEssentiaStorageTypes.Type_16K
+                || type == EnumEssentiaStorageTypes.Type_64K
+                || type == EnumEssentiaStorageTypes.Type_256K
+                || type == EnumEssentiaStorageTypes.Type_1024K
+                || type == EnumEssentiaStorageTypes.Type_4096K
+                || type == EnumEssentiaStorageTypes.Type_16384K;
     }
 
     /**
