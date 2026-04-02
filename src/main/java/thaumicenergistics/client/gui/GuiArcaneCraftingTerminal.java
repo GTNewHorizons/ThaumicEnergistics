@@ -25,7 +25,7 @@ import thaumicenergistics.common.utils.ThEUtils;
 public class GuiArcaneCraftingTerminal extends GuiMEMonitorable {
 
     private static final int GUI_WIDTH = 230;
-    private static final int GUI_HEIGHT = 243;
+    private static final int GUI_HEIGHT = 244;
     private static final int GUI_VIEW_CELL_TEXTURE_WIDTH = 35;
     private static final int GUI_MAIN_BODY_WIDTH = GUI_WIDTH - GUI_VIEW_CELL_TEXTURE_WIDTH;
     private static final int GUI_UPPER_TEXTURE_HEIGHT = 17 + 18 * 3;
@@ -96,7 +96,7 @@ public class GuiArcaneCraftingTerminal extends GuiMEMonitorable {
                 GUI_TEXTURE_LOWER_HEIGHT);
 
         // draw view cells background
-        this.drawTexturedModalRect(offsetX + x_width, offsetY, x_width, 0, 32, 104);
+        this.drawTexturedModalRect(offsetX + x_width, offsetY, x_width, 0, GUI_VIEW_CELL_TEXTURE_WIDTH, 104);
 
         this.searchField.drawTextBox();
 
