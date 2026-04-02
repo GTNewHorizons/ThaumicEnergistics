@@ -42,13 +42,13 @@ public class GuiButtonSaveDelete extends ThEStateButton {
         switch (saveState) {
             case Disabled_InvalidRecipe:
                 this.enabled = false;
-                this.stateIcon = null;
+                this.stateIcon = AEStateIconsEnum.INVALID_RECIPE;
                 this.cachedTooltip = ThEStrings.TooltipButton_InscriberInvalid.getLocalized();
                 break;
 
             case Disabled_CoreFull:
                 this.enabled = false;
-                this.stateIcon = null;
+                this.stateIcon = AEStateIconsEnum.CORE_FULL;;
                 this.cachedTooltip = ThEStrings.TooltipButton_InscriberFull.getLocalized();
                 break;
 
@@ -66,7 +66,7 @@ public class GuiButtonSaveDelete extends ThEStateButton {
 
             case Disabled_MissingCore:
                 this.enabled = false;
-                this.stateIcon = null;
+                this.stateIcon = AEStateIconsEnum.MISSING_CORE;
                 this.cachedTooltip = ThEStrings.TooltipButton_InscriberMissing.getLocalized();
                 break;
         }
