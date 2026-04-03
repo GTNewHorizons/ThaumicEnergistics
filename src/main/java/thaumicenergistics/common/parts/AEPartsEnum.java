@@ -32,7 +32,9 @@ public enum AEPartsEnum {
     EssentiaLevelEmitter(ThEStrings.Part_EssentiaLevelEmitter, PartEssentiaLevelEmitter.class, true),
 
     EssentiaStorageBus(ThEStrings.Part_EssentiaStorageBus, PartEssentiaStorageBus.class, null,
-            generatePair(Upgrades.INVERTER, 1)),
+            generatePair(Upgrades.INVERTER, 1), generatePair(Upgrades.CAPACITY, 1), generatePair(Upgrades.STICKY, 1)
+
+    ),
 
     EssentiaExportBus(ThEStrings.Part_EssentiaExportBus, PartEssentiaExportBus.class,
             ThaumicEnergistics.MOD_ID + ".group.essentia.transport", generatePair(Upgrades.CAPACITY, 2),
