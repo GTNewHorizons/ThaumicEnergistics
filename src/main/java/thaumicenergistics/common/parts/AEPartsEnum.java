@@ -32,8 +32,7 @@ public enum AEPartsEnum {
     EssentiaLevelEmitter(ThEStrings.Part_EssentiaLevelEmitter, PartEssentiaLevelEmitter.class, true),
 
     EssentiaStorageBus(ThEStrings.Part_EssentiaStorageBus, PartEssentiaStorageBus.class, null,
-            generatePair(Upgrades.FUZZY, 1), generatePair(Upgrades.INVERTER, 1), generatePair(Upgrades.CAPACITY, 1),
-            generatePair(Upgrades.ORE_FILTER, 1), generatePair(Upgrades.STICKY, 1)
+            generatePair(Upgrades.INVERTER, 1), generatePair(Upgrades.CAPACITY, 1), generatePair(Upgrades.STICKY, 1)
 
     ),
 
