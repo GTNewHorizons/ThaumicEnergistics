@@ -58,6 +58,9 @@ public enum AEStateIconsEnum implements IStateIconTexture {
     ENABLED(16, 128),
     SAVE(0, 176),
     DELETE(0, 192),
+    INVALID_RECIPE(112, 96),
+    MISSING_CORE(0, 128),
+    CORE_FULL(80, 96),
     CLEAR_GRID(96, 0),
     ARROW_DOWN(128, 0),
 

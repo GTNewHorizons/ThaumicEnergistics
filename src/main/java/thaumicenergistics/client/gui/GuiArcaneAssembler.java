@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.opengl.GL11;
 
+import appeng.core.localization.GuiColors;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
@@ -211,7 +212,11 @@ public class GuiArcaneAssembler extends ThEBaseGui {
     @Override
     public void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
         // Draw the title
-        this.fontRendererObj.drawString(this.title, GuiArcaneAssembler.TITLE_POS_X, GuiArcaneAssembler.TITLE_POS_Y, 0);
+        this.fontRendererObj.drawString(
+                this.title,
+                GuiArcaneAssembler.TITLE_POS_X,
+                GuiArcaneAssembler.TITLE_POS_Y,
+                GuiColors.UpgradableTitle.getColor());
 
         // Is the mouse over any of the bars?
         for (Aspect aspect : TileArcaneAssembler.PRIMALS) {

@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
+import appeng.core.localization.GuiColors;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.client.gui.abstraction.ThEBaseGui;
@@ -214,8 +215,11 @@ public class GuiKnowledgeInscriber extends ThEBaseGui {
     @Override
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
         // Draw the title
-        this.fontRendererObj
-                .drawString(this.title, GuiKnowledgeInscriber.TITLE_POS_X, GuiKnowledgeInscriber.TITLE_POS_Y, 0);
+        this.fontRendererObj.drawString(
+                this.title,
+                GuiKnowledgeInscriber.TITLE_POS_X,
+                GuiKnowledgeInscriber.TITLE_POS_Y,
+                GuiColors.InscriberTitle.getColor());
 
         // Any particles to draw?
         if (this.hasParticlesToDraw) {
