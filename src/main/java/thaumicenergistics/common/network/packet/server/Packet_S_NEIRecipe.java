@@ -172,11 +172,8 @@ public class Packet_S_NEIRecipe extends ThEServerPacket {
                                 if (request != null) {
                                     request.setStackSize(1);
                                     if (filter == null || filter.isListed(request)) {
-                                        final IAEItemStack out = Platform.poweredExtraction(
-                                                energy,
-                                                storage,
-                                                request,
-                                                as);
+                                        final IAEItemStack out = Platform
+                                                .poweredExtraction(energy, storage, request, as);
                                         if (out != null) {
                                             whichItem = out.getItemStack();
                                             break;
