@@ -81,6 +81,8 @@ public class Packet_S_NEIRecipe extends ThEServerPacket {
      */
     @Override
     public void execute() {
+        if (this.recipe == null) return;
+
         final EntityPlayerMP pmp = (EntityPlayerMP) player;
         final Container con = pmp.openContainer;
 
@@ -163,6 +165,27 @@ public class Packet_S_NEIRecipe extends ThEServerPacket {
                                         all,
                                         Actionable.MODULATE,
                                         filter);
+                        if (whichItem == null && this.recipe[x] != null) {
+                            for (int y = 0; y < this.recipe[x].length; y++) {
+                                if (this.recipe[x][y] == null) continue;
+                                final IAEItemStack request = AEItemStack.create(this.recipe[x][y]);
+                                if (request != null) {
+                                    request.setStackSize(1);
+                                    if (filter == null || filter.isListed(request)) {
+                                        final IAEItemStack out = Platform.poweredExtraction(
+                                                energy,
+                                                storage,
+                                                request,
+                                                as);
+                                        if (out != null) {
+                                            whichItem = out.getItemStack();
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         if (whichItem == null && playerInventory != null)
                             whichItem = extractItemFromPlayerInventory(player, patternItem);
 
