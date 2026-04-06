@@ -43,7 +43,7 @@ public class GuiArcaneCraftingTerminal extends GuiMEMonitorable {
     public GuiArcaneCraftingTerminal(InventoryPlayer inventoryPlayer, PartArcaneCraftingTerminal terminal) {
         super(inventoryPlayer, terminal, new ContainerPartArcaneCraftingTerminal(inventoryPlayer, terminal));
 
-        this.setReservedSpace(GUI_TEXTURE_LOWER_HEIGHT - PLAYER_INVENTORY_HEIGHT);
+        this.setReservedSpace(GUI_TEXTURE_LOWER_HEIGHT - PLAYER_INVENTORY_HEIGHT - 1);
     }
 
     private int getTopHeight() {
