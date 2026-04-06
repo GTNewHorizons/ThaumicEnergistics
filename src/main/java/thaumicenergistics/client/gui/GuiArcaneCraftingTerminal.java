@@ -25,7 +25,7 @@ import thaumicenergistics.common.utils.ThEUtils;
 public class GuiArcaneCraftingTerminal extends GuiMEMonitorable {
 
     private static final int GUI_WIDTH = 230;
-    private static final int GUI_HEIGHT = 243;
+    private static final int GUI_HEIGHT = 244;
     private static final int GUI_VIEW_CELL_TEXTURE_WIDTH = 35;
     private static final int GUI_MAIN_BODY_WIDTH = GUI_WIDTH - GUI_VIEW_CELL_TEXTURE_WIDTH;
     private static final int GUI_UPPER_TEXTURE_HEIGHT = 17 + 18 * 3;
@@ -43,7 +43,7 @@ public class GuiArcaneCraftingTerminal extends GuiMEMonitorable {
     public GuiArcaneCraftingTerminal(InventoryPlayer inventoryPlayer, PartArcaneCraftingTerminal terminal) {
         super(inventoryPlayer, terminal, new ContainerPartArcaneCraftingTerminal(inventoryPlayer, terminal));
 
-        this.setReservedSpace(GUI_TEXTURE_LOWER_HEIGHT - PLAYER_INVENTORY_HEIGHT);
+        this.setReservedSpace(GUI_TEXTURE_LOWER_HEIGHT - PLAYER_INVENTORY_HEIGHT - 1);
     }
 
     private int getTopHeight() {
