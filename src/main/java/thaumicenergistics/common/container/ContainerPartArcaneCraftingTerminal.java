@@ -347,6 +347,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
     }
 
     private void craftOnce(EntityPlayerMP player) {
+        if (this.resultSlot.getStack() == null) return;
         AdaptorPlayerHand adaptor = new AdaptorPlayerHand(player);
         ItemStack leftover = adaptor.simulateAdd(this.resultSlot.getStack());
         if (leftover != null) return;
@@ -359,6 +360,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
     }
 
     private void craftStack(EntityPlayer player) {
+        if (this.resultSlot.getStack() == null) return;
         InventoryAdaptor adaptor = InventoryAdaptor.getAdaptor(player, null);
         int maxTimesToCraft = (int) Math.floor(
                 (double) this.resultSlot.getStack().getMaxStackSize() / (double) this.resultSlot.getStack().stackSize);
@@ -383,10 +385,12 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
     }
 
     public void consumeIngredients(final EntityPlayer player) {
+        ItemStack craftResult = this.resultSlot.getStack();
+        if (craftResult == null) return;
         MinecraftForge.EVENT_BUS.post(
                 new PlayerEvent.ItemCraftedEvent(
                         player,
-                        this.resultSlot.getStack(),
+                        craftResult,
                         this.terminal.craftingGridInventory));
         if (player.worldObj.isRemote) return;
 
