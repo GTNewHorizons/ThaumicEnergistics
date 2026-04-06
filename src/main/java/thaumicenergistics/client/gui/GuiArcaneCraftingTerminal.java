@@ -25,7 +25,7 @@ import thaumicenergistics.common.utils.ThEUtils;
 public class GuiArcaneCraftingTerminal extends GuiMEMonitorable {
 
     private static final int GUI_WIDTH = 230;
-    private static final int GUI_HEIGHT = 244;
+    private static final int GUI_HEIGHT = 243;
     private static final int GUI_VIEW_CELL_TEXTURE_WIDTH = 35;
     private static final int GUI_MAIN_BODY_WIDTH = GUI_WIDTH - GUI_VIEW_CELL_TEXTURE_WIDTH;
     private static final int GUI_UPPER_TEXTURE_HEIGHT = 17 + 18 * 3;
