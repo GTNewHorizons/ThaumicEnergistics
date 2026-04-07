@@ -387,11 +387,8 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
     public void consumeIngredients(final EntityPlayer player) {
         ItemStack craftResult = this.resultSlot.getStack();
         if (craftResult == null) return;
-        MinecraftForge.EVENT_BUS.post(
-                new PlayerEvent.ItemCraftedEvent(
-                        player,
-                        craftResult,
-                        this.terminal.craftingGridInventory));
+        MinecraftForge.EVENT_BUS
+                .post(new PlayerEvent.ItemCraftedEvent(player, craftResult, this.terminal.craftingGridInventory));
         if (player.worldObj.isRemote) return;
 
         if ((this.requiredAspects != null)) {
