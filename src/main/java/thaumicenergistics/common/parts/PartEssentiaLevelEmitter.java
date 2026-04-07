@@ -1,11 +1,14 @@
 package thaumicenergistics.common.parts;
 
+import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STACK_TYPE;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.Settings;
 import appeng.api.storage.StorageName;
+import appeng.api.storage.data.IAEStackType;
 import appeng.parts.automation.PartLevelEmitter;
 import thaumcraft.api.aspects.Aspect;
 import thaumicenergistics.common.storage.AEEssentiaStack;
@@ -53,5 +56,10 @@ public class PartEssentiaLevelEmitter extends PartLevelEmitter {
             int ownerID = data.getInteger(NBT_KEY_OWNER);
             this.getProxy().getNode().setPlayerID(ownerID);
         }
+    }
+
+    @Override
+    protected IAEStackType<?> getUltraLegacyType() {
+        return ESSENTIA_STACK_TYPE;
     }
 }
