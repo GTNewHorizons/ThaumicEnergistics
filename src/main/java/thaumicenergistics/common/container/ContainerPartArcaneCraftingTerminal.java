@@ -140,6 +140,9 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         if (action == InventoryAction.CRAFT_ITEM) {
             this.craftOnce(player);
             return;
+        } else if (action == InventoryAction.CRAFT_STACK) {
+            this.craftStackToHand(player);
+            return;
         } else if (action == InventoryAction.CRAFT_SHIFT) {
             this.craftStack(player);
             return;
@@ -362,6 +365,34 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
     private void craftStack(EntityPlayer player) {
         if (this.resultSlot.getStack() == null) return;
         InventoryAdaptor adaptor = InventoryAdaptor.getAdaptor(player, null);
+        int maxTimesToCraft = this.calculateMaxTimesToCraft(adaptor);
+        if (maxTimesToCraft == 0) return;
+
+        for (int i = 0; i < maxTimesToCraft; i++) {
+            adaptor.addItems(this.resultSlot.getStack());
+            this.consumeIngredients(player);
+            if (this.resultSlot.getStack() == null) break;
+        }
+
+        this.detectAndSendChanges();
+    }
+
+    private void craftStackToHand(EntityPlayer player) {
+        if (this.resultSlot.getStack() == null) return;
+        AdaptorPlayerHand adaptor = new AdaptorPlayerHand(player);
+        int maxTimesToCraft = this.calculateMaxTimesToCraft(adaptor);
+        if (maxTimesToCraft == 0) return;
+
+        for (int i = 0; i < maxTimesToCraft; i++) {
+            adaptor.addItems(this.resultSlot.getStack());
+            this.consumeIngredients(player);
+            if (this.resultSlot.getStack() == null) break;
+        }
+
+        this.detectAndSendChanges();
+    }
+
+    private int calculateMaxTimesToCraft(InventoryAdaptor adaptor) {
         int maxTimesToCraft = (int) Math.floor(
                 (double) this.resultSlot.getStack().getMaxStackSize() / (double) this.resultSlot.getStack().stackSize);
 
@@ -373,15 +404,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
                     .floor((double) simResult.stackSize / (double) this.resultSlot.getStack().stackSize);
         }
 
-        if (maxTimesToCraft == 0) return;
-
-        for (int i = 0; i < maxTimesToCraft; i++) {
-            adaptor.addItems(this.resultSlot.getStack());
-            this.consumeIngredients(player);
-            if (this.resultSlot.getStack() == null) break;
-        }
-
-        this.detectAndSendChanges();
+        return maxTimesToCraft;
     }
 
     public void consumeIngredients(final EntityPlayer player) {

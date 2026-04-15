@@ -167,8 +167,18 @@ public class Packet_S_NEIRecipe extends ThEServerPacket {
                                         filter);
                         if (whichItem == null && this.recipe[x] != null) {
                             for (int y = 0; y < this.recipe[x].length; y++) {
-                                if (this.recipe[x][y] == null) continue;
-                                final IAEItemStack request = AEItemStack.create(this.recipe[x][y]);
+                                final ItemStack candidate = this.recipe[x][y];
+                                if (candidate == null || !this.isCandidateValidForSlot(
+                                        r,
+                                        arcaneRecipe,
+                                        testInv,
+                                        workbenchTile,
+                                        pmp,
+                                        x,
+                                        candidate,
+                                        is))
+                                    continue;
+                                final IAEItemStack request = AEItemStack.create(candidate);
                                 if (request != null) {
                                     request.setStackSize(1);
                                     if (filter == null || filter.isListed(request)) {
@@ -259,5 +269,26 @@ public class Packet_S_NEIRecipe extends ThEServerPacket {
                 || patternItem.isItemStackDamageable();
         return checkFuzzy ? ia.removeSimilarItems(1, patternItem, FuzzyMode.IGNORE_ALL, null)
                 : ia.removeItems(1, patternItem, null);
+    }
+
+    private boolean isCandidateValidForSlot(final IRecipe recipe, final IArcaneRecipe arcaneRecipe,
+            final InventoryCrafting testInv, final TileMagicWorkbench workbenchTile, final EntityPlayerMP player,
+            final int slotIndex, final ItemStack candidate, final ItemStack expectedOutput) {
+        final ItemStack originalTestSlot = testInv.getStackInSlot(slotIndex);
+        final ItemStack originalWorkbenchSlot = workbenchTile.getStackInSlot(slotIndex);
+
+        testInv.setInventorySlotContents(slotIndex, candidate);
+        workbenchTile.setInventorySlotContents(slotIndex, candidate);
+
+        final ItemStack candidateResult = recipe != null
+                ? (recipe.matches(testInv, player.worldObj) ? recipe.getCraftingResult(testInv) : null)
+                : (arcaneRecipe.matches(workbenchTile, player.worldObj, player)
+                        ? arcaneRecipe.getCraftingResult(workbenchTile)
+                        : null);
+
+        testInv.setInventorySlotContents(slotIndex, originalTestSlot);
+        workbenchTile.setInventorySlotContents(slotIndex, originalWorkbenchSlot);
+
+        return candidateResult != null && Platform.isSameItemPrecise(candidateResult, expectedOutput);
     }
 }
