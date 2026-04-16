@@ -169,7 +169,9 @@ public class GuiArcaneCraftingTerminal extends GuiMEMonitorable {
             if (slot.getStack() == null) return;
 
             InventoryAction action;
-            if (isShiftKeyDown()) {
+            if (isCtrlKeyDown()) {
+                action = InventoryAction.CRAFT_STACK;
+            } else if (isShiftKeyDown()) {
                 action = InventoryAction.CRAFT_SHIFT;
             } else {
                 action = InventoryAction.CRAFT_ITEM;

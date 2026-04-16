@@ -140,6 +140,9 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         if (action == InventoryAction.CRAFT_ITEM) {
             this.craftOnce(player);
             return;
+        } else if (action == InventoryAction.CRAFT_STACK) {
+            this.craftStackToHand(player);
+            return;
         } else if (action == InventoryAction.CRAFT_SHIFT) {
             this.craftStack(player);
             return;
@@ -347,6 +350,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
     }
 
     private void craftOnce(EntityPlayerMP player) {
+        if (this.resultSlot.getStack() == null) return;
         AdaptorPlayerHand adaptor = new AdaptorPlayerHand(player);
         ItemStack leftover = adaptor.simulateAdd(this.resultSlot.getStack());
         if (leftover != null) return;
@@ -359,18 +363,9 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
     }
 
     private void craftStack(EntityPlayer player) {
+        if (this.resultSlot.getStack() == null) return;
         InventoryAdaptor adaptor = InventoryAdaptor.getAdaptor(player, null);
-        int maxTimesToCraft = (int) Math.floor(
-                (double) this.resultSlot.getStack().getMaxStackSize() / (double) this.resultSlot.getStack().stackSize);
-
-        ItemStack simStack = this.resultSlot.getStack().copy();
-        simStack.stackSize *= maxTimesToCraft;
-        ItemStack simResult = adaptor.simulateAdd(simStack);
-        if (simResult != null) {
-            maxTimesToCraft = (int) Math
-                    .floor((double) simResult.stackSize / (double) this.resultSlot.getStack().stackSize);
-        }
-
+        int maxTimesToCraft = this.calculateMaxTimesToCraft(adaptor);
         if (maxTimesToCraft == 0) return;
 
         for (int i = 0; i < maxTimesToCraft; i++) {
@@ -382,12 +377,41 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         this.detectAndSendChanges();
     }
 
+    private void craftStackToHand(EntityPlayer player) {
+        if (this.resultSlot.getStack() == null) return;
+        AdaptorPlayerHand adaptor = new AdaptorPlayerHand(player);
+        int maxTimesToCraft = this.calculateMaxTimesToCraft(adaptor);
+        if (maxTimesToCraft == 0) return;
+
+        for (int i = 0; i < maxTimesToCraft; i++) {
+            adaptor.addItems(this.resultSlot.getStack());
+            this.consumeIngredients(player);
+            if (this.resultSlot.getStack() == null) break;
+        }
+
+        this.detectAndSendChanges();
+    }
+
+    private int calculateMaxTimesToCraft(InventoryAdaptor adaptor) {
+        int maxTimesToCraft = (int) Math.floor(
+                (double) this.resultSlot.getStack().getMaxStackSize() / (double) this.resultSlot.getStack().stackSize);
+
+        ItemStack simStack = this.resultSlot.getStack().copy();
+        simStack.stackSize *= maxTimesToCraft;
+        ItemStack simResult = adaptor.simulateAdd(simStack);
+        if (simResult != null) {
+            maxTimesToCraft = (int) Math
+                    .floor((double) simResult.stackSize / (double) this.resultSlot.getStack().stackSize);
+        }
+
+        return maxTimesToCraft;
+    }
+
     public void consumeIngredients(final EntityPlayer player) {
-        MinecraftForge.EVENT_BUS.post(
-                new PlayerEvent.ItemCraftedEvent(
-                        player,
-                        this.resultSlot.getStack(),
-                        this.terminal.craftingGridInventory));
+        ItemStack craftResult = this.resultSlot.getStack();
+        if (craftResult == null) return;
+        MinecraftForge.EVENT_BUS
+                .post(new PlayerEvent.ItemCraftedEvent(player, craftResult, this.terminal.craftingGridInventory));
         if (player.worldObj.isRemote) return;
 
         if ((this.requiredAspects != null)) {
