@@ -5,7 +5,6 @@ import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STA
 import java.io.IOException;
 import java.util.List;
 
-import appeng.me.GridAccessException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,9 +30,9 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
-import appeng.core.AELog;
 import appeng.core.localization.WailaText;
 import appeng.helpers.MultiCraftingTracker;
+import appeng.me.GridAccessException;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
