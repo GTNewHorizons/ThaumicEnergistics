@@ -132,11 +132,11 @@ public class TileAdvancedInfusionProvider extends TileInfusionProvider implement
         super.addWailaInformation(tooltip);
         if (this.matrices.isEmpty()) {
             tooltip.add(
-                    ThEStrings.Tooltip_AdvancedInfusionProviderWorkingMode.getLocalized() + ":"
+                    ThEStrings.Tooltip_AdvancedInfusionProviderWorkingMode.getLocalized() + ": "
                             + ThEStrings.Tooltip_AdvancedInfusionProviderNormalMode.getLocalized());
         } else {
             tooltip.add(
-                    ThEStrings.Tooltip_AdvancedInfusionProviderWorkingMode.getLocalized() + ":"
+                    ThEStrings.Tooltip_AdvancedInfusionProviderWorkingMode.getLocalized() + ": "
                             + ThEStrings.Tooltip_AdvancedInfusionProviderAdvancedMode.getLocalized());
             tooltip.add(
                     String.format(
