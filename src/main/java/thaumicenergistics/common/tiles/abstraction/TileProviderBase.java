@@ -5,6 +5,7 @@ import static thaumicenergistics.common.storage.AEEssentiaStackType.ESSENTIA_STA
 import java.io.IOException;
 import java.util.List;
 
+import appeng.me.GridAccessException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -547,9 +548,7 @@ public abstract class TileProviderBase extends AENetworkTile
                             this.getMachineSource());
                 }
             }
-        } catch (Exception e) {
-            AELog.warn(e);
-        }
+        } catch (GridAccessException ignored) {}
 
         return false;
     }
