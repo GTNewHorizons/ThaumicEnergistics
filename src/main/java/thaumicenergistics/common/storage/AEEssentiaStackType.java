@@ -391,4 +391,13 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
             }
         };
     }
+
+    @NotNull
+    private final AEEssentiaStack testStack = new AEEssentiaStack(Aspect.AIR);
+
+    @Override
+    @NotNull
+    public AEEssentiaStack getTestStack() {
+        return this.testStack.copy();
+    }
 }
