@@ -30,9 +30,9 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
-import appeng.core.AELog;
 import appeng.core.localization.WailaText;
 import appeng.helpers.MultiCraftingTracker;
+import appeng.me.GridAccessException;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
@@ -547,9 +547,7 @@ public abstract class TileProviderBase extends AENetworkTile
                             this.getMachineSource());
                 }
             }
-        } catch (Exception e) {
-            AELog.warn(e);
-        }
+        } catch (GridAccessException ignored) {}
 
         return false;
     }
