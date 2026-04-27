@@ -19,12 +19,11 @@ public class EssentiaCellConfig extends CellConfig {
 
     @Override
     public void readFromNBT(NBTTagCompound data, String name) {
-        NBTTagCompound tag = this.is.getTagCompound();
 
         // Migrate from old data
-        if (tag.hasKey(NBT_PARTITION_KEY)) {
+        if (data != null && data.hasKey(NBT_PARTITION_KEY)) {
             // Get the partition tag
-            NBTTagCompound partitionData = tag.getCompoundTag(NBT_PARTITION_KEY);
+            NBTTagCompound partitionData = data.getCompoundTag(NBT_PARTITION_KEY);
 
             // Get the partition count
             int partitionCount = partitionData.getInteger(NBT_PARTITION_COUNT_KEY);
