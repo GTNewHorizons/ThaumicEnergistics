@@ -532,4 +532,9 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
         }
         return new EssentiaCellConfig(is);
     }
+
+    @Override
+    public int getTypeWeight() {
+        return 2;
+    }
 }

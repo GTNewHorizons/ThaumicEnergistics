@@ -20,8 +20,6 @@ public class EssentiaCellInventory extends CellInventory<AEEssentiaStack> {
 
     public EssentiaCellInventory(ItemStack cell, ISaveProvider provider) throws AppEngException {
         super(cell, provider);
-
-        this.setTypeWeight(2);
     }
 
     @Override
