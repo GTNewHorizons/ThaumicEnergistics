@@ -1,5 +1,8 @@
 package thaumicenergistics.common.items;
 
+import java.util.List;
+
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,6 +20,11 @@ public class ItemArcaneCraftingPattern extends Item implements ICraftingPatternI
 
     public ItemArcaneCraftingPattern() {
         this.setUnlocalizedName("itemArcaneCraftingPattern");
+    }
+
+    @Override
+    public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_, List p_150895_3_) {
+        // hide in creative tab
     }
 
     @Override
