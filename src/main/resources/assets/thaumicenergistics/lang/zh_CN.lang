@@ -2,16 +2,12 @@
 itemGroup.ThaumicEnergistics=神秘能源
 thaumicenergistics.group.essentia.transport=ME源质输入/输出总线
 
-#Fluids
-thaumicenergistics.fluid.gaseous=气体
-
 #Blocks
 thaumicenergistics.block.essentia.provider.name=源质供应器
 thaumicenergistics.block.infusion.provider.name=注魔供应器
 thaumicenergistics.block.advanced.infusion.provider.name=进阶注魔供应器
 thaumicenergistics.block.gear.box.name=铁齿轮箱
 thaumicenergistics.block.golem.gear.box.name=神秘齿轮箱
-thaumicenergistics.block.essentia.cell.workbench.name=源质元件工作台
 thaumicenergistics.block.arcane.assembler.name=奥术装配室
 thaumicenergistics.block.knowledge.inscriber.name=知识记录仪
 thaumicenergistics.block.essentia.vibration.chamber.name=源质谐振仓
@@ -20,14 +16,10 @@ thaumicenergistics.block.distillation.encoder.name=蒸馏编码台
 #Cable parts
 thaumicenergistics.aeparts.essentia.ImportBus.name=源质输入总线
 thaumicenergistics.aeparts.essentia.ExportBus.name=源质输出总线
-thaumicenergistics.aeparts.essentia.levelemitter.name=源质发信器
 thaumicenergistics.aeparts.essentia.StorageBus.name=源质存储总线
-thaumicenergistics.aeparts.essentia.terminal.name=源质终端
 thaumicenergistics.aeparts.arcane.crafting.terminal.name=奥术合成终端
 thaumicenergistics.aeparts.vis.interface.name=要素中继接口
 thaumicenergistics.aeparts.vis.interface_creative.name=创造要素中继接口
-thaumicenergistics.aeparts.essentia.storage.monitor.name=源质储存监控器
-thaumicenergistics.aeparts.essentia.conversion.monitor.name=源质交换监控器
 
 #Items
 thaumicenergistics.item.essentia.cell.1k.name=1k-ME源质存储元件
@@ -53,7 +45,6 @@ thaumicenergistics.item.storage.component.16384k.name=16384k-ME源质存储组�
 thaumicenergistics.item.material.diffusion.core.name=扩散核心
 thaumicenergistics.item.material.coalescence.core.name=聚集核心
 thaumicenergistics.item.material.iron.gear.name=铁齿轮
-thaumicenergistics.item.wireless.essentia.terminal.name=无线源质终端
 thaumicenergistics.item.knowledge.core.name=知识核心
 thaumicenergistics.item.focus.aewrench.name=法杖核心: AE扳手
 thaumicenergistics.item.focus.aewrench.disabled.name=法杖核心: AE扳手 - 扳手模式已禁用
