@@ -2,23 +2,15 @@ package thaumicenergistics.common.blocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import appeng.core.sync.GuiBridge;
 import appeng.util.Platform;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import thaumicenergistics.client.textures.BlockTextureManager;
-import thaumicenergistics.common.ThaumicEnergistics;
 import thaumicenergistics.common.tiles.TileEssentiaCellWorkbench;
 
 /**
@@ -29,23 +21,8 @@ import thaumicenergistics.common.tiles.TileEssentiaCellWorkbench;
  */
 public class BlockEssentiaCellWorkbench extends AbstractBlockAEWrenchable {
 
-    /**
-     * Cached values of the top and bottom side indexes
-     */
-    private static final int SIDE_TOP = ForgeDirection.UP.ordinal(), SIDE_BOTTOM = ForgeDirection.DOWN.ordinal();
-
     public BlockEssentiaCellWorkbench() {
-        // Call super with material machine (iron)
         super(Material.iron);
-
-        // Basic hardness
-        this.setHardness(1.0f);
-
-        // Sound of metal
-        this.setStepSound(Block.soundTypeMetal);
-
-        // Place in the ThE creative tab
-        this.setCreativeTab(ThaumicEnergistics.ThETab);
     }
 
     /**
@@ -94,75 +71,12 @@ public class BlockEssentiaCellWorkbench extends AbstractBlockAEWrenchable {
     }
 
     @Override
-    public boolean canPlayerInteract(final EntityPlayer player) {
-        return !(player instanceof FakePlayer);
-    }
-
-    @Override
     public TileEntity createNewTileEntity(final World world, final int metaData) {
         return new TileEssentiaCellWorkbench();
     }
 
-    /**
-     * Gets the blocks icons.
-     */
-    @SideOnly(Side.CLIENT)
-    @Override
-    public IIcon getIcon(final int side, final int meta) {
-        // Is top?
-        if (side == BlockEssentiaCellWorkbench.SIDE_TOP) {
-            return BlockTextureManager.ESSENTIA_CELL_WORKBENCH.getTextures()[0];
-        }
-        // Is bottom?
-        else if (side == BlockEssentiaCellWorkbench.SIDE_BOTTOM) {
-            return BlockTextureManager.ESSENTIA_CELL_WORKBENCH.getTextures()[1];
-        }
-
-        // Sides
-        return BlockTextureManager.ESSENTIA_CELL_WORKBENCH.getTextures()[2];
-    }
-
-    /**
-     * Gets the unlocalized name of the block.
-     */
     @Override
     public String getUnlocalizedName() {
         return BlockEnum.ESSENTIA_CELL_WORKBENCH.getUnlocalizedName();
-    }
-
-    /**
-     * Is opaque.
-     */
-    @Override
-    public final boolean isOpaqueCube() {
-        // Occlude adjoining faces.
-        return true;
-    }
-
-    /**
-     * Is solid.
-     */
-    @Override
-    public final boolean isSideSolid(final IBlockAccess world, final int x, final int y, final int z,
-            final ForgeDirection side) {
-        // This is a solid cube
-        return true;
-    }
-
-    /**
-     * Taken care of by texture manager
-     */
-    @SideOnly(Side.CLIENT)
-    @Override
-    public final void registerBlockIcons(final IIconRegister register) {
-        // Ignored
-    }
-
-    /**
-     * Normal renderer.
-     */
-    @Override
-    public final boolean renderAsNormalBlock() {
-        return true;
     }
 }

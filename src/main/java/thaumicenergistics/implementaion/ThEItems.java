@@ -47,7 +47,6 @@ class ThEItems extends IThEItems {
 
         // Misc
         this.IronGear = new ThEItemDescription(MaterialTypes.IRON_GEAR.getStack());
-        this.WirelessEssentiaTerminal = new ThEItemDescription(ItemEnum.WIRELESS_TERMINAL.getStack());
         this.KnowledgeCore = new ThEItemDescription(ItemEnum.KNOWLEDGE_CORE.getStack());
         this.WandFocusAEWrench = new ThEItemDescription(ItemEnum.FOCUS_AEWRENCH.getStack());
         this.GolemWifiBackpack = new ThEItemDescription(ItemEnum.GOLEM_WIFI_BACKPACK.getStack());
