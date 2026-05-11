@@ -30,7 +30,6 @@ import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import thaumicenergistics.client.gui.GuiArcaneCraftingTerminal;
 import thaumicenergistics.client.gui.abstraction.ThEBaseGui;
-import thaumicenergistics.common.blocks.BlockEnum;
 import thaumicenergistics.common.container.ContainerPartArcaneCraftingTerminal;
 import thaumicenergistics.common.items.ItemEnum;
 import thaumicenergistics.common.network.NetworkHandler;
@@ -275,7 +274,6 @@ public class ModuleNEI {
 
         // Hide the crafting aspect item
         API.hideItem(ItemEnum.CRAFTING_ASPECT.getStack());
-        API.hideItem(new ItemStack(BlockEnum.ESSENTIA_CELL_WORKBENCH.getBlock()));
 
         if (ModsList.ASPECT_RECIPE_INDEX.isLoaded()) {
             ACTOverlayHandler ariOverlayHandler = new ARIOverlayHandler();
