@@ -23,12 +23,6 @@ public abstract class IThEBlocks {
     public IThEItemDescription DistillationPatternEncoder;
 
     /**
-     * Essentia Cell Workbench.
-     */
-    @Nonnull
-    public IThEItemDescription EssentiaCellWorkbench;
-
-    /**
      * Essentia Provider.
      */
     @Nonnull

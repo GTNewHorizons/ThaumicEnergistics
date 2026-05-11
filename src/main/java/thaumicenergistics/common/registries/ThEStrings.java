@@ -18,7 +18,6 @@ public enum ThEStrings {
     Block_AdvancedInfusionProvider("block.advanced.infusion.provider", true),
     Block_IronGearbox("block.gear.box", true),
     Block_ThaumiumGearbox("block.golem.gear.box", true),
-    Block_EssentiaCellWorkbench("block.essentia.cell.workbench", true),
     Block_ArcaneAssembler("block.arcane.assembler", true),
     Block_KnowledgeInscriber("block.knowledge.inscriber", true),
     Block_EssentiaVibrationChamber("block.essentia.vibration.chamber", true),

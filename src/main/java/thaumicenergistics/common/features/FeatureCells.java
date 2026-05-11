@@ -7,7 +7,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import appeng.api.AEApi;
 import appeng.core.AEConfig;
 import appeng.core.features.AEFeature;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -112,7 +111,6 @@ public class FeatureCells extends ThEThaumcraftResearchFeature {
         ItemStack EssentiaCell_16384k = theItems.EssentiaCell_16384k.getStack();
         ItemStack EssentiaCell_Quantum = theItems.EssentiaCell_Quantum.getStack();
         ItemStack EssentiaCell_Singularity = theItems.EssentiaCell_Singularity.getStack();
-        ItemStack EssentiaCellWorkbench = ThEApi.instance().blocks().EssentiaCellWorkbench.getStack();
 
         // Item Groups
         ArrayList<ItemStack> GroupQuartz = new ArrayList<ItemStack>(3);
@@ -418,12 +416,6 @@ public class FeatureCells extends ThEThaumcraftResearchFeature {
                         EssentiaCell_Singularity,
                         false,
                         recipeSingularityCell));
-
-        // Workbench
-        GameRegistry.addRecipe(
-                new ShapelessOreRecipe(
-                        AEApi.instance().definitions().blocks().cellWorkbench().maybeStack(1).get(),
-                        EssentiaCellWorkbench));
     }
 
     @Override
