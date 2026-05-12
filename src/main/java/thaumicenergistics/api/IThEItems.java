@@ -149,12 +149,6 @@ public abstract class IThEItems {
     public IThEItemDescription IronGear;
 
     /**
-     * Wireless essentia terminal
-     */
-    @Nonnull
-    public IThEItemDescription WirelessEssentiaTerminal;
-
-    /**
      * Knowledge core.
      */
     @Nonnull
