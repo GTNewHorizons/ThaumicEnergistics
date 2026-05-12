@@ -35,7 +35,7 @@ public enum BlockTextureManager {
 
     ESSENTIA_TERMINAL(TextureTypes.Part,
             new String[] { "essentia.terminal.overlay.dark", "essentia.terminal.overlay.medium",
-                    "essentia.terminal.overlay.light", "essentia.terminal.side", "essentia.termina.border" }),
+                    "essentia.terminal.overlay.light" }),
 
     ESSENTIA_PROVIDER(TextureTypes.Block, new String[] { "essentia.provider", "essentia.provider.overlay" }),
 
