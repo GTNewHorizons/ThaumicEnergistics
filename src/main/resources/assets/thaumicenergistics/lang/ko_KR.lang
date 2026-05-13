@@ -2,22 +2,16 @@
 itemGroup.ThaumicEnergistics=사우믹 에너지스틱즈[Thaumic Energistics]
 thaumicenergistics.group.essentia.transport=ME 에센시아 입출력 버스
 
-#Fluids
-thaumicenergistics.fluid.gaseous=기체
-
 #Blocks
 thaumicenergistics.block.essentia.provider.name=에센시아 공급기
 thaumicenergistics.block.infusion.provider.name=주입용 공급기
 thaumicenergistics.block.gear.box.name=철 기어박스
 thaumicenergistics.block.golem.gear.box.name=사우뮴 기어박스
-thaumicenergistics.block.essentia.cell.workbench.name=에센시아 셀 워크벤치
 
 #Cable parts
 thaumicenergistics.aeparts.essentia.ImportBus.name=에센시아 입력 버스
 thaumicenergistics.aeparts.essentia.ExportBus.name=에센시아 출력 버스
-thaumicenergistics.aeparts.essentia.levelemitter.name=에센시아 레벨 방출기
 thaumicenergistics.aeparts.essentia.StorageBus.name=에센시아 저장 버스
-thaumicenergistics.aeparts.essentia.terminal.name=에센시아 단말기
 thaumicenergistics.aeparts.arcane.crafting.terminal.name=아케인 조합 단말기
 thaumicenergistics.aeparts.vis.interface.name=비스 충전 중계 인터페이스
 
@@ -34,13 +28,10 @@ thaumicenergistics.item.storage.component.64k.name=ME 64k 에센시아 저장요
 thaumicenergistics.item.material.diffusion.core.name=증류 코어
 thaumicenergistics.item.material.coalescence.core.name=응결 코어
 thaumicenergistics.item.material.iron.gear.name=철 톱니바퀴
-thaumicenergistics.item.wireless.essentia.terminal.name=무선 에센시아 단말기
 
 #Tooltips
 thaumicenergistics.tooltip.essentia.cell.bytes=%s 바이트가 %s 중에서 사용됨
 thaumicenergistics.tooltip.essentia.cell.types=%s 개의 에센스 저장소가 %s 개중에서 사용됨
-thaumicenergistics.tooltip.essentia.cell.details=shift시 더 자세한 사항
-thaumicenergistics.tooltip.button.clear.crafting=Deposit Crafting Grid
 thaumicenergistics.tooltip.button.void=Allow Void?
 thaumicenergistics.tooltip.button.void.disabled=Do not void essentia
 thaumicenergistics.tooltip.button.void.allowed=Void essentia if jar is full
@@ -89,7 +80,6 @@ thaumicenergistics.research_page.TEARCANETERM.1=당신은 근본적인 양상들
 # Research Essentia Provider
 tc.research_name.thaumicenergistics.TEESSPROV=에센시아 공급기
 tc.research_text.thaumicenergistics.TEESSPROV=요구하면 반드시 받을 것이다.
-thaumicenergistics.research_page.TEESSPROV.1=While import and export buses are useful for an array of jobs, they lack the flexibility to interface with complex alchemical constructs. To overcome this limitation you have created a device that will allow these constructs to request essentia directly from the network.<BR>Using the §lEssentia Provider§r should prove to be a simple task. Simply connect it to both the network and construct, and it will do the rest.
 thaumicenergistics.research_page.TEESSPROV.1=While import and export buses are useful for an array of jobs, they lack the flexibility to interface with complex alchemical constructs. To overcome this limitation you have created a device that will allow these constructs to request essentia directly from the network.<BR>Using the §lEssentia Provider§r should prove to be a simple task. Simply connect it to both the network and construct, and it will do the rest.<BR>Like an essentia buffer it has a small amount of suction(8).
 
 # Research Infusion Provider

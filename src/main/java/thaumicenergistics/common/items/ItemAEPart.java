@@ -99,6 +99,7 @@ public class ItemAEPart extends Item implements IPartItem, IItemGroup {
 
         // Add each one to the list
         for (int i = 0; i < count; i++) {
+            if (AEPartsEnum.VALUES[i].isDeprecated()) continue;
             itemList.add(new ItemStack(item, 1, i));
         }
     }

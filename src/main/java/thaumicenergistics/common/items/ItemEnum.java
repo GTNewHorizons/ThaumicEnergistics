@@ -18,7 +18,6 @@ public enum ItemEnum {
     STORAGE_COMPONENT("storage.component", new ItemStorageComponent()),
     STORAGE_CASING("storage.casing", new ItemStorageCasing()),
     MATERIAL("material", new ItemMaterial()),
-    WIRELESS_TERMINAL("wireless.essentia.terminal", new ItemWirelessEssentiaTerminal()),
     KNOWLEDGE_CORE("knowledge.core", new ItemKnowledgeCore()),
     FOCUS_AEWRENCH("focus.aewrench", new ItemFocusAEWrench()),
     CRAFTING_ASPECT("crafting.aspect", new ItemCraftingAspect()),

@@ -67,8 +67,11 @@ public enum AEPartsEnum {
 
     private final String tooltip;
 
+    private boolean deprecated;
+
     AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass, boolean deprecated) {
         this(unlocalizedName, partClass, null, deprecated ? "§4DEPRECATED!" : "");
+        this.deprecated = true;
     }
 
     AEPartsEnum(final ThEStrings unlocalizedName, final Class<? extends IPart> partClass) {
@@ -87,6 +90,8 @@ public enum AEPartsEnum {
         this.groupName = groupName;
 
         this.tooltip = tooltip;
+
+        this.deprecated = false;
     }
 
     @SafeVarargs
@@ -169,5 +174,9 @@ public enum AEPartsEnum {
             return null;
         }
         return tooltip.isEmpty() ? null : tooltip;
+    }
+
+    public boolean isDeprecated() {
+        return this.deprecated;
     }
 }

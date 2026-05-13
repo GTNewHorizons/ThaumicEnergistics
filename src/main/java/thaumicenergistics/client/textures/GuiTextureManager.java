@@ -15,13 +15,7 @@ import thaumicenergistics.common.ThaumicEnergistics;
 @SideOnly(Side.CLIENT)
 public enum GuiTextureManager {
 
-    ESSENTIA_LEVEL_EMITTER("essentia.level.emitter"),
-    ESSENTIA_STORAGE_BUS("essentia.storage.bus"),
-    ESSENTIA_TERMINAL("essentia.terminal"),
-    ESSENTIA_IO_BUS("essentia.io.bus"),
     ARCANE_CRAFTING_TERMINAL("arcane.crafting"),
-    PRIORITY("priority"),
-    CELL_WORKBENCH("essentia.cell.workbench"),
     ARCANE_ASSEMBLER("arcane.assembler"),
     ARCANE_ASSEMBLER_VISBAR("arcane.assembler.visbar"),
     KNOWLEDGE_INSCRIBER("knowledge.inscriber"),
