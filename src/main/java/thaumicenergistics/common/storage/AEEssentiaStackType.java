@@ -400,4 +400,9 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
     public AEEssentiaStack getTestStack() {
         return this.testStack.copy();
     }
+
+    @Override
+    public int getTypeWeight() {
+        return 2;
+    }
 }
