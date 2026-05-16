@@ -287,7 +287,7 @@ public class GolemHooks {
             for (int i = 4; i < 31; ++i) {
                 try {
                     // Add the object
-                    watcher.addObject(GolemHooks.DATAWATCHER_ID, localRegistry.mappingsToString());
+                    watcher.addObject(i, localRegistry.mappingsToString());
 
                     // Object was added
                     GolemHooks.DATAWATCHER_ID = i;
