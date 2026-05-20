@@ -402,7 +402,7 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
     }
 
     @Override
-    public int getTypeWeight() {
+    public int getAmountPerByte() {
         return 2;
     }
 }
