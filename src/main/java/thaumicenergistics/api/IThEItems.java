@@ -171,4 +171,8 @@ public abstract class IThEItems {
      */
     @Nonnull
     public IThEItemDescription CellMicroscope;
+
+    // EC2 compatibility
+    @Nonnull
+    public IThEItemDescription WirelessEssentiaTerminal;
 }

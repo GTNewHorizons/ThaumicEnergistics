@@ -1,5 +1,6 @@
 package thaumicenergistics.implementaion;
 
+import appeng.api.AEApi;
 import thaumicenergistics.api.IThEItems;
 import thaumicenergistics.common.items.ItemEnum;
 import thaumicenergistics.common.items.ItemMaterial.MaterialTypes;
@@ -53,5 +54,9 @@ class ThEItems extends IThEItems {
 
         // Post-release
         this.CellMicroscope = new ThEItemDescription(ItemEnum.CELL_MICROSCOPE.getStack());
+
+        // EC2 compatibility
+        this.WirelessEssentiaTerminal = new ThEItemDescription(
+                AEApi.instance().definitions().items().wirelessTerminal().maybeStack(1).get());
     }
 }
