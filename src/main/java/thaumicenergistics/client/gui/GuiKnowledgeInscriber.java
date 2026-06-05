@@ -219,7 +219,7 @@ public class GuiKnowledgeInscriber extends ThEBaseGui {
                 this.title,
                 GuiKnowledgeInscriber.TITLE_POS_X,
                 GuiKnowledgeInscriber.TITLE_POS_Y,
-                GuiColors.InscriberTitle.getColor());
+                GuiColors.GuiTextColorGray.getColor());
 
         // Any particles to draw?
         if (this.hasParticlesToDraw) {

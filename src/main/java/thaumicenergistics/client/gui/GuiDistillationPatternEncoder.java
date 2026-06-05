@@ -136,7 +136,7 @@ public class GuiDistillationPatternEncoder extends AEBaseGui {
                 this.title,
                 GuiDistillationPatternEncoder.TITLE_POS_X,
                 GuiDistillationPatternEncoder.TITLE_POS_Y,
-                GuiColors.PatternTerminalTitle.getColor());
+                GuiColors.GuiTextColorGray.getColor());
 
         // Check the source item
         if (this.sourceItemDirty) {

@@ -216,7 +216,7 @@ public class GuiArcaneAssembler extends ThEBaseGui {
                 this.title,
                 GuiArcaneAssembler.TITLE_POS_X,
                 GuiArcaneAssembler.TITLE_POS_Y,
-                GuiColors.UpgradableTitle.getColor());
+                GuiColors.GuiTextColorGray.getColor());
 
         // Is the mouse over any of the bars?
         for (Aspect aspect : TileArcaneAssembler.PRIMALS) {
