@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 import appeng.api.storage.data.IAEStackType;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;
-import appeng.core.localization.GuiColors;
+import appeng.core.localization.ColorUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumcraft.api.aspects.Aspect;
@@ -136,7 +136,7 @@ public class GuiDistillationPatternEncoder extends AEBaseGui {
                 this.title,
                 GuiDistillationPatternEncoder.TITLE_POS_X,
                 GuiDistillationPatternEncoder.TITLE_POS_Y,
-                GuiColors.GuiTextColorGray.getColor());
+                ColorUtils.guiTextColorGray.getColor());
 
         // Check the source item
         if (this.sourceItemDirty) {
