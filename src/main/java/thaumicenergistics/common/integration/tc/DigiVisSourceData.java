@@ -11,9 +11,8 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import appeng.api.networking.IGrid;
-import appeng.api.parts.IPart;
-import appeng.api.parts.IPartHost;
 import appeng.api.util.DimensionalCoord;
+import appeng.util.Platform;
 import thaumicenergistics.api.grid.IDigiVisSource;
 import thaumicenergistics.common.registries.ThEStrings;
 
@@ -166,21 +165,12 @@ public class DigiVisSourceData {
                 // Get the source
                 visSource = (IDigiVisSource) tile;
             } else {
-                // Ensure the tile is a part host
-                if (!(tile instanceof IPartHost)) {
-                    return;
-                }
-
-                // Get the part from the host
-                IPart part = ((IPartHost) tile).getPart(this.side);
-
                 // Ensure we got the part, and it is a vis source
-                if (!(part instanceof IDigiVisSource)) {
+                if (!(Platform.getPartFromTE(tile, this.side) instanceof IDigiVisSource part)) {
                     return;
                 }
 
-                // Cast to the source
-                visSource = (IDigiVisSource) part;
+                visSource = part;
             }
 
             // Check the UID

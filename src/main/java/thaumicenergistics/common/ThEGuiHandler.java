@@ -1,14 +1,15 @@
 package thaumicenergistics.common;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import appeng.api.parts.IPart;
-import appeng.api.parts.IPartHost;
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
 import appeng.parts.AEBasePart;
+import appeng.util.Platform;
 import cpw.mods.fml.common.network.IGuiHandler;
 import thaumicenergistics.client.gui.GuiArcaneAssembler;
 import thaumicenergistics.client.gui.GuiArcaneCraftingTerminal;
@@ -57,30 +58,6 @@ public class ThEGuiHandler implements IGuiHandler {
     public static final int DISTILLATION_ENCODER = ThEGuiHandler.ID_STEP_VALUE * 10;
 
     /**
-     * Gets the AE part at the specified location.
-     *
-     * @param tileSide
-     * @param world
-     * @param x
-     * @param y
-     * @param z
-     * @return
-     */
-    private static IPart getPart(final ForgeDirection tileSide, final World world, final int x, final int y,
-            final int z) {
-        // Get the host at the specified position
-        IPartHost partHost = (IPartHost) (world.getTileEntity(x, y, z));
-
-        // Ensure we got a host
-        if (partHost == null) {
-            return null;
-        }
-
-        // Get the part from the host
-        return (partHost.getPart(tileSide));
-    }
-
-    /**
      * Get the gui element for the AE part at the specified location
      *
      * @param tileSide
@@ -94,7 +71,8 @@ public class ThEGuiHandler implements IGuiHandler {
      */
     private static Object getPartGuiElement(final ForgeDirection tileSide, final EntityPlayer player, final World world,
             final int x, final int y, final int z, final boolean isServerSide) {
-        IPart ipart = ThEGuiHandler.getPart(tileSide, world, x, y, z);
+        TileEntity tile = world.getTileEntity(x, y, z);
+        IPart ipart = Platform.getPartFromTE(tile, tileSide);
 
         if (ipart instanceof PartArcaneCraftingTerminal arcaneCraftingTerminalNew) {
             if (isServerSide) {

@@ -14,6 +14,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import com.google.common.collect.ImmutableSet;
 
 import appeng.api.config.Actionable;
+import appeng.api.implementations.parts.IPartCable;
 import appeng.api.implementations.tiles.IColorableTile;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGrid;
@@ -36,8 +37,8 @@ import appeng.me.GridAccessException;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
-import appeng.tile.networking.TileCableBus;
 import appeng.util.IterationCounter;
+import appeng.util.Platform;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -116,9 +117,9 @@ public abstract class TileProviderBase extends AENetworkTile
             }
 
             // Is that entity a cable?
-            if (tileEntity instanceof TileCableBus) {
+            if (Platform.getPartFromTE(tileEntity, ForgeDirection.UNKNOWN) instanceof IPartCable cable) {
                 // Set the color
-                sideColors[side.ordinal()] = ((TileCableBus) tileEntity).getColor();
+                sideColors[side.ordinal()] = cable.getCableColor();
             }
         }
 
