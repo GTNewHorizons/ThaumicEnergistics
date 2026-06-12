@@ -15,10 +15,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
 import appeng.api.AEApi;
-import appeng.api.parts.IPartHost;
 import appeng.core.CommonHelper;
 import appeng.parts.PartPlacement;
 import appeng.parts.PartPlacement.PlaceType;
+import appeng.util.Platform;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.wands.FocusUpgradeType;
@@ -223,8 +223,10 @@ public class ItemFocusAEWrench extends ItemFocusBasic {
             return false;
         }
 
-        // Is the block an part host?
-        boolean isPartHost = (te instanceof IPartHost);
+        // Is the block an AE2 part host?
+        boolean isPartHost = Platform
+                .selectPartFromTE(te, position.hitVec.addVector(-position.blockX, -position.blockY, -position.blockZ))
+                != null;
 
         // Was a part host right clicked?
         if (isPartHost && (action == Action.RIGHT_CLICK_BLOCK)) {
