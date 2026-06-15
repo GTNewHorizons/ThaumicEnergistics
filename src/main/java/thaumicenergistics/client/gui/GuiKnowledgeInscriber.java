@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
-import appeng.core.localization.GuiColors;
+import appeng.core.localization.ColorUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.client.gui.abstraction.ThEBaseGui;
@@ -219,7 +219,7 @@ public class GuiKnowledgeInscriber extends ThEBaseGui {
                 this.title,
                 GuiKnowledgeInscriber.TITLE_POS_X,
                 GuiKnowledgeInscriber.TITLE_POS_Y,
-                GuiColors.GuiTextColorGray.getColor());
+                ColorUtils.guiTextColorGray.getColor());
 
         // Any particles to draw?
         if (this.hasParticlesToDraw) {
