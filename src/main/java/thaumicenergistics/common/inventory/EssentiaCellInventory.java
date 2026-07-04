@@ -87,7 +87,10 @@ public class EssentiaCellInventory extends CellInventory<AEEssentiaStack> {
                 count += aes.getStackSize();
             }
         }
-        this.tagCompound.setShort(this.getStackTypeTag(), (short) this.cellStacks.size());
+        this.storedTypes = (short) this.cellStacks.size();
+        this.storedCount = count;
+
+        this.tagCompound.setShort(this.getStackTypeTag(), this.storedTypes);
         this.tagCompound.setLong(this.getStackCountTag(), count);
     }
 
