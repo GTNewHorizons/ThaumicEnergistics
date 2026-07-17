@@ -116,7 +116,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
             if (stack != null) {
                 // Build the display string
                 String aspectInfo = String.format(
-                        "  &#%x%s%s x %d",
+                        "  &#%06x%s%s x %d",
                         stack.getAspect().getColor(),
                         stack.getDisplayName(player),
                         EnumChatFormatting.WHITE,
@@ -141,7 +141,7 @@ public class ItemEssentiaCell extends Item implements ICellHandler, IStorageCell
         for (AEEssentiaStack stack : cellHandler.getPartitionList().getItems()) {
             if (stack == null) continue;
             Aspect aspect = stack.getAspect();
-            list.add(String.format("  &#%x%s", aspect.getColor(), stack.getDisplayName(player)));
+            list.add(String.format("  &#%06x%s", aspect.getColor(), stack.getDisplayName(player)));
         }
         return list;
     }
