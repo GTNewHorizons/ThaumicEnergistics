@@ -51,7 +51,8 @@ public class EssentiaCellInventory extends CellInventory<AEEssentiaStack> {
             index++;
         }
 
-        for (int i = index; i < this.storedTypes; i++) {
+        // Legacy cells can store stacks sparsely, so storedTypes is not a valid upper bound for cleanup.
+        for (int i = index; i < this.getMaxTypes(); i++) {
             this.tagCompound.removeTag(NBT_ESSENTIA_NUMBER_KEY + i);
         }
 
