@@ -21,6 +21,7 @@ import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.implementations.items.IMemoryCard;
 import appeng.api.implementations.items.MemoryCardMessages;
+import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.energy.IEnergyGrid;
@@ -113,6 +114,10 @@ public class PartVisInterface extends AEBasePart implements IGridTickable, IDigi
 
     public PartVisInterface(final ItemStack is) {
         super(is);
+
+        // Require a channel
+        this.getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
+
         this.UID = System.currentTimeMillis() ^ this.hashCode();
     }
 
