@@ -21,7 +21,6 @@ import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.implementations.items.IMemoryCard;
 import appeng.api.implementations.items.MemoryCardMessages;
-import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.energy.IEnergyGrid;
@@ -31,7 +30,8 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartRenderHelper;
 import appeng.api.util.AEColor;
-import appeng.parts.AEBasePart;
+import appeng.parts.PartBasicState;
+import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
@@ -50,7 +50,7 @@ import thaumicenergistics.common.registries.Renderers;
  * @author Nividica
  *
  */
-public class PartVisInterface extends AEBasePart implements IGridTickable, IDigiVisSource {
+public class PartVisInterface extends PartBasicState implements IGridTickable, IDigiVisSource {
 
     /**
      * NBT key for the unique ID
@@ -114,10 +114,7 @@ public class PartVisInterface extends AEBasePart implements IGridTickable, IDigi
 
     public PartVisInterface(final ItemStack is) {
         super(is);
-
-        // Require a channel
-        this.getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
-
+        this.getProxy().setIdlePowerUsage(0);
         this.UID = System.currentTimeMillis() ^ this.hashCode();
     }
 
@@ -307,7 +304,7 @@ public class PartVisInterface extends AEBasePart implements IGridTickable, IDigi
     @Override
     public int consumeVis(final @NotNull Aspect digiVisAspect, final int amount) {
         // Ensure the interface is active
-        if (!this.isActive()) {
+        if (!this.getProxy().isActive()) {
             return 0;
         }
 
@@ -405,16 +402,13 @@ public class PartVisInterface extends AEBasePart implements IGridTickable, IDigi
     }
 
     @Override
-    public boolean isActive() {
-        IGridNode gridNode = this.getGridNode();
-        if (gridNode == null) return false;
-        return gridNode.isActive();
-    }
-
-    @Override
     protected boolean useMemoryCard(EntityPlayer player) {
         final ItemStack hand = player.inventory.getCurrentItem();
         if (hand == null || !(hand.getItem() instanceof IMemoryCard memoryCard)) return false;
+
+        // Client-side interaction must succeed so AE2 sends the part interaction packet, but only the server may
+        // mutate the authoritative held stack and part state.
+        if (Platform.isClient()) return true;
 
         if (ForgeEventFactory.onItemUseStart(player, hand, 1) <= 0) return false;
 
