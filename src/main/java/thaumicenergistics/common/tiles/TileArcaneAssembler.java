@@ -582,6 +582,13 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
         return ThEApi.instance().blocks().ArcaneAssembler.getStack();
     }
 
+    /**
+     * Data pertaining to the linked digi-vis source
+     */
+    public DigiVisSourceData getVisSourceData() {
+        return this.visSourceInfo;
+    }
+
     @Override
     public void addWailaInformation(final List<String> tooltip) {
         // Is it active?

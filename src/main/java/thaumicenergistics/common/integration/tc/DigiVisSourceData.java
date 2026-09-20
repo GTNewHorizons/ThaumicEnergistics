@@ -226,6 +226,45 @@ public class DigiVisSourceData {
     }
 
     /**
+     * Gets the position of the source.
+     *
+     * @return The x,y,z of the source, or null if there is no data.
+     */
+    public int[] getSourcePosition() {
+        if (!this.hasData) {
+            return null;
+        }
+
+        return new int[] { this.x, this.y, this.z };
+    }
+
+    /**
+     * True if this data points at the specified source.
+     *
+     * @param source
+     *
+     * @return
+     */
+    public boolean isSource(final IDigiVisSource source) {
+        if (!this.hasData || (source == null)) {
+            return false;
+        }
+
+        // Check the UID first, as it is the cheapest comparison
+        if (this.UID != source.getUID()) {
+            return false;
+        }
+
+        // Get the source location
+        DimensionalCoord sourceLocation = source.getLocation();
+
+        return (this.worldID == sourceLocation.getWorld().provider.dimensionId) && (this.x == sourceLocation.x)
+                && (this.y == sourceLocation.y)
+                && (this.z == sourceLocation.z)
+                && (this.side == source.getSide());
+    }
+
+    /**
      * Reads the info directly from the tag.
      *
      * @param tag

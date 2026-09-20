@@ -91,6 +91,11 @@ thaumicenergistics.gui.digivis.source.name=Источник ЦифроВис
 thaumicenergistics.gui.vibration.chamber.stored=Хранится: %d %s
 thaumicenergistics.gui.vibration.chamber.processing=Прогресс: %s
 
+#Waila
+thaumicenergistics.waila.vis.linked.devices=Привязано устройств: %d
+thaumicenergistics.waila.vis.source=Источник вис: %d, %d, %d
+thaumicenergistics.waila.vis.source.none=Источник вис: нет
+
 #Research Tab
 tc.research_category.thaumicenergistics=Энергетика
 

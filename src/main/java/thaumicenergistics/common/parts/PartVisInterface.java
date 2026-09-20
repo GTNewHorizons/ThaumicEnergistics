@@ -22,6 +22,7 @@ import appeng.api.config.PowerMultiplier;
 import appeng.api.implementations.items.IMemoryCard;
 import appeng.api.implementations.items.MemoryCardMessages;
 import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.energy.IEnergyGrid;
 import appeng.api.networking.ticking.IGridTickable;
@@ -42,6 +43,7 @@ import thaumicenergistics.client.textures.BlockTextureManager;
 import thaumicenergistics.common.integration.tc.DigiVisSourceData;
 import thaumicenergistics.common.integration.tc.VisProviderProxy;
 import thaumicenergistics.common.registries.Renderers;
+import thaumicenergistics.common.tiles.TileArcaneAssembler;
 
 /**
  * Interfaces with a {@link TileVisRelay}.
@@ -390,6 +392,66 @@ public class PartVisInterface extends AEBasePart implements IGridTickable, IDigi
 
     public Boolean isVisProvider() {
         return this.isProvider;
+    }
+
+    /**
+     * If this end is a provider, the source it draws from.
+     */
+    public DigiVisSourceData getP2PSourceData() {
+        return this.visP2PSourceInfo;
+    }
+
+    /**
+     * Gets the source data of a machine that can be linked to an interface.
+     *
+     * @return The machines source data, or null if the machine can not be linked.
+     */
+    private static DigiVisSourceData getMachineSourceData(final IGridHost machine) {
+        if (machine instanceof PartVisInterface visInterface) {
+            return visInterface.visP2PSourceInfo;
+        }
+
+        if (machine instanceof PartArcaneCraftingTerminal terminal) {
+            return terminal.getVisSourceData();
+        }
+
+        if (machine instanceof TileArcaneAssembler assembler) {
+            return assembler.getVisSourceData();
+        }
+
+        return null;
+    }
+
+    private int countLinkedDevices(final IGrid grid, final Class<? extends IGridHost> machineClass) {
+        int count = 0;
+
+        for (IGridNode node : grid.getMachines(machineClass)) {
+            DigiVisSourceData sourceData = getMachineSourceData(node.getMachine());
+
+            if ((sourceData != null) && sourceData.isSource(this)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * Counts the devices in the network that draw vis from this interface.
+     *
+     * @return
+     */
+    public int countLinkedDevices() {
+        IGrid grid = this.getGrid();
+
+        if (grid == null) {
+            return 0;
+        }
+
+        return this.countLinkedDevices(grid, PartVisInterface.class)
+                + this.countLinkedDevices(grid, PartCreativeVisInterface.class)
+                + this.countLinkedDevices(grid, PartArcaneCraftingTerminal.class)
+                + this.countLinkedDevices(grid, TileArcaneAssembler.class);
     }
 
     @Override

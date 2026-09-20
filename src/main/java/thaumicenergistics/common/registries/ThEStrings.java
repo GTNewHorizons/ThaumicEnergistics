@@ -102,7 +102,12 @@ public enum ThEStrings {
     GUi_VibrationChamber_Stored("gui.vibration.chamber.stored", false),
     GUi_VibrationChamber_Processing("gui.vibration.chamber.processing", false),
 
-    Gui_TypeEssentia("gui.essentia", false);
+    Gui_TypeEssentia("gui.essentia", false),
+
+    // Waila
+    Waila_VisLinkedDevices("waila.vis.linked.devices", false),
+    Waila_VisSource("waila.vis.source", false),
+    Waila_VisSourceNone("waila.vis.source.none", false);
 
     private String unlocalized;
     private boolean isDotName;
