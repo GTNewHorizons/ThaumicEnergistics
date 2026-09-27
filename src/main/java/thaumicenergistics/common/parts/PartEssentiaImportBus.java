@@ -108,8 +108,10 @@ public class PartEssentiaImportBus extends PartBaseImportBus<AEEssentiaStack> {
             if (aes.getStackSize() <= 0) return true;
         }
 
-        EssentiaTileContainerHelper.INSTANCE
-                .extractFromContainer(container, (int) aes.getStackSize(), aspect, Actionable.MODULATE);
+        if (EssentiaTileContainerHelper.INSTANCE
+                .extractFromContainer(container, (int) aes.getStackSize(), aspect, Actionable.MODULATE) > 0) {
+            this.worked = true;
+        }
 
         return true;
     }
