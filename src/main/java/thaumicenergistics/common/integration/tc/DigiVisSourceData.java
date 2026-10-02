@@ -239,6 +239,15 @@ public class DigiVisSourceData {
     }
 
     /**
+     * Gets the dimension the source is in.
+     *
+     * @return The dimension id, or {@link Integer#MIN_VALUE} if there is no data.
+     */
+    public int getSourceDimension() {
+        return this.hasData ? this.worldID : Integer.MIN_VALUE;
+    }
+
+    /**
      * True if this data points at the specified source.
      *
      * @param source

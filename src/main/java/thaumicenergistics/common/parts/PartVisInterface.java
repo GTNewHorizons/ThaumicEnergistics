@@ -219,7 +219,7 @@ public class PartVisInterface extends PartBasicState implements IGridTickable, I
     /**
      * Verifies that a p2p source is valid
      */
-    private boolean isP2PSourceValid() {
+    public boolean isP2PSourceValid() {
         // Is there anything even linked to?
         if (!this.visP2PSourceInfo.hasSourceData()) {
             return false;
