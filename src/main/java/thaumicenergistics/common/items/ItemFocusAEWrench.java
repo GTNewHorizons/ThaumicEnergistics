@@ -154,9 +154,6 @@ public class ItemFocusAEWrench extends ItemFocusBasic {
         // Update the AE render mode, in-case they are hiding facades
         CommonHelper.proxy.updateRenderMode(player);
 
-        // Set the eye height
-        PartPlacement.setEyeHeight(eyeHeight);
-
         // Wrench the target
         PartPlacement.place(
                 wrench,
