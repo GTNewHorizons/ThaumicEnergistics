@@ -218,7 +218,6 @@ public abstract class TileProviderBase extends AENetworkTile
 
         // Are we server side?
         if (EffectiveSide.isServerSide()) {
-            // Refresh the node's cached color and connections when our color changes.
             if (colorChanged) {
                 IGridNode gridNode = this.getProxy().getNode();
                 if (gridNode != null) {
