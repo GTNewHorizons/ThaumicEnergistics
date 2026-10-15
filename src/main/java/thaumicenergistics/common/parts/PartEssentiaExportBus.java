@@ -106,6 +106,7 @@ public class PartEssentiaExportBus extends PartBaseExportBus<AEEssentiaStack> im
 
     @Override
     protected boolean canInjectStackToTarget(AEEssentiaStack aes) {
+        if (aes == null) return false;
         IAspectContainer container = (IAspectContainer) this.getTarget();
         if (container == null) return false;
 
