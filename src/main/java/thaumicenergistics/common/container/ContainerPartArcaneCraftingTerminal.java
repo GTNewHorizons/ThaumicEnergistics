@@ -400,8 +400,9 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         simStack.stackSize *= maxTimesToCraft;
         ItemStack simResult = adaptor.simulateAdd(simStack);
         if (simResult != null) {
-            maxTimesToCraft = (int) Math
-                    .floor((double) simResult.stackSize / (double) this.resultSlot.getStack().stackSize);
+            maxTimesToCraft = (int) Math.floor(
+                    (double) (simStack.stackSize - simResult.stackSize)
+                            / (double) this.resultSlot.getStack().stackSize);
         }
 
         return maxTimesToCraft;
