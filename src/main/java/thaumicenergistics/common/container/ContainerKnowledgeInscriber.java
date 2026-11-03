@@ -477,8 +477,10 @@ public class ContainerKnowledgeInscriber extends ContainerWithPlayerInventory {
                     return;
                 }
             } else {
-                // Unknown recipe type.
-                return;
+                // Dynamic recipes do not expose ingredients, so use the matched crafting grid.
+                for (int slotNumber = 0; slotNumber < inputs.length; ++slotNumber) {
+                    inputs[slotNumber] = ItemStack.copyItemStack(this.craftingSlots[slotNumber].getStack());
+                }
             }
 
             // Get the aspect cost

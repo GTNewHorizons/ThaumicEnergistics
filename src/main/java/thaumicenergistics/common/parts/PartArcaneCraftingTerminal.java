@@ -71,6 +71,13 @@ public class PartArcaneCraftingTerminal extends AbstractPartTerminal implements 
         return this.visSourceInfo;
     }
 
+    /**
+     * True if the linked source can be reached from this terminal.
+     */
+    public boolean isVisSourceReachable() {
+        return this.visSourceInfo.tryGetSource(this.getGrid()) != null;
+    }
+
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
         return new TickingRequest(2, 20, false, false);

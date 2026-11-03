@@ -202,6 +202,12 @@ public class ArcaneCraftingPattern implements ICraftingPatternDetails {
 
                 this.ingredientsAE[index] = AEApi.instance().storage().createItemStack(firstIng);
             }
+
+            // Recipes may list an ingredient with a stack size of 0 (e.g. a non-consumed focus shown in NEI),
+            // but a pattern needs at least one of each input, otherwise AE2 divides by zero when planning
+            if (this.ingredientsAE[index] != null && this.ingredientsAE[index].getStackSize() < 1) {
+                this.ingredientsAE[index].setStackSize(1);
+            }
         }
     }
 

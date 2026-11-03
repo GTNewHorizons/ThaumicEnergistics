@@ -211,15 +211,19 @@ public abstract class TileProviderBase extends AENetworkTile
      * Sets the color of the provider. This does not set the isColorForced flag to true.
      */
     protected void setProviderColor(final AEColor gridColor) {
+        boolean colorChanged = this.getProxy().getColor() != gridColor;
+
         // Set our color to match
         this.getProxy().setColor(gridColor);
 
         // Are we server side?
         if (EffectiveSide.isServerSide()) {
-            /*
-             * // Get the grid node IGridNode gridNode = this.getProxy().getNode(); // Do we have a grid node? if(
-             * gridNode != null ) { // Update the grid node this.getProxy().getNode().updateState(); }
-             */
+            if (colorChanged) {
+                IGridNode gridNode = this.getProxy().getNode();
+                if (gridNode != null) {
+                    gridNode.updateState();
+                }
+            }
 
             // Mark the tile as needing updates and to be saved
             this.markForUpdate();

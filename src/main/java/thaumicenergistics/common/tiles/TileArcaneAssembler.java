@@ -589,6 +589,17 @@ public class TileArcaneAssembler extends AENetworkInvTile implements ICraftingPr
         return this.visSourceInfo;
     }
 
+    /**
+     * True if the linked source can be reached from this assembler.
+     */
+    public boolean isVisSourceReachable() {
+        try {
+            return this.visSourceInfo.tryGetSource(this.getProxy().getGrid()) != null;
+        } catch (GridAccessException ignored) {
+            return false;
+        }
+    }
+
     @Override
     public void addWailaInformation(final List<String> tooltip) {
         // Is it active?

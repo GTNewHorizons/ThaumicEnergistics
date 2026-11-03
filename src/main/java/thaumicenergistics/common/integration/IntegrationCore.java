@@ -25,11 +25,6 @@ public final class IntegrationCore {
             // Integrate with NEI
             ModuleNEI.init();
         }
-
-        if (Loader.isModLoaded("Waila")) {
-            // Integrate with Waila
-            ModuleWaila.init();
-        }
     }
 
     /**
@@ -41,6 +36,10 @@ public final class IntegrationCore {
         if (EffectiveSide.isClientSide()) {
             // Integrate with client mods
             IntegrationCore.integrateWithClientMods();
+        }
+        if (Loader.isModLoaded("Waila")) {
+            // The server fills in the tooltip data, so both sides have to register
+            ModuleWaila.init();
         }
         if (Loader.isModLoaded("ComputerCraft")) {
             ModuleCC.init();

@@ -8,12 +8,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import appeng.api.parts.IPart;
-import appeng.api.parts.IPartHost;
 import appeng.api.parts.SelectedPart;
 import appeng.tile.networking.TileCableBus;
+import appeng.util.Platform;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import mcp.mobius.waila.api.IWailaConfigHandler;
@@ -53,9 +54,19 @@ public class ModuleWaila implements IWailaDataProvider {
     private static final String NBT_KEY_LINKED_DEVICES = "linkedDevices";
 
     /**
-     * NBT key for the position of the source a machine draws from.
+     * NBT key for the position of the source a device draws from.
      */
     private static final String NBT_KEY_SOURCE_POSITION = "sourcePosition";
+
+    /**
+     * NBT key for the dimension name of the source, written only when it differs from the viewer's.
+     */
+    private static final String NBT_KEY_SOURCE_DIMENSION = "sourceDimension";
+
+    /**
+     * NBT key set when the device holds a link it can not draw from.
+     */
+    private static final String NBT_KEY_SOURCE_UNREACHABLE = "sourceUnreachable";
 
     /**
      * Attempts to integrate with Waila
@@ -93,6 +104,14 @@ public class ModuleWaila implements IWailaDataProvider {
         // The vis link info is only known to the server
         registrar.registerNBTProvider(ModuleWaila.INSTANCE, TileCableBus.class);
         registrar.registerNBTProvider(ModuleWaila.INSTANCE, BlockArcaneAssembler.class);
+
+        // Covering the cable with a microblock moves our parts into a multipart tile
+        try {
+            Class<?> multipartTile = Class.forName("codechicken.multipart.TileMultipart");
+
+            registrar.registerBodyProvider(ModuleWaila.INSTANCE, multipartTile);
+            registrar.registerNBTProvider(ModuleWaila.INSTANCE, multipartTile);
+        } catch (ClassNotFoundException ignored) {}
     }
 
     /**
@@ -100,13 +119,14 @@ public class ModuleWaila implements IWailaDataProvider {
      *
      * @return The info, or null if the part has no vis link.
      */
-    private static NBTTagCompound getPartVisLinkInfo(final IPart part) {
+    private static NBTTagCompound getPartVisLinkInfo(final IPart part, final World world) {
         NBTTagCompound info = new NBTTagCompound();
 
         if (part instanceof PartVisInterface visInterface) {
             // A provider draws from another interface, everything else draws from the vis net
             if (visInterface.isVisProvider()) {
-                ModuleWaila.writeSourcePosition(info, visInterface.getP2PSourceData());
+                ModuleWaila
+                        .writeSourceInfo(info, visInterface.getP2PSourceData(), visInterface.isP2PSourceValid(), world);
             } else {
                 info.setInteger(ModuleWaila.NBT_KEY_LINKED_DEVICES, visInterface.countLinkedDevices());
             }
@@ -115,7 +135,7 @@ public class ModuleWaila implements IWailaDataProvider {
         }
 
         if (part instanceof PartArcaneCraftingTerminal terminal) {
-            ModuleWaila.writeSourcePosition(info, terminal.getVisSourceData());
+            ModuleWaila.writeSourceInfo(info, terminal.getVisSourceData(), terminal.isVisSourceReachable(), world);
 
             return info;
         }
@@ -123,11 +143,30 @@ public class ModuleWaila implements IWailaDataProvider {
         return null;
     }
 
-    private static void writeSourcePosition(final NBTTagCompound info, final DigiVisSourceData sourceData) {
+    private static void writeSourceInfo(final NBTTagCompound info, final DigiVisSourceData sourceData,
+            final boolean reachable, final World world) {
         int[] position = sourceData.getSourcePosition();
 
-        if (position != null) {
-            info.setIntArray(ModuleWaila.NBT_KEY_SOURCE_POSITION, position);
+        if (position == null) {
+            return;
+        }
+
+        // Without this, a link the device can not draw from reads as a working one
+        if (!reachable) {
+            info.setBoolean(ModuleWaila.NBT_KEY_SOURCE_UNREACHABLE, true);
+            return;
+        }
+
+        info.setIntArray(ModuleWaila.NBT_KEY_SOURCE_POSITION, position);
+
+        int dimension = sourceData.getSourceDimension();
+
+        if (dimension != world.provider.dimensionId) {
+            World sourceWorld = DimensionManager.getWorld(dimension);
+
+            info.setString(
+                    ModuleWaila.NBT_KEY_SOURCE_DIMENSION,
+                    sourceWorld != null ? sourceWorld.provider.getDimensionName() : String.valueOf(dimension));
         }
     }
 
@@ -145,18 +184,19 @@ public class ModuleWaila implements IWailaDataProvider {
 
         String key = ModuleWaila.NBT_KEY_VIS_LINK;
 
-        if (tileEntity instanceof IPartHost host) {
+        if (!(tileEntity instanceof TileArcaneAssembler)) {
             MovingObjectPosition position = accessor.getPosition();
 
             if (position == null) {
                 return null;
             }
 
-            // Find the part the player is looking at
-            SelectedPart selected = host
-                    .selectPart(position.hitVec.addVector(-position.blockX, -position.blockY, -position.blockZ));
+            // The host is a multipart tile when the cable is covered
+            SelectedPart selected = Platform.selectPartFromTE(
+                    tileEntity,
+                    position.hitVec.addVector(-position.blockX, -position.blockY, -position.blockZ));
 
-            if (selected.part == null) {
+            if ((selected == null) || (selected.part == null)) {
                 return null;
             }
 
@@ -175,6 +215,11 @@ public class ModuleWaila implements IWailaDataProvider {
             return;
         }
 
+        if (info.hasKey(ModuleWaila.NBT_KEY_SOURCE_UNREACHABLE)) {
+            tooltip.add(ThEStrings.Waila_VisSourceUnreachable.getLocalized());
+            return;
+        }
+
         if (!info.hasKey(ModuleWaila.NBT_KEY_SOURCE_POSITION)) {
             tooltip.add(ThEStrings.Waila_VisSourceNone.getLocalized());
             return;
@@ -182,27 +227,38 @@ public class ModuleWaila implements IWailaDataProvider {
 
         int[] position = info.getIntArray(ModuleWaila.NBT_KEY_SOURCE_POSITION);
 
+        if (info.hasKey(ModuleWaila.NBT_KEY_SOURCE_DIMENSION)) {
+            tooltip.add(
+                    String.format(
+                            ThEStrings.Waila_VisSourceInDimension.getLocalized(),
+                            position[0],
+                            position[1],
+                            position[2],
+                            info.getString(ModuleWaila.NBT_KEY_SOURCE_DIMENSION)));
+            return;
+        }
+
         tooltip.add(String.format(ThEStrings.Waila_VisSource.getLocalized(), position[0], position[1], position[2]));
     }
 
     @Override
     public NBTTagCompound getNBTData(final EntityPlayerMP player, final TileEntity tileEntity,
             final NBTTagCompound data, final World world, final int x, final int y, final int z) {
-        if (tileEntity instanceof IPartHost host) {
+        if (tileEntity instanceof TileArcaneAssembler assembler) {
+            NBTTagCompound info = new NBTTagCompound();
+
+            ModuleWaila.writeSourceInfo(info, assembler.getVisSourceData(), assembler.isVisSourceReachable(), world);
+
+            data.setTag(ModuleWaila.NBT_KEY_VIS_LINK, info);
+        } else {
             // Write the info of every part that has a vis link
             for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-                NBTTagCompound info = ModuleWaila.getPartVisLinkInfo(host.getPart(side));
+                NBTTagCompound info = ModuleWaila.getPartVisLinkInfo(Platform.getPartFromTE(tileEntity, side), world);
 
                 if (info != null) {
                     data.setTag(ModuleWaila.NBT_KEY_VIS_LINK + side.ordinal(), info);
                 }
             }
-        } else if (tileEntity instanceof TileArcaneAssembler assembler) {
-            NBTTagCompound info = new NBTTagCompound();
-
-            ModuleWaila.writeSourcePosition(info, assembler.getVisSourceData());
-
-            data.setTag(ModuleWaila.NBT_KEY_VIS_LINK, info);
         }
 
         return data;
