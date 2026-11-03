@@ -283,6 +283,38 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
                 .findMatchingRecipe(craftingInventory, this.terminal.getTile().getWorldObj());
     }
 
+    /**
+     * Does the current crafting grid match any regular or arcane recipe?
+     */
+    private boolean hasMatchingRecipe() {
+        if (this.findMatchingRegularResult() != null) {
+            return true;
+        }
+
+        return ArcaneRecipeHelper.INSTANCE
+                .findMatchingArcaneResult(this.terminal.craftingGridInventory, 0, 9, this.getInventoryPlayer().player)
+                != null;
+    }
+
+    /**
+     * Puts an item back into the network, dropping it at the players feet if the network can not take it.
+     */
+    private void returnItemToNetwork(final ItemStack itemStack) {
+        IMEMonitor<IAEItemStack> monitor = this.getItemMonitor();
+
+        IAEItemStack leftOver = (monitor != null)
+                ? monitor.injectItems(AEItemStack.create(itemStack), Actionable.MODULATE, this.playerSource)
+                : AEItemStack.create(itemStack);
+
+        if (leftOver != null && leftOver.getStackSize() > 0) {
+            ItemStack drop = leftOver.getItemStack();
+            EntityPlayer player = this.getInventoryPlayer().player;
+            if (!player.inventory.addItemStackToInventory(drop)) {
+                player.entityDropItem(drop, 0.0f);
+            }
+        }
+    }
+
     @Override
     public void onCraftMatrixChanged(IInventory p_75130_1_) {
         this.requiredAspects = null;
@@ -471,6 +503,17 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
                     if (!ItemStack.areItemStacksEqual(replenishment, slotStack)) {
                         // Set the slot contents to the replenishment
                         this.terminal.craftingGridInventory.setInventorySlotContents(slotIndex, replenishment);
+
+                        /*
+                         * The replenishment was an ore dictionary match, which the recipe itself may not accept. Undo
+                         * the substitution and return the item to the network if the recipe no longer matches.
+                         */
+                        if (!this.hasMatchingRecipe()) {
+                            this.terminal.craftingGridInventory.setInventorySlotContents(slotIndex, slotStack);
+                            this.returnItemToNetwork(replenishment);
+                            this.terminal.craftingGridInventory.decrStackSize(slotIndex, 1);
+                            continue;
+                        }
                     }
                     continue;
                 }
