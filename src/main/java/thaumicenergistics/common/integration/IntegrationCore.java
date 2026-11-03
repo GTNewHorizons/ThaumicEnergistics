@@ -1,12 +1,14 @@
 package thaumicenergistics.common.integration;
 
 import appeng.api.config.Upgrades;
+import appeng.items.tools.ToolNetworkVisualiser;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import thaumicenergistics.api.ThEApi;
 import thaumicenergistics.common.blocks.BlockArcaneAssembler;
+import thaumicenergistics.common.parts.PartVisInterface;
 import thaumicenergistics.common.tiles.TileEssentiaProvider;
 import thaumicenergistics.common.utils.EffectiveSide;
 import thaumicenergistics.common.utils.ThELog;
@@ -46,6 +48,10 @@ public final class IntegrationCore {
         }
         // Send a message to Thaumic Tinkerer to blacklist the essentia provider from its CC support
         FMLInterModComms.sendMessage("ThaumicTinkerer", "AddCCBlacklist", TileEssentiaProvider.class.getName());
+
+        // Show vis links in the AE2 network visualiser
+        ToolNetworkVisualiser
+                .registerExternalLinkProvider((grid, world, out) -> PartVisInterface.addVisLinks(grid, out));
 
         // Register the Arcane Assembler for upgrades
         Upgrades.SPEED.registerItem(
