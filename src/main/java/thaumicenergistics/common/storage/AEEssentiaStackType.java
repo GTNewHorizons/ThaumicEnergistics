@@ -83,7 +83,9 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
     @Override
     public boolean isContainerItemForType(@Nullable ItemStack container) {
         if (container == null) return false;
-        return container.getItem() instanceof IEssentiaContainerItem || container.getItem() instanceof BlockJarItem;
+        final Item item = container.getItem();
+        if (item instanceof ItemCrystalEssence) return false;
+        return item instanceof IEssentiaContainerItem || item instanceof BlockJarItem;
     }
 
     @Override
