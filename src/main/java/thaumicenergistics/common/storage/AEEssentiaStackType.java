@@ -29,6 +29,7 @@ import thaumcraft.common.blocks.BlockJarItem;
 import thaumcraft.common.blocks.ItemJarFilled;
 import thaumcraft.common.items.ItemCrystalEssence;
 import thaumcraft.common.items.ItemEssence;
+import thaumcraft.common.items.ItemWispEssence;
 import thaumicenergistics.api.IThEEssentiaContainerPermission;
 import thaumicenergistics.api.items.IRestrictedEssentiaContainerItem;
 import thaumicenergistics.common.integration.ModsList;
@@ -85,7 +86,7 @@ public class AEEssentiaStackType implements IAEStackType<AEEssentiaStack> {
     public boolean isContainerItemForType(@Nullable ItemStack container) {
         if (container == null) return false;
         final Item item = container.getItem();
-        if (item instanceof ItemCrystalEssence) return false;
+        if (item instanceof ItemCrystalEssence || item instanceof ItemWispEssence) return false;
         return item instanceof IEssentiaContainerItem || item instanceof BlockJarItem;
     }
 
