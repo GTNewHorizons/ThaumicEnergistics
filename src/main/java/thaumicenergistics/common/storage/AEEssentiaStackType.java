@@ -27,6 +27,7 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
 import thaumcraft.common.blocks.BlockJarItem;
 import thaumcraft.common.blocks.ItemJarFilled;
+import thaumcraft.common.items.ItemCrystalEssence;
 import thaumcraft.common.items.ItemEssence;
 import thaumicenergistics.api.IThEEssentiaContainerPermission;
 import thaumicenergistics.api.items.IRestrictedEssentiaContainerItem;
