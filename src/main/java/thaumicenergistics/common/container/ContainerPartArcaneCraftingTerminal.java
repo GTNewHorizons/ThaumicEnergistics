@@ -11,6 +11,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 
@@ -39,6 +40,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.IArcaneRecipe;
 import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.tiles.TileMagicWorkbench;
 import thaumicenergistics.client.gui.ThEPrimaryGui;
 import thaumicenergistics.common.container.slot.SlotArcaneCraftingResult;
 import thaumicenergistics.common.container.slot.SlotArmor;
@@ -298,11 +300,44 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         return copy;
     }
 
+    private IRecipe findMatchingRegularRecipe(final ItemStack[] gridSnapshot, final ItemStack expectedResult) {
+        InventoryCrafting craftingInventory = new InventoryCrafting(new ContainerNull(), 3, 3);
+        for (int slotIndex = 0; slotIndex < 9; slotIndex++) {
+            craftingInventory.setInventorySlotContents(slotIndex, gridSnapshot[slotIndex]);
+        }
+
+        for (Object recipeObject : CraftingManager.getInstance().getRecipeList()) {
+            IRecipe recipe = (IRecipe) recipeObject;
+            if (recipe.matches(craftingInventory, this.terminal.getTile().getWorldObj())) {
+                ItemStack recipeResult = recipe.getCraftingResult(craftingInventory);
+                return ItemStack.areItemStacksEqual(recipeResult, expectedResult) ? recipe : null;
+            }
+        }
+
+        return null;
+    }
+
+    private IArcaneRecipe findMatchingArcaneRecipe(final ItemStack[] gridSnapshot, final ItemStack expectedResult) {
+        InventoryCrafting craftingInventory = new InventoryCrafting(new ContainerNull(), 3, 3);
+        for (int slotIndex = 0; slotIndex < 9; slotIndex++) {
+            craftingInventory.setInventorySlotContents(slotIndex, gridSnapshot[slotIndex]);
+        }
+
+        IArcaneRecipe recipe = ArcaneRecipeHelper.INSTANCE
+                .findMatchingArcaneResult(craftingInventory, 0, 9, this.getInventoryPlayer().player);
+        if (recipe == null) {
+            return null;
+        }
+
+        ItemStack recipeResult = ArcaneRecipeHelper.INSTANCE.getRecipeOutput(craftingInventory, 0, 9, recipe);
+        return ItemStack.areItemStacksEqual(recipeResult, expectedResult) ? recipe : null;
+    }
+
     /**
      * Does putting the candidate into the given slot of the grid still produce the expected result?
      */
     private boolean isValidReplenishment(final ItemStack[] gridSnapshot, final int slotIndex, final ItemStack candidate,
-            final ItemStack expectedResult) {
+            final ItemStack expectedResult, final IRecipe regularRecipe, final IArcaneRecipe arcaneRecipe) {
         if (expectedResult == null) {
             return false;
         }
@@ -312,22 +347,36 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
             testInventory.setInventorySlotContents(index, (index == slotIndex) ? candidate : gridSnapshot[index]);
         }
 
-        ItemStack testResult = CraftingManager.getInstance()
-                .findMatchingRecipe(testInventory, this.terminal.getTile().getWorldObj());
+        ItemStack testResult = null;
+        if (regularRecipe != null) {
+            if (regularRecipe.matches(testInventory, this.terminal.getTile().getWorldObj())) {
+                testResult = regularRecipe.getCraftingResult(testInventory);
+            }
+        } else if (arcaneRecipe != null) {
+            TileMagicWorkbench testWorkbench = ArcaneRecipeHelper.INSTANCE.createBridgeInventory(testInventory, 0, 9);
+            if (arcaneRecipe.matches(
+                    testWorkbench,
+                    this.getInventoryPlayer().player.worldObj,
+                    this.getInventoryPlayer().player)) {
+                testResult = arcaneRecipe.getCraftingResult(testWorkbench);
+            }
+        } else {
+            testResult = CraftingManager.getInstance()
+                    .findMatchingRecipe(testInventory, this.terminal.getTile().getWorldObj());
 
-        if (testResult == null) {
-            // Not a regular recipe, try the arcane recipes.
-            IArcaneRecipe arcaneRecipe = ArcaneRecipeHelper.INSTANCE
-                    .findMatchingArcaneResult(testInventory, 0, 9, this.getInventoryPlayer().player);
+            if (testResult == null) {
+                // Not a regular recipe, try the arcane recipes.
+                IArcaneRecipe matchingArcaneRecipe = ArcaneRecipeHelper.INSTANCE
+                        .findMatchingArcaneResult(testInventory, 0, 9, this.getInventoryPlayer().player);
 
-            if (arcaneRecipe != null) {
-                testResult = ArcaneRecipeHelper.INSTANCE.getRecipeOutput(testInventory, 0, 9, arcaneRecipe);
+                if (matchingArcaneRecipe != null) {
+                    testResult = ArcaneRecipeHelper.INSTANCE.getRecipeOutput(testInventory, 0, 9, matchingArcaneRecipe);
+                }
             }
         }
 
         // The replacement must not change what is being crafted.
-        return (testResult != null) && testResult.isItemEqual(expectedResult)
-                && ItemStack.areItemStackTagsEqual(testResult, expectedResult);
+        return ItemStack.areItemStacksEqual(testResult, expectedResult);
     }
 
     @Override
@@ -348,7 +397,8 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
      * Attempts to extract an item from the network. Used when crafting to replenish the crafting grid.
      */
     public ItemStack requestCraftingReplenishment(final ItemStack itemStack, final int slotIndex,
-            final ItemStack[] gridSnapshot, final ItemStack expectedResult) {
+            final ItemStack[] gridSnapshot, final ItemStack expectedResult, final IRecipe regularRecipe,
+            final IArcaneRecipe arcaneRecipe) {
         IMEMonitor<IAEItemStack> monitor = this.getItemMonitor();
         if (monitor == null) {
             return null;
@@ -387,8 +437,13 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
                  * An ore dictionary match is not necessarily accepted by the recipe, so test the candidate against the
                  * grid as it was before the ingredients were consumed, and keep searching if it does not fit.
                  */
-                if (!this
-                        .isValidReplenishment(gridSnapshot, slotIndex, candidateStack.getItemStack(), expectedResult)) {
+                if (!this.isValidReplenishment(
+                        gridSnapshot,
+                        slotIndex,
+                        candidateStack.getItemStack(),
+                        expectedResult,
+                        regularRecipe,
+                        arcaneRecipe)) {
                     continue;
                 }
 
@@ -486,6 +541,9 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
         // Remember the grid and the result, replenishments are tested against them while the grid is consumed.
         ItemStack[] gridSnapshot = this.copyCraftingGrid();
         ItemStack expectedResult = this.resultInventory.getStackInSlot(0);
+        IRecipe regularRecipe = this.findMatchingRegularRecipe(gridSnapshot, expectedResult);
+        IArcaneRecipe arcaneRecipe = regularRecipe == null ? this.findMatchingArcaneRecipe(gridSnapshot, expectedResult)
+                : null;
 
         // Loop over all crafting slots
         for (int slotIndex = 0; slotIndex < this.terminal.craftingGridInventory.getSizeInventory(); slotIndex++) {
@@ -524,8 +582,13 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
             // If decrementing it would result in it being empty, ask the ME system for a replenishment.
             if (slotStack.stackSize == 1) {
                 // First check if we can replenish it from the ME network
-                ItemStack replenishment = this
-                        .requestCraftingReplenishment(slotStack, slotIndex, gridSnapshot, expectedResult);
+                ItemStack replenishment = this.requestCraftingReplenishment(
+                        slotStack,
+                        slotIndex,
+                        gridSnapshot,
+                        expectedResult,
+                        regularRecipe,
+                        arcaneRecipe);
 
                 // Did we get a replenishment?
                 if (replenishment != null) {
@@ -534,6 +597,7 @@ public class ContainerPartArcaneCraftingTerminal extends ContainerMEMonitorable 
                         // Set the slot contents to the replenishment
                         this.terminal.craftingGridInventory.setInventorySlotContents(slotIndex, replenishment);
                     }
+                    gridSnapshot[slotIndex] = replenishment.copy();
                     continue;
                 }
             }
