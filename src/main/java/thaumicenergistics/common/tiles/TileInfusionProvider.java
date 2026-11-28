@@ -5,8 +5,8 @@ import net.minecraft.item.ItemStack;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectSource;
-import thaumcraft.common.Thaumcraft;
 import thaumicenergistics.api.ThEApi;
+import thaumicenergistics.common.network.packet.client.Packet_R_ParticleFX;
 import thaumicenergistics.common.tiles.abstraction.TileProviderBase;
 
 /**
@@ -17,25 +17,9 @@ import thaumicenergistics.common.tiles.abstraction.TileProviderBase;
  */
 public class TileInfusionProvider extends TileProviderBase implements IAspectSource {
 
-    /**
-     * Shows runes on the infusion provider.
-     *
-     * @param aspectColor
-     */
     public void doParticalFX(final int aspectColor) {
-        // Convert each color to percentage
-        float red = (aspectColor & 0xFF0000) / (float) 0xFF0000;
-        float green = (aspectColor & 0x00FF00) / (float) 0x00FF00;
-        float blue = (aspectColor & 0x0000FF) / (float) 0x0000FF;
-
-        // Add particles
-        for (int i = 0; i < 5; i++) {
-            Thaumcraft.proxy
-                    .blockRunes(this.worldObj, this.xCoord, this.yCoord, this.zCoord, red, green, blue, 15, -0.1F);
-        }
-        for (int i = 0; i < 5; i++) {
-            Thaumcraft.proxy
-                    .blockRunes(this.worldObj, this.xCoord, this.yCoord, this.zCoord, red, green, blue, 15, 0.1F);
+        if (!this.worldObj.isRemote) {
+            Packet_R_ParticleFX.sendInfusionRunes(this, aspectColor);
         }
     }
 
