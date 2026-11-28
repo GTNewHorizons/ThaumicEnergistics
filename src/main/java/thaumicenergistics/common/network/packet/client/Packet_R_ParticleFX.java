@@ -3,6 +3,7 @@ package thaumicenergistics.common.network.packet.client;
 import java.awt.Color;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import cpw.mods.fml.relauncher.Side;
@@ -11,6 +12,7 @@ import io.netty.buffer.ByteBuf;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.client.fx.ParticleEngine;
 import thaumcraft.client.fx.beams.FXBeam;
+import thaumcraft.common.Thaumcraft;
 import thaumicenergistics.common.network.NetworkHandler;
 
 /**
@@ -22,6 +24,7 @@ import thaumicenergistics.common.network.NetworkHandler;
 public class Packet_R_ParticleFX extends ThEAreaPacket {
 
     private static final byte MODE_WRENCH_FX = 0;
+    private static final byte MODE_INFUSION_RUNES = 1;
 
     /**
      * Destination coords.
@@ -33,45 +36,55 @@ public class Packet_R_ParticleFX extends ThEAreaPacket {
      */
     private int aspectColor;
 
-    /**
-     * Creates an FX packet.
-     *
-     * @param world
-     * @param sourceX
-     * @param sourceY
-     * @param sourceZ
-     * @param destinationX
-     * @param destinationY
-     * @param destinationZ
-     * @param aspectColor
-     * @param range
-     */
+    public Packet_R_ParticleFX() {}
+
+    private Packet_R_ParticleFX(final byte mode, final World world, final double x, final double y, final double z,
+            final int aspectColor) {
+        this.mode = mode;
+        this.targetWorld = world;
+        this.targetX = (float) x;
+        this.targetY = (float) y;
+        this.targetZ = (float) z;
+        this.aspectColor = aspectColor;
+    }
+
     public static void createWrenchFX(final World world, final double sourceX, final double sourceY,
             final double sourceZ, final double destinationX, final double destinationY, final double destinationZ,
             final Aspect aspectColor, final float range) {
-        Packet_R_ParticleFX packet = new Packet_R_ParticleFX();
-
-        // Set the mode
-        packet.mode = Packet_R_ParticleFX.MODE_WRENCH_FX;
-
-        // Set the world
-        packet.targetWorld = world;
-
-        // Set the target coords
-        packet.targetX = (float) sourceX;
-        packet.targetY = (float) sourceY;
-        packet.targetZ = (float) sourceZ;
-
-        // Set the destination values
+        Packet_R_ParticleFX packet = new Packet_R_ParticleFX(
+                MODE_WRENCH_FX,
+                world,
+                sourceX,
+                sourceY,
+                sourceZ,
+                aspectColor.getColor());
         packet.dX = (float) destinationX;
         packet.dY = (float) destinationY;
         packet.dZ = (float) destinationZ;
-
-        // Set the aspect color
-        packet.aspectColor = aspectColor.getColor();
-
-        // Send it
         NetworkHandler.sendAreaPacketToClients(packet, range);
+    }
+
+    public static void sendInfusionRunes(final TileEntity provider, final int aspectColor) {
+        Packet_R_ParticleFX packet = new Packet_R_ParticleFX(
+                MODE_INFUSION_RUNES,
+                provider.getWorldObj(),
+                provider.xCoord,
+                provider.yCoord,
+                provider.zCoord,
+                aspectColor);
+        NetworkHandler.sendAreaPacketToClients(packet, 32);
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void addInfusionRunes() {
+        Color color = new Color(this.aspectColor);
+        float red = color.getRed() / 255.0F;
+        float green = color.getGreen() / 255.0F;
+        float blue = color.getBlue() / 255.0F;
+        for (int i = 0; i < 10; i++) {
+            float gravity = i < 5 ? -0.1F : 0.1F;
+            Thaumcraft.proxy.blockRunes(targetWorld, targetX, targetY, targetZ, red, green, blue, 15, gravity);
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -102,39 +115,24 @@ public class Packet_R_ParticleFX extends ThEAreaPacket {
 
     @Override
     protected void readData(final ByteBuf stream) {
-        // Call super
         super.readData(stream);
-
-        switch (this.mode) {
-            case Packet_R_ParticleFX.MODE_WRENCH_FX:
-
-                // Read the destination
-                this.dX = stream.readFloat();
-                this.dY = stream.readFloat();
-                this.dZ = stream.readFloat();
-
-                // Read the color
-                this.aspectColor = stream.readInt();
-                break;
+        if (this.mode == MODE_WRENCH_FX) {
+            this.dX = stream.readFloat();
+            this.dY = stream.readFloat();
+            this.dZ = stream.readFloat();
         }
+        this.aspectColor = stream.readInt();
     }
 
     @Override
     protected void writeData(final ByteBuf stream) {
-        // Call super
         super.writeData(stream);
-
-        switch (this.mode) {
-            case Packet_R_ParticleFX.MODE_WRENCH_FX:
-                // Write the destination
-                stream.writeFloat(this.dX);
-                stream.writeFloat(this.dY);
-                stream.writeFloat(this.dZ);
-
-                // Write the color
-                stream.writeInt(this.aspectColor);
-                break;
+        if (this.mode == MODE_WRENCH_FX) {
+            stream.writeFloat(this.dX);
+            stream.writeFloat(this.dY);
+            stream.writeFloat(this.dZ);
         }
+        stream.writeInt(this.aspectColor);
     }
 
     @SideOnly(Side.CLIENT)
@@ -151,8 +149,11 @@ public class Packet_R_ParticleFX extends ThEAreaPacket {
         }
 
         switch (this.mode) {
-            case Packet_R_ParticleFX.MODE_WRENCH_FX:
+            case MODE_WRENCH_FX:
                 this.addWrenchFX();
+                break;
+            case MODE_INFUSION_RUNES:
+                this.addInfusionRunes();
                 break;
         }
     }
